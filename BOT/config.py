@@ -1,0 +1,1 @@
+TOKEN = '5174521358:AAEwm_vViDldLBbmhIk9Fp77_rARS2Y1bms'  # @YandexLyceum_rulka_bot

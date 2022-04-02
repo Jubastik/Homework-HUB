@@ -1,16 +1,13 @@
 from aiogram import Dispatcher
 from aiogram.types import Message
 
+from bot import dp
 from tgbot.Filters.DeveloperFilter import DeveloperFilter
 
 # Tasks:
 # 1) Создание рассылок
 
+
+@dp.message_handler(DeveloperFilter(), commands=["dev_panel"], state="*")
 async def dev_panel(msg: Message):
-    await msg.reply("Developer panel")
-
-
-def register_developer_handlers(dp: Dispatcher):
-    dp.register_message_handler(
-        dev_panel, DeveloperFilter(), commands=["dev_panel"], state="*"
-    )
+    await msg.answer("Developer panel")

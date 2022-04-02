@@ -11,8 +11,9 @@ import tgbot.Handlers
 logger = logging.getLogger(__name__)
 
 # Tasks:
-# 1) Клавиатуры
-# 2) Машина состояний
+# 1) Реализация клавиатуры
+# 2) Реализация машины состояний
+# ?3) Создание Redis
 
 async def main():
     # Логгирование

@@ -3,8 +3,6 @@ from aiogram.types import Message
 
 from tgbot.Filters.StudentFilter import StudentFilter
 
-# Tasks:
-# 1)
 
 async def student_start(msg: Message):
     await msg.reply("Зареган")

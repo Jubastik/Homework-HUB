@@ -3,6 +3,8 @@ from aiogram.types import Message
 
 from tgbot.Filters.DeveloperFilter import DeveloperFilter
 
+# Tasks:
+# 1) Создание рассылок
 
 async def dev_panel(msg: Message):
     await msg.reply("Developer panel")

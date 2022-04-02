@@ -1,30 +1,47 @@
-from aiogram import Bot, Dispatcher, executor
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+import asyncio
 import logging
 
-from handlers import Handlers
+from aiogram import Bot, Dispatcher
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
+from tgbot.config import load_config
+import tgbot.Filters
+import tgbot.Handlers
 
-class TgBot:
-    def __init__(self, TOKEN):
-        self.bot = Bot(token=TOKEN)
-        self.dp = Dispatcher(self.bot, storage=MemoryStorage())  # MemoryStorage хранит инфу в оперативке
-        logging.basicConfig(level=logging.INFO)
-        self.hd = Handlers(self.bot, self.dp)
-        self.hd.register_handlers()
-
-    def start(self):
-        executor.start_polling(self.dp, on_shutdown=self.shutdown)
-
-    async def shutdown(self, dp: Dispatcher):
-        await dp.storage.close()
-        await dp.storage.wait_closed()
-
+logger = logging.getLogger(__name__)
 
 # Tasks:
-# 1) Реализация машины состояний
-# 2) Понять что такое мидлвари
-# 3) Фильтры
+# 1) Клавиатуры
+# 2) Машина состояний
 
-# Следующая волна тасков
-# 1) Реализация регистрации (без подключения к api)
+async def main():
+    # Логгирование
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    )
+    logger.info("Starting bot")
+    config = load_config("bot.ini")
+
+    # Подготовка бота
+    bot = Bot(token=config.tg_bot.token)
+    dp = Dispatcher(bot, storage=MemoryStorage())
+
+    tgbot.Filters.setup(dp)  # Подключение фильтров
+    tgbot.Handlers.setup(dp)  # Подключение хендлеров
+
+    # Запуск бота
+    # !Падает с ошибкой при ctrl+c: ИСПРАВИТЬ
+    try:
+        await dp.start_polling()
+    finally:
+        await dp.storage.close()
+        await dp.storage.wait_closed()
+        await bot.session.close()
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Bot stopped!")

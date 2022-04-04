@@ -23,6 +23,10 @@ def create_schedule(tg_id):  # Создает расписание на осно
 
 
 @blueprint.route('/api/schedule/<int:tg_id>/<int:day>', methods=['PUT'])
+def full_edit_schedule(tg_id, day):  # Полное Изменение расписания на основе входящего Json
+    return "full edit_schedule"
+
+@blueprint.route('/api/schedule/<int:tg_id>/<int:day>', methods=['PATCH'])
 def edit_schedule(tg_id, day):  # Изменение расписания на основе входящего Json
     return "edit_schedule"
 

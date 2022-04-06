@@ -6,8 +6,8 @@ from bot import dp
 import tgbot.Filters, tgbot.Handlers
 
 # Tasks:
-# 1) Реализация машины состояний
-# ?2) Создание Redis
+# 1) Создание Redis
+# 2) Нормальное скрытие меню а не эта фигня (ну или всё решит FSM)
 
 
 async def on_startup(dp):

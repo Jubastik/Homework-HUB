@@ -1,5 +1,5 @@
-from aiogram import Dispatcher
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
+from aiogram.dispatcher import FSMContext
 
 from bot import dp
 from tgbot.Filters.AdminFilter import AdminFilter

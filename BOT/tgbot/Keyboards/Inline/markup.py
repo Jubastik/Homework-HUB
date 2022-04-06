@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # InlineKeyboardMarkup - кнопочки
 
-empty = InlineKeyboardMarkup()
+empty_markup = InlineKeyboardMarkup()
 
 
 start_on = InlineKeyboardMarkup(

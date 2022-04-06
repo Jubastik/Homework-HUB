@@ -3,6 +3,7 @@
 
 # Tasks:
 # !1) Реализация используемых фильтрами is_student, is_admin, is_developer
+# 2) add_user
 
 
 async def add_user(tguser_id):
@@ -22,4 +23,8 @@ async def is_admin(tguser_id):
 
 
 async def is_developer(tguser_id):
+    pass
+
+# Вообще по хорошему создать вспомогательный класс для homework, так будет удобней и красивше.
+async def add_homework(tguser_id, homework: dict):
     pass

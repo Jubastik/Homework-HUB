@@ -64,7 +64,7 @@ async def JoinClass_handler(callback: CallbackQuery):
 async def Start(msg: Message):
     # !Обработка deeplinking
     FSMContext = dp.current_state(user=msg.from_user.id)
-    FSMContext.reset_state()
+    await FSMContext.reset_state()
     await msg.answer("Привет, я бот для сохранения домашки", reply_markup=Start_markup)
     await RegistrationStates.StartBtn.set()
 

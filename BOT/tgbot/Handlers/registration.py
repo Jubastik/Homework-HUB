@@ -14,21 +14,23 @@ from tgbot.Services.Restapi import register_user
 # 3) Обработка фаст ссылок (deeplinking)
 
 
-@dp.callback_query_handler(RegistrationFilter(), text="make_class")
+@dp.callback_query_handler(
+    RegistrationFilter(), state=RegistrationStates.StartBtn, text="make_class"
+)
 async def new_class(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer("Создание класса")
-    await callback.message.edit_reply_markup(empty_markup)
 
 
-@dp.callback_query_handler(RegistrationFilter(), text="join_class_by_id")
+@dp.callback_query_handler(
+    RegistrationFilter(), state=RegistrationStates.StartBtn, text="join_class_by_id"
+)
 async def join_class(callback: CallbackQuery):
     await callback.answer()
     await RegistrationStates.GetGroupId.set()
     await callback.message.answer(
         "Введите id класса. Его можно получить у участника класса."
     )
-    await callback.message.edit_reply_markup(empty_markup)
 
 
 @dp.message_handler(RegistrationFilter(), state=RegistrationStates.GetGroupId)
@@ -49,3 +51,4 @@ async def get_id(msg: Message):
 async def start(msg: Message):
     # !Обработка deeplinking
     await msg.answer("Привет, я бот для сохранения домашки.", reply_markup=start_on)
+    await RegistrationStates.StartBtn.set()

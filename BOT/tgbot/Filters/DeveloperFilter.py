@@ -1,8 +1,7 @@
 from aiogram.dispatcher.filters import BoundFilter
 from aiogram import types
 
-from tgbot.services.restapi import is_developer
-
+from tgbot.Services.Restapi import is_developer
 
 
 class DeveloperFilter(BoundFilter):

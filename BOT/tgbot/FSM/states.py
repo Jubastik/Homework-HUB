@@ -5,9 +5,20 @@ class RegistrationStates(StatesGroup):
     """Состояния регистрации"""
 
     # Вход:
+    Start = State()
     GetGroupId = State()
     # Создание класса:
-    # ...
+    # 1) Получение времени старта уроков
+    GetStartTime = State()  # "Уроки начинаются в 9:00?"
+    GetOtherTime = State()  # Если уроки не в 9:00
+    # 2) Получение списка предметов класса
+    CheckSubjects = State()
+    AddSubject = State()
+    CheckSubjectsAgain = State()
+    # 3) Получение кол-ва уроков каждый день
+
+    # 4) Получение расписания
+
 
 
 class GetHomeworkStates(StatesGroup):

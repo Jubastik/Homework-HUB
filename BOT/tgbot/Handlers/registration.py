@@ -3,9 +3,9 @@ from aiogram.dispatcher import FSMContext
 
 from bot import dp
 from tgbot.Filters.RegistrationFilter import RegistrationFilter
-from tgbot.Keyboards.Inline.markup import start_on, empty_markup
-from tgbot.FSM.states import RegistrationStates
-from tgbot.services.scripts import register_user
+from tgbot.Keyboards.Inline.Markup import start_on, empty_markup
+from tgbot.FSM.States import RegistrationStates
+from tgbot.Services.Restapi import register_user
 
 
 # Tasks:

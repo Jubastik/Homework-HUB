@@ -9,15 +9,16 @@ class RegistrationStates(StatesGroup):
     GetGroupId = State()
     # Создание класса:
     # 1) Получение времени старта уроков
-    GetStartTime = State()  # "Уроки начинаются в 9:00?"
-    GetOtherTime = State()  # Если уроки не в 9:00
+    CheckStartTime = State()  # "Уроки начинаются в 9:00?"
+    AddTime = State()  # Если уроки не в 9:00
     # 2) Получение списка предметов класса
     CheckSubjects = State()  # Все ли предметы есть в списке?
     AddSubject = State()  # Добавить предмет в список
     CheckSubjectsAgain = State()  # Все ли предметы есть в списке? (по другому)
-    # 4) Получение расписания
+    # 3) Получение расписания
     Form = State()  # Форма заполнения
-
+    # 4) Проверка
+    IsCorrect = State()
 
 class GetHomeworkStates(StatesGroup):
     pass

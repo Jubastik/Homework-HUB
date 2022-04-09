@@ -13,8 +13,8 @@ class RegistrationStates(StatesGroup):
     AddTime = State()  # Если уроки не в 9:00
     # 2) Получение списка предметов класса
     CheckSubjects = State()  # Все ли предметы есть в списке?
-    AddSubject = State()  # Добавить предмет в список
-    CheckSubjectsAgain = State()  # Все ли предметы есть в списке? (по другому)
+    # AddSubject = State()  # Добавить предмет в список
+    # CheckSubjectsAgain = State()  # Все ли предметы есть в списке? (по другому)
     # 3) Получение расписания
     Form = State()  # Форма заполнения
     # 4) Проверка

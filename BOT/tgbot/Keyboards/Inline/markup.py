@@ -1,5 +1,7 @@
-from distutils.command import check
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.dispatcher import FSMContext
+
+from CONSTANTS import SUBJECTS
 
 # InlineKeyboardMarkup - кнопочки
 
@@ -23,3 +25,20 @@ YesOrNo_markup = InlineKeyboardMarkup(
         [InlineKeyboardButton(text="Назад", callback_data="back")],
     ]
 )
+
+CheckSubjects1_markup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Всё верно", callback_data="Check_Subjects_okey")],
+        [InlineKeyboardButton(text="Назад", callback_data="back")],
+    ]
+)
+CheckSubjects2_markup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Вернуть", callback_data="Check_Subjects_undo")],
+    ]
+)
+
+
+def get_FormMarkup(FSMContext: FSMContext):
+    inline_keyboard = [[], [InlineKeyboardButton(text="Назад", callback_data="back")]]
+    return InlineKeyboardMarkup()

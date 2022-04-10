@@ -26,9 +26,11 @@ def create_homework(tg_id, date):  # Создает дз на основе вх�
 def full_edit_homework(tg_id, date):  # Полное Изменение дз на основе входящего Json
     return "full edit_homework"
 
+
 @blueprint.route('/api/homework/<int:tg_id>/<int:date>', methods=['PATCH'])
 def edit_homework(tg_id, date):  # Изменение дз на основе входящего Json
     return "edit_homework"
+
 
 @blueprint.route('/api/homework/<int:tg_id>/<int:date>', methods=['DELETE'])
 def del_homework(tg_id, date):  # Удаление дз

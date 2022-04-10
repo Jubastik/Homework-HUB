@@ -12,9 +12,15 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/api/user/<platform>/<int:tg_id>', methods=['GET'])
-def get_user(platform, tg_id):  # Возвращает базовую информацию о пользователе
-    return "check_user"
+@blueprint.route('/api/user/<platform>/<int:user_id>', methods=['GET'])
+def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
+    try:
+        id = id_processing(platform, user_id)
+    except IDError as e:
+        return make_response(jsonify({'error': str(e)}), 404)
+    db_sess = db_session.create_session()
+    student = db_sess.query(Student).filter(Student.id == id).first()
+    return jsonify({'data': student.to_dict(only=('id', 'name', 'class_id', 'is_admin'))})
 
 
 @blueprint.route('/api/user', methods=['POST'])
@@ -45,23 +51,21 @@ def create_user():  # Создает пользователя на основе 
 #     name:
 # }
 
-@blueprint.route('/api/user/<int:tg_id>', methods=['PUT'])
-def full_edit_user(tg_id):  # Полное Изменение пользователя на основе входящего Json
+@blueprint.route('/api/user/<platform>/<int:user_id>', methods=['PUT'])
+def full_edit_user(platform, user_id):  # Полное Изменение пользователя на основе входящего Json
     return "full edit_user"
 
 
-@blueprint.route('/api/user/<platform>/<int:id>', methods=['PATCH'])
-def edit_user(platform, id):  # Изменение пользователя на основе входящего Json
+@blueprint.route('/api/user/<platform>/<int:user_id>', methods=['PATCH'])
+def edit_user(platform, user_id):  # Изменение пользователя на основе входящего Json
     if not request.json:
         return make_response(jsonify({'error': 'Пустой json'}), 422)
     try:
-        id = id_processing(platform, id)
+        id = id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
-    if not student:
-        return make_response(jsonify({'error': 'Пользователь не существует'}), 422)
     data = request.json
     for key, data in data.items():
         if key == "name":
@@ -76,6 +80,6 @@ def edit_user(platform, id):  # Изменение пользователя на
     return make_response()
 
 
-@blueprint.route('/api/user/<int:tg_id>', methods=['DELETE'])
-def del_user(tg_id):  # Удаление пользователя
+@blueprint.route('/api/user/<platform>/<int:user_id>', methods=['DELETE'])
+def del_user(platform, user_id):  # Удаление пользователя
     return "del_user"

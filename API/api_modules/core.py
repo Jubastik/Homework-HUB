@@ -14,7 +14,13 @@ def id_processing(platform, id):
     if platform == TG:
         db_sess = db_session.create_session()
         id = db_sess.query(Student.id).filter(Student.tg_id == id).first()
-        if id is  None:
+        if id is None:
+            raise IDError('Ошибка в ID')
+        return id[0]
+    elif platform == 'no':
+        db_sess = db_session.create_session()
+        id = db_sess.query(Student.id).filter(Student.id == id).first()
+        if id is None:
             raise IDError('Ошибка в ID')
         return id[0]
     else:

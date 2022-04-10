@@ -2,35 +2,35 @@ class SheduleData:
     def __init__(self):
         # fmt: off
         self.shedule = {
-            1: {
+            0: {
                 "day_name": "Понедельник",
-                "shedule": {1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-", 8: "-"},
+                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
+            },
+            1: {
+                "day_name": "Вторник",
+                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
             },
             2: {
-                "day_name": "Вторник",
-                "shedule": {1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-", 8: "-"},
+                "day_name": "Среда",
+                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
             },
             3: {
-                "day_name": "Среда",
-                "shedule": {1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-", 8: "-"},
+                "day_name": "Четверг",
+                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
             },
             4: {
-                "day_name": "Четверг",
-                "shedule": {1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-", 8: "-"},
+                "day_name": "Пятница",
+                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
             },
             5: {
-                "day_name": "Пятница",
-                "shedule": {1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-", 8: "-"},
-            },
-            6: {
                 "day_name": "Суббота",
-                "shedule": {1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-", 8: "-"},
+                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
             },
         }  # self.shedule = {day_id: {day_name: "day_name", {lesson: "name"}}}
         # fmt: on
 
-    def add_lesson(self, name, day_id, lesson_id):
-        self.shedule[day_id]["shedule"][lesson_id] = name
+    def add_lesson(self, name, pos):
+        self.shedule[pos[0]]["shedule"][pos[1]] = name
 
     def delete_lesson(self, day_id, lesson_id):
         self.shedule[day_id]["shedule"][lesson_id] = "-"
@@ -44,9 +44,12 @@ class SheduleData:
             day = self.shedule[key]
             res.append(f'{day["day_name"]}:')
             for lesson in day["shedule"].keys():
-                res.append(f'{lesson}) {day["shedule"][lesson]}')
+                res.append(f'{lesson + 1}) {day["shedule"][lesson]}')
         if current_id is not None:
-            pass
+            res_id = current_id[0] * 9 + current_id[1] + 1
+            res[res_id] = res[res_id].ljust(20)
+            res[res_id] += "⬅️"
+        return res
 
     def load_shedule(self, shedule):
         # Мб пригодится, когда будем делать блок студента

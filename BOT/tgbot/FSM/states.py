@@ -16,7 +16,7 @@ class RegistrationStates(StatesGroup):
     # AddSubject = State()  # Добавить предмет в список
     # CheckSubjectsAgain = State()  # Все ли предметы есть в списке? (по другому)
     # 3) Получение расписания
-    Form = State()  # Форма заполнения
+    AddShedule = State()  # Форма заполнения
     # 4) Проверка
     IsCorrect = State()
 

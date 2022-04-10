@@ -7,7 +7,7 @@ import tgbot.Filters, tgbot.Handlers
 
 # Tasks:
 # 1) Создание Redis
-
+# 2) Кеширование
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов

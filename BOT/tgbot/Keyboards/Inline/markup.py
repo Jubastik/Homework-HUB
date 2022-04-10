@@ -1,7 +1,9 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.dispatcher import FSMContext
+from emoji import emojize
 
 from CONSTANTS import SUBJECTS
+from tgbot.Keyboards.Inline.CallbackData import SubjectData, ArrowsData
 
 # InlineKeyboardMarkup - кнопочки
 
@@ -34,11 +36,28 @@ CheckSubjects1_markup = InlineKeyboardMarkup(
 )
 CheckSubjects2_markup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text="Вернуть", callback_data="Check_Subjects_undo")],
+        [InlineKeyboardButton(text="Отмена", callback_data="Check_Subjects_undo")],
+    ]
+)
+Shedule2_markup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Готово", callback_data="shedule_done")]
     ]
 )
 
 
-def get_FormMarkup(FSMContext: FSMContext):
-    inline_keyboard = [[], [InlineKeyboardButton(text="Назад", callback_data="back")]]
-    return InlineKeyboardMarkup()
+def get_SheduleMarkup(subjects):
+    keyboard = InlineKeyboardMarkup(row_width=3)
+    for i in range(len(subjects)):
+        keyboard.insert(
+            InlineKeyboardButton(
+                text=subjects[i],
+                callback_data=SubjectData.new(name=subjects[i]),
+            )
+        )
+    keyboard.add(
+        InlineKeyboardButton(text="Вверх", callback_data=ArrowsData.new(num=-1)),
+        InlineKeyboardButton(text="Вниз", callback_data=ArrowsData.new(num=1)),
+    )
+    keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back"))
+    return keyboard

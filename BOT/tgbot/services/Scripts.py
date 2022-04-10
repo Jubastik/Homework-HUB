@@ -14,3 +14,7 @@ def convert_time(time: list):
     if len(time[1]) == 1:
         time[1] = f"1{time[1]}"
     return time
+
+
+def convert_position(pos):
+    return [((pos) // 8), (pos % 8)]

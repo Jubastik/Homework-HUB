@@ -33,9 +33,9 @@ from CONSTANTS import SUBJECTS
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
 async def Start(msg: Message):
     # !Обработка deeplinking
-    # пример: t.me/YandexLyceum_rulka_bot?start=group_id123
-    if "group_id" in msg.text:
-        classid = msg.text.split("group_id")[-1]
+    # пример: t.me/YandexLyceum_rulka_bot?start=class_token123
+    if "class_token" in msg.text:
+        classid = msg.text.split("class_token")[-1]
         userid = msg.from_user.id
         FSMContext = dp.current_state(user=userid)
         if register_user(userid, classid):

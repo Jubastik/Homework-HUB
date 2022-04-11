@@ -40,7 +40,7 @@ async def Start(msg: Message):
         FSMContext = dp.current_state(user=userid)
         if register_user(userid, classid):
             await msg.answer(
-                "Регистрация успешна"
+                "Регистрация по ссылке успешна"
             )  # Тут надо сделать отправку менюшки студента
             await msg.answer("*Менюшка студента*")
             await FSMContext.reset_state()

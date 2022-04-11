@@ -2,8 +2,7 @@
 # Пока что просто затычки => фильтры работают через жопу, надо в коде указывать кем воспринимать юзеров
 
 # Tasks:
-# !1) Реализация используемых фильтрами is_student, is_admin, is_developer
-# 2) add_user
+# 1) Реализация используемых фильтрами is_student, is_admin, is_developer, register_class, register_user
 
 
 async def is_student(tguser_id):
@@ -29,8 +28,12 @@ async def add_homework(tguser_id, homework: dict):
 
 def register_user(tguser_id, classid):
     """Добавление юзера в бд, возвращает True если успешно, в противном случае False"""
+    # 1) Создать юзера, привязанного к классу
     return True
 
+
 def register_class(tguser_id, data):
-    """Добавление юзера в бд, возвращает True если успешно, в противном случае False"""
+    """Добавление класса в бд, возвращает True если успешно, в противном случае False"""
+    # 1) Создать пустого юзера
+    # 2) Создание класса
     return True

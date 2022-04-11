@@ -12,6 +12,7 @@ class Class(SqlAlchemyBase, SerializerMixin):
     class_token = sqlalchemy.Column(sqlalchemy.Integer, unique=True)
     vk_id = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=True)
     student = orm.relationship("Student", back_populates="my_class")
+    schedules = orm.relationship("Schedule", back_populates="my_class")
 
     def __repr__(self):
         return f'<Class> {self.id} {self.name} {self.vk_id}'

@@ -21,7 +21,7 @@ def get_class(platform, user_id):  # Возвращает токен класс�
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
-    my_class = db_sess.query(Class).filter(Class.id == student.class_id).first()
+    my_class = student.my_class
     return jsonify({'data': my_class.to_dict(only=('id', 'name', 'class_token', 'vk_id', 'student.id'))})
 
 
@@ -71,7 +71,7 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
     student = db_sess.query(Student).filter(Student.id == id).first()
     if not student.is_admin:
         return make_response(jsonify({'error': 'Нет прав'}), 404)
-    my_class = db_sess.query(Class).filter(Class.id == student.class_id).first()
+    my_class = student.my_class
     for key, data in json_data.items():
         if key == "class_token":
             my_class.class_token = data

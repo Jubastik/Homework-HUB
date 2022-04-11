@@ -197,16 +197,11 @@ async def BackCheckSubjects_handler(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:  # Создание дефолтной FSMdata
-        time = FSMdata["start_time"] = ["9", "00"]
-        FSMdata["extra_subjects"] = [*SUBJECTS]
-        FSMdata["shedule"] = SheduleData()
-        FSMdata["current_pos"] = 1
-    time = convert_time(time)
-    await RegistrationStates.CheckStartTime.set()
-    await callback.message.answer(
-        f"Ваши уроки начинаются в {' : '.join(convert_time(time))}?",
-        reply_markup=YesOrNo_markup,
-    )
+        await RegistrationStates.CheckStartTime.set()
+        await callback.message.answer(
+            f"Ваши уроки начинаются в {' : '.join(convert_time(FSMdata['start_time']))}?",
+            reply_markup=YesOrNo_markup,
+        )
 
 
 @dp.callback_query_handler(

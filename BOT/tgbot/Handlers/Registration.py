@@ -33,12 +33,27 @@ from CONSTANTS import SUBJECTS
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
 async def Start(msg: Message):
     # !Обработка deeplinking
-    FSMContext = dp.current_state(user=msg.from_user.id)
-    await FSMContext.reset_state()
-    await msg.answer(
-        "Привет! Я бот для быстрого сохранения домашки", reply_markup=Start_markup
-    )
-    await RegistrationStates.StartBtn.set()
+    # пример: t.me/YandexLyceum_rulka_bot?start=group_id123
+    if 'group_id' in msg.text:
+        classid = msg.text.split('group_id')[-1]
+        userid = msg.from_user.id
+        FSMContext = dp.current_state(user=userid)
+        if register_user(userid, classid):
+            await msg.answer(
+                "Регистрация успешна"
+            )  # Тут надо сделать отправку менюшки студента
+            await msg.answer("*Менюшка студента*")
+            await FSMContext.reset_state()
+        else:
+            await msg.answer("Неправильный формат id")
+    else:
+        FSMContext = dp.current_state(user=msg.from_user.id)
+        await FSMContext.reset_state()
+        await msg.answer(
+            "Привет! Я бот для быстрого сохранения домашки", reply_markup=Start_markup
+        )
+        await RegistrationStates.StartBtn.set()
+
 
 
 @dp.callback_query_handler(

@@ -1,7 +1,7 @@
 from aiogram.dispatcher.filters import BoundFilter
 from aiogram import types
 
-from tgbot.Services.Restapi import is_unregistered
+from tgbot.Services.Restapi.Restapi import is_unregistered
 
 
 class RegistrationFilter(BoundFilter):

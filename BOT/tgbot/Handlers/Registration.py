@@ -13,7 +13,7 @@ from tgbot.Keyboards.Inline.Markup import (
     Shedule2_markup,
 )
 from tgbot.FSM.States import RegistrationStates
-from tgbot.Services.Restapi import register_user, register_class
+from tgbot.Services.Restapi.Restapi import register_user, register_class
 from tgbot.Services.Scripts import (
     time_is_correct,
     convert_time,
@@ -34,13 +34,13 @@ from CONSTANTS import SUBJECTS
 async def Start(msg: Message):
     # !Обработка deeplinking
     # пример: t.me/YandexLyceum_rulka_bot?start=group_id123
-    if 'group_id' in msg.text:
-        classid = msg.text.split('group_id')[-1]
+    if "group_id" in msg.text:
+        classid = msg.text.split("group_id")[-1]
         userid = msg.from_user.id
         FSMContext = dp.current_state(user=userid)
         if register_user(userid, classid):
             await msg.answer(
-                "Регистрация успешна"
+                "Регистрация по ссылке успешна"
             )  # Тут надо сделать отправку менюшки студента
             await msg.answer("*Менюшка студента*")
             await FSMContext.reset_state()
@@ -53,7 +53,6 @@ async def Start(msg: Message):
             "Привет! Я бот для быстрого сохранения домашки", reply_markup=Start_markup
         )
         await RegistrationStates.StartBtn.set()
-
 
 
 @dp.callback_query_handler(
@@ -94,9 +93,7 @@ async def GetId_handler(msg: Message):
     userid = msg.from_user.id
     FSMContext = dp.current_state(user=userid)
     if register_user(userid, classid):
-        await msg.answer(
-            "Регистрация успешна"
-        )  # Тут надо сделать отправку менюшки студента
+        await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
         await msg.answer("*Менюшка студента*")
         await FSMContext.reset_state()
     else:
@@ -272,7 +269,9 @@ async def CheckSubjectsUndo_handler(callback: CallbackQuery):
             "\n".join(
                 [
                     "Расписание:",
-                    *FSMdata["shedule"].get_readable_shedule(current_id=convert_position(FSMdata["current_pos"])),
+                    *FSMdata["shedule"].get_readable_shedule(
+                        current_id=convert_position(FSMdata["current_pos"])
+                    ),
                 ]
             )
         )

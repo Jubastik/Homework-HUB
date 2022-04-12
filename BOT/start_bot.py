@@ -9,9 +9,10 @@ import tgbot.Filters, tgbot.Handlers
 # 1) Создание Redis
 # 2) Кеширование
 
+
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
-    pass
+    tgbot.Filters.setup(dp)
 
 
 async def on_shutdown(dp):

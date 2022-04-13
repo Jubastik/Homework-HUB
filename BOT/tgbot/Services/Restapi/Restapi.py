@@ -34,6 +34,8 @@ async def add_homework(tguser_id, homework: dict):
 def register_user(tguser_id, classid):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
     #sdvsvdvsvd
+    """Добавление юзера в бд, возвращает True если успешно, в противном случае False"""
+    # 1) Создать юзера, привязанного к классу
     return True
 
 

@@ -34,24 +34,18 @@ async def add_homework(tguser_id, homework: dict):
 def register_user(tguser_id, classid):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
     #sdvsvdvsvd
-    """Добавление юзера в бд, возвращает True если успешно, в противном случае False"""
-    # 1) Создать юзера, привязанного к классу
     return True
 
 
 def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
-    generate_class_id = random.randint(1000, 9999)
     url_user = f'http://127.0.0.1:5000/api/user'
     url_class = f'http://127.0.0.1:5000/api/class'
     # сначала регистрация полльзователя
     response = requests.post(url_user, json={
         "id": tguser_id,
         "platform": "tg",
-        "name": "Олег",
-        "class_id": generate_class_id,
-        "is_admin": True,
-        "is_superuser": False
+        "name": "Олег"
     })
     if not response:
         return False

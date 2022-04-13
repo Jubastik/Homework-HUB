@@ -29,14 +29,17 @@ def create_user():  # Создает пользователя на основе 
     if not request.json:
         return make_response(jsonify({'error': 'Пустой json'}), 422)
     elif not all(key in request.json for key in
-                 ["platform", "id", "name"]):
+                 ["platform", "id", "name", "class_id", "is_admin", "is_superuser"]):
         return make_response(jsonify({'error': 'Отсутствуют поля "platform", "id", "name"'}), 422)
     db_sess = db_session.create_session()
     data = request.json
     if data['platform'] == "tg":
         student = Student(
             tg_id=data['id'],
-            name=data['name']
+            name=data['name'],
+            class_id=data['class_id'],
+            is_admin=data['is_admin'],
+            is_superuser=data['is_superuser']
         )
     else:
         return make_response(jsonify({'error': 'поддерживается только tg'}), 422)

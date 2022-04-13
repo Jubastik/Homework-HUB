@@ -29,6 +29,8 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
     schedule = db_sess.query(Schedule).join(WeekDay).filter(WeekDay.name == day).first()
+    if schedule is None:
+        return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
     return jsonify({'data': schedule.to_dict(only=('id', 'day_id', 'lesson.name', 'slot.number_of_lesson'))})
 
 

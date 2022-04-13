@@ -32,7 +32,7 @@ from CONSTANTS import SUBJECTS
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
 async def Start(msg: Message):
     # !Обработка deeplinking
-    # пример: t.me/YandexLyceum_rulka_bot?start=class_token56207
+    # пример: t.me/YandexLyceum_rulka_bot?start=class_token94811
     if "class_token" in msg.text:
         classid = msg.text.split("class_token")[-1]
         userid = msg.from_user.id

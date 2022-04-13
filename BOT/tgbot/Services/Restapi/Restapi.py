@@ -13,7 +13,13 @@ from CONSTANTS import URL_USER, URL_CLASS
 
 async def is_student(tguser_id):
     # есть ли в базе
-    pass
+    try:
+        query = f"/tg/{tguser_id}"
+        res = requests.get(URL_USER + query)
+        res = json.loads(res.text)
+        return True
+    except Exception:
+        return False
 
 
 async def is_unregistered(tguser_id):
@@ -22,11 +28,23 @@ async def is_unregistered(tguser_id):
 
 async def is_admin(tguser_id):
     # админ или нет
-    pass
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_USER + query)
+    res = json.loads(res.text)
+    if res['is_admin']:
+        return True
+    else:
+        return False
 
 
 async def is_developer(tguser_id):
-    pass
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_USER + query)
+    res = json.loads(res.text)
+    if res['is_superuser']:
+        return True
+    else:
+        return False
 
 
 # Вообще по хорошему создать вспомогательный класс для homework, так будет удобней и красивше.
@@ -34,7 +52,7 @@ async def add_homework(tguser_id, homework: dict):
     pass
 
 
-def register_user(tguser_id, data):
+def register_user(tguser_id, classid):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     response = requests.post(
@@ -42,8 +60,8 @@ def register_user(tguser_id, data):
         json={
             "id": tguser_id,
             "platform": "tg",
-            "class_token": data["class_id"],
-            "name": data["name"],
+            "class_token": classid,
+            "name": "Олег",
         },
     )
     if response:

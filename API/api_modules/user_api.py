@@ -1,4 +1,5 @@
 import flask
+import sqlalchemy
 from flask import request, jsonify, make_response
 
 from API.api_modules.core import id_processing, IDError
@@ -50,7 +51,10 @@ def create_user():  # Создает пользователя на основе 
     else:
         return make_response(jsonify({'error': 'поддерживается только tg'}), 422)
     db_sess.add(student)
-    db_sess.commit()
+    try:
+        db_sess.commit()
+    except sqlalchemy.exc.IntegrityError:
+        return make_response(jsonify({'error': 'Такой пользователь уже существует'}), 400)
     return make_response()
 
 

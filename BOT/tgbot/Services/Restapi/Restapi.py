@@ -3,6 +3,7 @@
 import json
 import requests
 import random
+from CONSTANTS import URL_USER, URL_CLASS
 
 
 # Tasks:
@@ -11,7 +12,14 @@ import random
 
 
 async def is_student(tguser_id):
-    pass
+    # есть ли в базе
+    try:
+        query = f"/tg/{tguser_id}"
+        res = requests.get(URL_USER + query)
+        res = json.loads(res.text)
+        return True
+    except Exception:
+        return False
 
 
 async def is_unregistered(tguser_id):
@@ -19,11 +27,24 @@ async def is_unregistered(tguser_id):
 
 
 async def is_admin(tguser_id):
-    pass
+    # админ или нет
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_USER + query)
+    res = json.loads(res.text)
+    if res['is_admin']:
+        return True
+    else:
+        return False
 
 
 async def is_developer(tguser_id):
-    pass
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_USER + query)
+    res = json.loads(res.text)
+    if res['is_superuser']:
+        return True
+    else:
+        return False
 
 
 # Вообще по хорошему создать вспомогательный класс для homework, так будет удобней и красивше.
@@ -33,28 +54,36 @@ async def add_homework(tguser_id, homework: dict):
 
 def register_user(tguser_id, classid):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
-    #sdvsvdvsvd
-    return True
+    # сначала регистрация полльзователя
+    response = requests.post(
+        URL_USER,
+        json={
+            "id": tguser_id,
+            "platform": "tg",
+            "class_token": classid,
+            "name": "Олег",
+        },
+    )
+    if response:
+        return True
+    else:
+        return False
 
 
 def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
-    url_user = f'http://127.0.0.1:5000/api/user'
-    url_class = f'http://127.0.0.1:5000/api/class'
     # сначала регистрация полльзователя
-    response = requests.post(url_user, json={
-        "id": tguser_id,
-        "platform": "tg",
-        "name": "Олег"
-    })
+    response = requests.post(
+        URL_USER, json={"id": tguser_id, "platform": "tg", "name": "Олег"}
+    )
+    print(response)
     if not response:
         return False
     # уже потом регистрация класса
-    response = requests.post(url_class, json={
-        "creator_platform": 'tg',
-        "creator_id": tguser_id,
-        "name": "10A"
-    })
+    response = requests.post(
+        URL_CLASS,
+        json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"},
+    )
     if not response:
         return False
 

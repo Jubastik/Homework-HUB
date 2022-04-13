@@ -40,7 +40,7 @@ def create_user():  # Создает пользователя на основе 
         if class_id is not None:
             class_id = class_id[0]
         else:
-            return make_response(jsonify({'error': 'Нет такого класса'}), 422)
+            return make_response(jsonify({'error': 'Нет такого класса'}), 404)
     if data['platform'] == "tg":
         student = Student(
             tg_id=data['id'],

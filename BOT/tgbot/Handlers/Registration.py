@@ -33,7 +33,7 @@ from CONSTANTS import SUBJECTS
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
 async def Start(msg: Message):
     # !Обработка deeplinking
-    # пример: t.me/YandexLyceum_rulka_bot?start=class_token123
+    # пример: t.me/YandexLyceum_rulka_bot?start=class_token56207
     if "class_token" in msg.text:
         classid = msg.text.split("class_token")[-1]
         userid = msg.from_user.id
@@ -45,7 +45,7 @@ async def Start(msg: Message):
             await msg.answer("*Менюшка студента*")
             await FSMContext.reset_state()
         else:
-            await msg.answer("Неправильный формат id")
+            await msg.answer("Неправильный формат id, либо пользователь уже зарегестрирован")
     else:
         FSMContext = dp.current_state(user=msg.from_user.id)
         await FSMContext.reset_state()

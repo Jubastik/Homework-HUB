@@ -13,7 +13,7 @@ from tgbot.Keyboards.Inline.Markup import (
     Shedule2_markup,
 )
 from tgbot.FSM.States import RegistrationStates
-from tgbot.Services.Restapi import register_user, register_class
+from tgbot.Services.Restapi.Restapi import register_user, register_class
 from tgbot.Services.Scripts import (
     time_is_correct,
     convert_time,
@@ -33,12 +33,26 @@ from CONSTANTS import SUBJECTS
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
 async def Start(msg: Message):
     # !Обработка deeplinking
-    FSMContext = dp.current_state(user=msg.from_user.id)
-    await FSMContext.reset_state()
-    await msg.answer(
-        "Привет! Я бот для быстрого сохранения домашки", reply_markup=Start_markup
-    )
-    await RegistrationStates.StartBtn.set()
+    # пример: t.me/YandexLyceum_rulka_bot?start=group_id123
+    if "group_id" in msg.text:
+        classid = msg.text.split("group_id")[-1]
+        userid = msg.from_user.id
+        FSMContext = dp.current_state(user=userid)
+        if register_user(userid, classid):
+            await msg.answer(
+                "Регистрация по ссылке успешна"
+            )  # Тут надо сделать отправку менюшки студента
+            await msg.answer("*Менюшка студента*")
+            await FSMContext.reset_state()
+        else:
+            await msg.answer("Неправильный формат id")
+    else:
+        FSMContext = dp.current_state(user=msg.from_user.id)
+        await FSMContext.reset_state()
+        await msg.answer(
+            "Привет! Я бот для быстрого сохранения домашки", reply_markup=Start_markup
+        )
+        await RegistrationStates.StartBtn.set()
 
 
 @dp.callback_query_handler(
@@ -79,9 +93,7 @@ async def GetId_handler(msg: Message):
     userid = msg.from_user.id
     FSMContext = dp.current_state(user=userid)
     if register_user(userid, classid):
-        await msg.answer(
-            "Регистрация успешна"
-        )  # Тут надо сделать отправку менюшки студента
+        await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
         await msg.answer("*Менюшка студента*")
         await FSMContext.reset_state()
     else:
@@ -185,16 +197,11 @@ async def BackCheckSubjects_handler(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:  # Создание дефолтной FSMdata
-        time = FSMdata["start_time"] = ["9", "00"]
-        FSMdata["extra_subjects"] = [*SUBJECTS]
-        FSMdata["shedule"] = SheduleData()
-        FSMdata["current_pos"] = 1
-    time = convert_time(time)
-    await RegistrationStates.CheckStartTime.set()
-    await callback.message.answer(
-        f"Ваши уроки начинаются в {' : '.join(convert_time(time))}?",
-        reply_markup=YesOrNo_markup,
-    )
+        await RegistrationStates.CheckStartTime.set()
+        await callback.message.answer(
+            f"Ваши уроки начинаются в {' : '.join(convert_time(FSMdata['start_time']))}?",
+            reply_markup=YesOrNo_markup,
+        )
 
 
 @dp.callback_query_handler(
@@ -257,7 +264,9 @@ async def CheckSubjectsUndo_handler(callback: CallbackQuery):
             "\n".join(
                 [
                     "Расписание:",
-                    *FSMdata["shedule"].get_readable_shedule(current_id=convert_position(FSMdata["current_pos"])),
+                    *FSMdata["shedule"].get_readable_shedule(
+                        current_id=convert_position(FSMdata["current_pos"])
+                    ),
                 ]
             )
         )

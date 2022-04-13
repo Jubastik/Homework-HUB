@@ -44,7 +44,9 @@ async def Start(msg: Message):
             await msg.answer("*Менюшка студента*")
             await FSMContext.reset_state()
         else:
-            await msg.answer("Неправильный формат id, либо пользователь уже зарегестрирован")
+            await msg.answer(
+                "Неправильный формат id, либо пользователь уже зарегестрирован"
+            )
     else:
         FSMContext = dp.current_state(user=msg.from_user.id)
         await FSMContext.reset_state()
@@ -91,7 +93,8 @@ async def GetId_handler(msg: Message):
     classid = msg.text
     userid = msg.from_user.id
     FSMContext = dp.current_state(user=userid)
-    if register_user(userid, classid):
+    data = {"class_id": classid, "name": msg.from_user.full_name}
+    if register_user(userid, data):
         await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
         await msg.answer("*Менюшка студента*")
         await FSMContext.reset_state()

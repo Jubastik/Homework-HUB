@@ -31,16 +31,19 @@ async def add_homework(tguser_id, homework: dict):
     pass
 
 
-def register_user(tguser_id, classid):
+def register_user(tguser_id, data):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
-    url_user = f'http://127.0.0.1:5000/api/user'
+    url_user = f"http://127.0.0.1:5000/api/user"
     # сначала регистрация полльзователя
-    response = requests.post(url_user, json={
-        "id": tguser_id,
-        "platform": "tg",
-        "class_token": classid,
-        "name": "Олег"
-    })
+    response = requests.post(
+        url_user,
+        json={
+            "id": tguser_id,
+            "platform": "tg",
+            "class_token": data["class_id"],
+            "name": data["name"],
+        },
+    )
     if response:
         return True
     else:
@@ -49,23 +52,20 @@ def register_user(tguser_id, classid):
 
 def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
-    url_user = f'http://127.0.0.1:5000/api/user'
-    url_class = f'http://127.0.0.1:5000/api/class'
+    url_user = f"http://127.0.0.1:5000/api/user"
+    url_class = f"http://127.0.0.1:5000/api/class"
     # сначала регистрация полльзователя
-    response = requests.post(url_user, json={
-        "id": tguser_id,
-        "platform": "tg",
-        "name": "Олег"
-    })
+    response = requests.post(
+        url_user, json={"id": tguser_id, "platform": "tg", "name": "Олег"}
+    )
     print(response)
     if not response:
         return False
     # уже потом регистрация класса
-    response = requests.post(url_class, json={
-        "creator_platform": 'tg',
-        "creator_id": tguser_id,
-        "name": "10A"
-    })
+    response = requests.post(
+        url_class,
+        json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"},
+    )
     if not response:
         return False
 

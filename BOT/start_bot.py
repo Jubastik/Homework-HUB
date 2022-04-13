@@ -25,7 +25,7 @@ def start():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
-
+    print("Bot started")
     executor.start_polling(dp, on_startup=on_startup, on_shutdown=on_shutdown)
 
 

@@ -28,7 +28,7 @@ def get_class(platform, user_id):  # Возвращает токен класс�
 @blueprint.route('/api/class', methods=['POST'])
 def create_class():  # Создает класс на основе входящего Json
     if not request.json:
-        return make_response(jsonify({'error': 'Пустой json'}), 422)
+        return make_response(jsonify({'error': 'Пустой json'}), 400)
     elif not all(key in request.json for key in ["creator_platform", "creator_id", "name"]):
         return make_response(jsonify({'error': 'Отсутствуют поля "creator_platform", "creator_id", "name"'}), 422)
     data = request.json
@@ -62,7 +62,7 @@ def full_edit_class(tg_id, day):  # Полное Изменение класс �
 def edit_class(platform, user_id):  # Изменение класс на основе входящего Json (изменение токена, vk_id)
     json_data = request.json
     if not json_data:
-        return make_response(jsonify({'error': 'Пустой json'}), 422)
+        return make_response(jsonify({'error': 'Пустой json'}), 400)
     try:
         id = id_processing(platform, user_id)
     except IDError as e:

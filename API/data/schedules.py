@@ -11,8 +11,9 @@ class Schedule(SqlAlchemyBase, SerializerMixin):
     class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"))
     my_class = orm.relationship('Class', back_populates='schedules')
 
-    day_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("week_days.id"))
-    day = orm.relationship('WeekDay')
+    day_id = sqlalchemy.Column(sqlalchemy.Integer,
+                    sqlalchemy.ForeignKey("week_days.id"))
+    day = orm.relationship("WeekDay")
 
     slot_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("time_tables.id"))
     slot = orm.relationship('TimeTable')

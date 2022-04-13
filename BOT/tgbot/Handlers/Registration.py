@@ -1,4 +1,3 @@
-from email import message
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 
@@ -351,6 +350,7 @@ async def AddSheduleDone_handler(callback: CallbackQuery):
             "shedule": FSMdata["shedule"],
             "subjects": FSMdata["extra_subjects"],
             "start_time": FSMdata["start_time"],
+            "user_name": callback.from_user.full_name,
         }
         register_class(userid, data)
         await FSMContext.reset_state()

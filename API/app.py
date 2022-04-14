@@ -1,9 +1,8 @@
 from flask import Flask
-
 from API.data import db_session
 from API.data.classes import Class
 from API.data.students import Student
-from api_modules import user_api, homework_api, class_api, schedule_api
+from api_modules import user_api, homework_api, class_api, schedule_api, time_table_api
 
 app = Flask(__name__)
 
@@ -14,6 +13,7 @@ def main():
     app.register_blueprint(homework_api.blueprint)
     app.register_blueprint(class_api.blueprint)
     app.register_blueprint(schedule_api.blueprint)
+    app.register_blueprint(time_table_api.blueprint)
     app.run(debug=True)
 
 

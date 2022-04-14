@@ -1,6 +1,6 @@
 import flask
 import sqlalchemy
-from flask import request, jsonify, abort, make_response
+from flask import request, jsonify, make_response
 
 from API.api_modules.core import id_processing, IDError
 from API.data import db_session

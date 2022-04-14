@@ -12,6 +12,7 @@ class TimeTable(SqlAlchemyBase, SerializerMixin):
     number_of_lesson = sqlalchemy.Column(sqlalchemy.Integer)
     begin_time = sqlalchemy.Column(sqlalchemy.String)
     end_time = sqlalchemy.Column(sqlalchemy.String)
+    __table_args__ = (sqlalchemy.UniqueConstraint('class_id', 'number_of_lesson'),)
 
     def __repr__(self):
         return f'<TimeTable> {self.id} {self.number_of_lesson} {self.begin_time} {self.end_time}'

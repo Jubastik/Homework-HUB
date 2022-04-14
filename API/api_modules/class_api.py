@@ -22,6 +22,8 @@ def get_class(platform, user_id):  # Возвращает токен класс�
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     my_class = student.my_class
+    if my_class is None:
+        return make_response(jsonify({'error': 'Вы не состоите в классе'}), 404)
     return jsonify({'data': my_class.to_dict(only=('id', 'name', 'class_token', 'vk_id', 'student.id'))})
 
 

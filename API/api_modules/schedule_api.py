@@ -1,4 +1,5 @@
 import flask
+import sqlalchemy
 from flask import request, jsonify, abort, make_response
 
 from API.api_modules.core import id_processing, IDError
@@ -16,9 +17,19 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/api/schedule/<int:tg_id>', methods=['GET'])
-def get_schedule(tg_id):  # Возвращает все расписание
-    return "get_schedule"
+@blueprint.route('/api/schedule/<platform>/<int:user_id>', methods=['GET'])
+def get_schedule(platform, user_id):  # Возвращает все расписание
+    try:
+        id = id_processing(platform, user_id)
+    except IDError as e:
+        return make_response(jsonify({'error': str(e)}), 404)
+    db_sess = db_session.create_session()
+    user_class = db_sess.query(Student.class_id).filter(Student.id == id).first()[0]
+    schedules = db_sess.query(Schedule).join(WeekDay).filter(Schedule.class_id == user_class).all()
+    if schedules is None:
+        return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
+    return jsonify({'data': [schedule.to_dict(only=('day.name', 'lesson.name', 'slot.number_of_lesson')) for
+                             schedule in schedules]})
 
 
 @blueprint.route('/api/schedule/<platform>/<int:user_id>/<day>', methods=['GET'])
@@ -29,10 +40,11 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
     user_class = db_sess.query(Student.class_id).filter(Student.id == id).first()[0]
-    schedule = db_sess.query(Schedule).join(WeekDay).filter(WeekDay.name == day, Schedule.class_id == user_class).first()
+    schedule = db_sess.query(Schedule).join(WeekDay).filter(WeekDay.name == day,
+                                                            Schedule.class_id == user_class).first()
     if schedule is None:
         return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
-    return jsonify({'data': schedule.to_dict(only=('id', 'day_id', 'lesson.name', 'slot.number_of_lesson'))})
+    return jsonify({'data': schedule.to_dict(only=('day.name', 'lesson.name', 'slot.number_of_lesson'))})
 
 
 @blueprint.route('/api/schedule/', methods=['POST'])
@@ -90,7 +102,10 @@ def create_schedule():  # Создает расписание на основе 
         lesson_id=lessons_id,
     )
     db_sess.add(schedule)
-    db_sess.commit()
+    try:
+        db_sess.commit()
+    except sqlalchemy.exc.IntegrityError:
+        return make_response(jsonify({'error': 'Расписание уже существует'}), 422)
     return make_response()
 
 

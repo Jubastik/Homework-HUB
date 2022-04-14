@@ -20,6 +20,7 @@ class Schedule(SqlAlchemyBase, SerializerMixin):
 
     lesson_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("lessons.id"))
     lesson = orm.relationship('Lesson')
+    __table_args__ = (sqlalchemy.UniqueConstraint('class_id', 'slot_id', 'day_id'),)
 
     def __repr__(self):
         return f'<Student> {self.id} {self.name} {self.my_class} {self.is_admin}'

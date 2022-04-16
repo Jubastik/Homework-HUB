@@ -13,13 +13,12 @@ from CONSTANTS import URL_USER, URL_CLASS
 
 async def is_student(tguser_id):
     # есть ли в базе
-    try:
-        query = f"/tg/{tguser_id}"
+    query = f"/tg/{tguser_id}"
+    if requests.get(URL_USER + query):
         res = requests.get(URL_USER + query)
         res = json.loads(res.text)
         return True
-    except Exception:
-        return False
+    return False
 
 
 async def is_unregistered(tguser_id):

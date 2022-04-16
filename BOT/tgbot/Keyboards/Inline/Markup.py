@@ -59,6 +59,3 @@ def get_SheduleMarkup(subjects):
     )
     keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back"))
     return keyboard
-
-# Git brain fuck renaming
-Git = "RENAMING"

@@ -11,7 +11,3 @@ from tgbot.filters.admin_filter import AdminFilter
 @dp.message_handler(AdminFilter(), commands=["admin_panel"], state="*")
 async def admin_panel(msg: Message):
     await msg.answer("Админка")
-
-
-# Git brain fuck renaming
-Git = "RENAMING"

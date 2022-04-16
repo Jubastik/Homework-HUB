@@ -54,7 +54,3 @@ class SheduleData:
     def load_shedule(self, shedule):
         # Мб пригодится, когда будем делать блок студента
         pass
-
-
-# Git brain fuck renaming
-Git = "RENAMING"

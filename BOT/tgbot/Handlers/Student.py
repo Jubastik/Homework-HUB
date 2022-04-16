@@ -8,6 +8,3 @@ from tgbot.filters.student_filter import StudentFilter
 @dp.message_handler(StudentFilter(), commands=["start", "menu"], state="*")
 async def student_menu(msg: Message):
     await msg.answer("Какая-то менюшка")
-
-# Git brain fuck renaming
-Git = "RENAMING"

@@ -20,6 +20,7 @@ class RegistrationStates(StatesGroup):
     # 4) Проверка
     IsCorrect = State()
 
+
 class GetHomeworkStates(StatesGroup):
     pass
 
@@ -31,6 +32,3 @@ class AddHomeworkStates(StatesGroup):
 
 class RemoveHomeworkStates(StatesGroup):
     pass
-
-# Git brain fuck renaming
-Git = "RENAMING"

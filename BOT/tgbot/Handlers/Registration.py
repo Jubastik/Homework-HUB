@@ -387,7 +387,3 @@ async def query_add_shedule_back(callback: CallbackQuery):
         )
         subjects_msg_id = subjects_msg.message_id
         FSMdata["subjects_msg_id"] = subjects_msg_id
-
-
-# Git brain fuck renaming
-Git = "RENAMING"

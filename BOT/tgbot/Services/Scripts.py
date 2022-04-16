@@ -18,7 +18,3 @@ def convert_time(time: list):
 
 def convert_position(pos):
     return [((pos) // 8), (pos % 8)]
-
-
-# Git brain fuck renaming
-Git = "RENAMING"

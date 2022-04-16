@@ -1,9 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.dispatcher import FSMContext
-from emoji import emojize
 
 from CONSTANTS import SUBJECTS
-from tgbot.Keyboards.Inline.CallbackData import SubjectData, ArrowsData
+from tgbot.keyboards.inline.callback_data import SubjectData, ArrowsData
 
 # InlineKeyboardMarkup - кнопочки
 
@@ -61,3 +59,6 @@ def get_SheduleMarkup(subjects):
     )
     keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back"))
     return keyboard
+
+# Git brain fuck renaming
+Git = "RENAMING"

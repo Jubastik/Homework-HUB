@@ -31,3 +31,6 @@ class AddHomeworkStates(StatesGroup):
 
 class RemoveHomeworkStates(StatesGroup):
     pass
+
+# Git brain fuck renaming
+Git = "RENAMING"

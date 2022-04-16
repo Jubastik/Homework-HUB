@@ -88,3 +88,7 @@ def register_class(tguser_id, data):
         return False
 
     return True
+
+
+# Git brain fuck renaming
+Git = "RENAMING"

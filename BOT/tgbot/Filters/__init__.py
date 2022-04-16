@@ -1,9 +1,9 @@
 from aiogram import Dispatcher
 
-from .AdminFilter import AdminFilter
-from .DeveloperFilter import DeveloperFilter
-from .RegistrationFilter import RegistrationFilter
-from .StudentFilter import StudentFilter
+from .admin_filter import AdminFilter
+from .developer_filter import DeveloperFilter
+from .registration_filter import RegistrationFilter
+from .student_filter import StudentFilter
 
 
 def setup(dp: Dispatcher):

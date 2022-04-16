@@ -3,7 +3,7 @@ import logging
 
 
 from bot import dp
-import tgbot.Filters, tgbot.Handlers
+import tgbot.filters, tgbot.handlers
 
 # Tasks:
 # 1) Создание Redis
@@ -12,7 +12,7 @@ import tgbot.Filters, tgbot.Handlers
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
-    tgbot.Filters.setup(dp)
+    tgbot.filters.setup(dp)
 
 
 async def on_shutdown(dp):
@@ -25,7 +25,6 @@ def start():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
-    print("Bot started")
     executor.start_polling(dp, on_startup=on_startup, on_shutdown=on_shutdown)
 
 

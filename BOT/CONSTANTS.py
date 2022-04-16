@@ -1,6 +1,3 @@
-from emoji import emojize
-
-
 SUBJECTS = [
     "Русский🇷🇺",
     "Литература📚",

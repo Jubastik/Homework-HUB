@@ -2,7 +2,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 
 from bot import dp
-from tgbot.Filters.AdminFilter import AdminFilter
+from tgbot.filters.admin_filter import AdminFilter
 
 # Tasks:
 # 1) Изменение/удаление домашки в классе

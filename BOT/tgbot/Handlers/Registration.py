@@ -2,8 +2,8 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 
 from bot import bot, dp
-from tgbot.Filters.RegistrationFilter import RegistrationFilter
-from tgbot.Keyboards.Inline.Markup import (
+from tgbot.filters.registration_filter import RegistrationFilter
+from tgbot.keyboards.inline.markup import (
     Start_markup,
     YesOrNo_markup,
     CheckSubjects1_markup,
@@ -11,26 +11,22 @@ from tgbot.Keyboards.Inline.Markup import (
     get_SheduleMarkup,
     Shedule2_markup,
 )
-from tgbot.FSM.States import RegistrationStates
-from tgbot.Services.Restapi.Restapi import register_user, register_class
-from tgbot.Services.Scripts import (
+from tgbot.FSM.states import RegistrationStates
+from tgbot.services.restapi.restapi import register_user, register_class
+from tgbot.services.scripts import (
     time_is_correct,
     convert_time,
     convert_position,
 )
-from tgbot.Services.SubClasses import SheduleData
+from tgbot.services.sub_classes import SheduleData
 from CONSTANTS import SUBJECTS
 
-
-# Tasks:
-# 1) Регистрация
-# 2) Обработка фаст ссылок (deeplinking)
 
 # | start | start | start | start | start | start | start | start |
 
 
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
-async def Start(msg: Message):
+async def hanldler_start(msg: Message):
     # !Обработка deeplinking
     # пример: t.me/YandexLyceum_rulka_bot?start=class_token94811
     if "class_token" in msg.text:
@@ -59,7 +55,7 @@ async def Start(msg: Message):
 @dp.callback_query_handler(
     RegistrationFilter(), state=RegistrationStates.StartBtn, text="make_class"
 )
-async def NewClass_handler(callback: CallbackQuery):
+async def query_new_class(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:  # Создание дефолтной FSMdata
@@ -77,7 +73,7 @@ async def NewClass_handler(callback: CallbackQuery):
 @dp.callback_query_handler(
     RegistrationFilter(), state=RegistrationStates.StartBtn, text="join_class_by_id"
 )
-async def JoinClass_handler(callback: CallbackQuery):
+async def query_join_class(callback: CallbackQuery):
     await callback.answer()
     await RegistrationStates.GetGroupId.set()
     await callback.message.answer(
@@ -89,7 +85,7 @@ async def JoinClass_handler(callback: CallbackQuery):
 
 
 @dp.message_handler(RegistrationFilter(), state=RegistrationStates.GetGroupId)
-async def GetId_handler(msg: Message):
+async def handler_get_id(msg: Message):
     classid = msg.text
     userid = msg.from_user.id
     FSMContext = dp.current_state(user=userid)
@@ -108,7 +104,7 @@ async def GetId_handler(msg: Message):
 @dp.callback_query_handler(
     RegistrationFilter(), state=RegistrationStates.CheckStartTime, text="check_true"
 )
-async def CheckStartTimeTrue_handler(callback: CallbackQuery):
+async def query_check_start_time_true(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     await RegistrationStates.CheckSubjects.set()
@@ -138,7 +134,7 @@ async def CheckStartTimeTrue_handler(callback: CallbackQuery):
 @dp.callback_query_handler(
     RegistrationFilter(), state=RegistrationStates.CheckStartTime, text="check_false"
 )
-async def CheckStartTimeFalse_handler(callback: CallbackQuery):
+async def query_check_start_time_false(callback: CallbackQuery):
     await callback.answer()
     await RegistrationStates.AddTime.set()
     await callback.message.answer(
@@ -149,14 +145,14 @@ async def CheckStartTimeFalse_handler(callback: CallbackQuery):
 @dp.callback_query_handler(
     RegistrationFilter(), state=RegistrationStates.CheckStartTime, text="back"
 )
-async def BackCheckStartTime_handler(callback: CallbackQuery):
+async def query_check_start_time_back(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer("Способы регистрации:", reply_markup=Start_markup)
     await RegistrationStates.StartBtn.set()
 
 
 @dp.message_handler(RegistrationFilter(), state=RegistrationStates.AddTime)
-async def AddTime_handler(msg: Message):
+async def handler_add_time(msg: Message):
     time = msg.text
     FSMContext = dp.current_state(user=msg.from_user.id)
     if time_mod := time_is_correct(time):
@@ -195,7 +191,7 @@ async def AddTime_handler(msg: Message):
 @dp.callback_query_handler(
     RegistrationFilter(), state=RegistrationStates.CheckSubjects, text="back"
 )
-async def BackCheckSubjects_handler(callback: CallbackQuery):
+async def query_check_subjects_back(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:  # Создание дефолтной FSMdata
@@ -211,7 +207,7 @@ async def BackCheckSubjects_handler(callback: CallbackQuery):
     state=RegistrationStates.CheckSubjects,
     text="Check_Subjects_undo",
 )
-async def CheckSubjectsUndo_handler(callback: CallbackQuery):
+async def query_check_subjects_undo(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
@@ -233,7 +229,7 @@ async def CheckSubjectsUndo_handler(callback: CallbackQuery):
 
 
 @dp.message_handler(RegistrationFilter(), state=RegistrationStates.CheckSubjects)
-async def AddSubject_handler(msg: Message):
+async def handler_add_subject(msg: Message):
     FSMContext = dp.current_state(user=msg.from_user.id)
     subject = msg.text
     async with FSMContext.proxy() as FSMdata:
@@ -258,7 +254,7 @@ async def AddSubject_handler(msg: Message):
     state=RegistrationStates.CheckSubjects,
     text="Check_Subjects_okey",
 )
-async def CheckSubjectsUndo_handler(callback: CallbackQuery):
+async def query_check_subjects_undo(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
@@ -288,7 +284,7 @@ async def CheckSubjectsUndo_handler(callback: CallbackQuery):
     state=RegistrationStates.AddShedule,
     text_contains="up_or_down",
 )
-async def AddSheduleUp_handler(callback: CallbackQuery):
+async def query_move_cursor(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     move_num = int(callback.data.split(":")[1])
@@ -315,7 +311,7 @@ async def AddSheduleUp_handler(callback: CallbackQuery):
     state=RegistrationStates.AddShedule,
     text_contains="subject",
 )
-async def AddSheduleAdd_handler(callback: CallbackQuery):
+async def query_add_shedule(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
@@ -344,7 +340,7 @@ async def AddSheduleAdd_handler(callback: CallbackQuery):
     state=RegistrationStates.AddShedule,
     text="shedule_done",
 )
-async def AddSheduleDone_handler(callback: CallbackQuery):
+async def query_shedule_done(callback: CallbackQuery):
     await callback.answer()
     userid = callback.from_user.id
     FSMContext = dp.current_state(user=userid)
@@ -366,7 +362,7 @@ async def AddSheduleDone_handler(callback: CallbackQuery):
     state=RegistrationStates.AddShedule,
     text="back",
 )
-async def AddSheduleBack_handler(callback: CallbackQuery):
+async def query_add_shedule_back(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     await RegistrationStates.CheckSubjects.set()

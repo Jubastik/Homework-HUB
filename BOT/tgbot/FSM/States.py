@@ -20,6 +20,7 @@ class RegistrationStates(StatesGroup):
     # 4) Проверка
     IsCorrect = State()
 
+
 class GetHomeworkStates(StatesGroup):
     pass
 

@@ -23,4 +23,4 @@ class Schedule(SqlAlchemyBase, SerializerMixin):
     __table_args__ = (sqlalchemy.UniqueConstraint('class_id', 'slot_id', 'day_id'),)
 
     def __repr__(self):
-        return f'<Student> {self.id} {self.name} {self.my_class} {self.is_admin}'
+        return f'<Schedule> {self.id} {self.day.name} {self.slot.number_of_lesson} {self.lesson.name}'

@@ -4,6 +4,7 @@ from flask import request, jsonify, make_response
 
 from API.api_modules.core import id_processing, IDError
 from API.data import db_session
+from API.data.classes import Class
 from API.data.lessons import Lesson
 from API.data.schedules import Schedule
 from API.data.students import Student
@@ -24,10 +25,7 @@ def get_schedule(platform, user_id):  # Возвращает все распис
     except IDError as e:
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
-    user_class = db_sess.query(Student.class_id).filter(Student.id == id).first()[0]
-    schedules = db_sess.query(Schedule).join(WeekDay).filter(Schedule.class_id == user_class).all()
-    if schedules is None:
-        return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
+    schedules = db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
     return jsonify({'data': [schedule.to_dict(only=('day.name', 'lesson.name', 'slot.number_of_lesson')) for
                              schedule in schedules]})
 
@@ -39,12 +37,12 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
     except IDError as e:
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
-    user_class = db_sess.query(Student.class_id).filter(Student.id == id).first()[0]
-    schedule = db_sess.query(Schedule).join(WeekDay).filter(WeekDay.name == day,
-                                                            Schedule.class_id == user_class).first()
-    if schedule is None:
+    schedules = db_sess.query(Schedule).join(WeekDay).join(Class).join(Student).filter(Student.id == id,
+                                                                                       WeekDay.name == day).all()
+    if len(schedules) == 0:
         return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
-    return jsonify({'data': schedule.to_dict(only=('day.name', 'lesson.name', 'slot.number_of_lesson'))})
+    return jsonify({'data': [schedule.to_dict(only=('lesson.name', 'slot.number_of_lesson')) for
+                             schedule in schedules]})
 
 
 @blueprint.route('/api/schedule/', methods=['POST'])

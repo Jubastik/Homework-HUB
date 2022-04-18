@@ -68,8 +68,7 @@ def create_schedule():  # Создает расписание на основе 
         return make_response(jsonify({'error': f'Пользователь не состоит в классе'}), 422)
     else:
         class_id = class_id[0]
-
-    day_id = db_sess.query(WeekDay.id).filter(WeekDay.name == data['day']).first()
+    day_id = db_sess.query(WeekDay.id).filter(WeekDay.name == data['day'].lower()).first()
     lessons_id = db_sess.query(Lesson.id).filter(Lesson.name == data['lesson']).first()
     slot_id = db_sess.query(TimeTable.id).filter(TimeTable.class_id == class_id,
                                                  TimeTable.number_of_lesson == data['lesson_number']).first()
@@ -79,10 +78,7 @@ def create_schedule():  # Создает расписание на основе 
     else:
         slot_id = slot_id[0]
     if day_id is None:
-        day = WeekDay(day=data['day'])
-        db_sess.add(day)
-        db_sess.flush()
-        day_id = day.id
+        return make_response(jsonify({'error': f'Неизвестный день {data["day"]}'}), 422)
     else:
         day_id = day_id[0]
     if lessons_id is None:

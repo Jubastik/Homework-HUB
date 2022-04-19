@@ -7,4 +7,3 @@ from . import week_days
 from . import lessons
 
 from . import homeworks
-from . import photos

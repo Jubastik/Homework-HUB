@@ -1,3 +1,6 @@
+from tgbot.services.restapi.restapi import is_lessons_in_saturday
+
+
 def time_is_correct(time: list):
     try:
         hours, minutes = map(int, time.split(":"))
@@ -18,3 +21,17 @@ def convert_time(time: list):
 
 def convert_position(pos):
     return [((pos) // 8), (pos % 8)]
+
+
+def generate_dates() -> list:
+    """Генерирует даты"""
+    saturday_lesson = is_lessons_in_saturday()
+    # Вот так вот если is_lessons_in_saturday() возвращает True для 19.04
+    return [
+        "20.04 Среда",
+        "21.04 Четверг",
+        "22.04 Пятница",
+        "23.04 Суббота",
+        "25.04 Понедельник",
+        "26.04 Вторник",
+    ]

@@ -4,12 +4,12 @@ from aiogram.dispatcher import FSMContext
 from bot import bot, dp
 from tgbot.filters.registration_filter import RegistrationFilter
 from tgbot.keyboards.inline.markup import (
-    Start_markup,
-    YesOrNo_markup,
-    CheckSubjects1_markup,
-    CheckSubjects2_markup,
-    get_SheduleMarkup,
-    Shedule2_markup,
+    markup_start,
+    markup_yes_or_no,
+    markup_check_subjects1,
+    markup_check_subjects2,
+    get_markup_shedule,
+    markup_shedule2
 )
 from tgbot.FSM.states import RegistrationStates
 from tgbot.services.restapi.restapi import register_user, register_class
@@ -47,7 +47,7 @@ async def hanldler_start(msg: Message):
         FSMContext = dp.current_state(user=msg.from_user.id)
         await FSMContext.reset_state()
         await msg.answer(
-            "Привет! Я бот для быстрого сохранения домашки", reply_markup=Start_markup
+            "Привет! Я бот для быстрого сохранения домашки", reply_markup=markup_start
         )
         await RegistrationStates.StartBtn.set()
 
@@ -66,7 +66,7 @@ async def query_new_class(callback: CallbackQuery):
     await RegistrationStates.CheckStartTime.set()
     await callback.message.answer(
         f"Ваши уроки начинаются в {' : '.join(convert_time(time))}?",
-        reply_markup=YesOrNo_markup,
+        reply_markup=markup_yes_or_no,
     )
 
 
@@ -125,7 +125,7 @@ async def query_check_start_time_true(callback: CallbackQuery):
                     "Если нет - отправте название предмета, который хотите добавить в список",
                 ]
             ),
-            reply_markup=CheckSubjects1_markup,
+            reply_markup=markup_check_subjects1,
         )
         subjects_msg_id = subjects_msg.message_id
         FSMdata["subjects_msg_id"] = subjects_msg_id
@@ -147,7 +147,7 @@ async def query_check_start_time_false(callback: CallbackQuery):
 )
 async def query_check_start_time_back(callback: CallbackQuery):
     await callback.answer()
-    await callback.message.answer("Способы регистрации:", reply_markup=Start_markup)
+    await callback.message.answer("Способы регистрации:", reply_markup=markup_start)
     await RegistrationStates.StartBtn.set()
 
 
@@ -177,7 +177,7 @@ async def handler_add_time(msg: Message):
                         "Если нет - отправте название предмета, который хотите добавить в список",
                     ]
                 ),
-                reply_markup=CheckSubjects1_markup,
+                reply_markup=markup_check_subjects1,
             )
             FSMdata["subjects_msg_id"] = subjects_msg.message_id
             await RegistrationStates.CheckSubjects.set()
@@ -198,7 +198,7 @@ async def query_check_subjects_back(callback: CallbackQuery):
         await RegistrationStates.CheckStartTime.set()
         await callback.message.answer(
             f"Ваши уроки начинаются в {' : '.join(convert_time(FSMdata['start_time']))}?",
-            reply_markup=YesOrNo_markup,
+            reply_markup=markup_yes_or_no,
         )
 
 
@@ -224,7 +224,7 @@ async def query_check_subjects_undo(callback: CallbackQuery):
                 ),
                 chat_id=callback.message.chat.id,
                 message_id=msgid,
-                reply_markup=CheckSubjects2_markup,
+                reply_markup=markup_check_subjects2,
             )
 
 
@@ -245,7 +245,7 @@ async def handler_add_subject(msg: Message):
             ),
             chat_id=msg.chat.id,
             message_id=msgid,
-            reply_markup=CheckSubjects2_markup,
+            reply_markup=markup_check_subjects2,
         )
 
 
@@ -272,7 +272,7 @@ async def query_check_subjects_undo(callback: CallbackQuery):
         await RegistrationStates.AddShedule.set()
         await callback.message.answer(
             "\n".join(["Давай заполним расписание", "*инструкция*"]),
-            reply_markup=get_SheduleMarkup([*SUBJECTS, *FSMdata["extra_subjects"]]),
+            reply_markup=get_markup_shedule([*SUBJECTS, *FSMdata["extra_subjects"]]),
         )
 
 
@@ -302,7 +302,7 @@ async def query_move_cursor(callback: CallbackQuery):
                 ),
                 chat_id=callback.message.chat.id,
                 message_id=msgid,
-                reply_markup=Shedule2_markup,
+                reply_markup=get_markup_shedule([*SUBJECTS, *FSMdata["extra_subjects"]]),
             )
 
 
@@ -331,7 +331,7 @@ async def query_add_shedule(callback: CallbackQuery):
             ),
             chat_id=callback.message.chat.id,
             message_id=msgid,
-            reply_markup=Shedule2_markup,
+            reply_markup=get_markup_shedule([*SUBJECTS, *FSMdata["extra_subjects"]]),
         )
 
 
@@ -383,7 +383,7 @@ async def query_add_shedule_back(callback: CallbackQuery):
                     "Если нет - отправте название предмета, который хотите добавить в список",
                 ]
             ),
-            reply_markup=CheckSubjects1_markup,
+            reply_markup=markup_check_subjects1,
         )
         subjects_msg_id = subjects_msg.message_id
         FSMdata["subjects_msg_id"] = subjects_msg_id

@@ -3,6 +3,7 @@
 import json
 import requests
 import random
+import datetime
 from CONSTANTS import URL_USER, URL_CLASS
 
 
@@ -31,7 +32,7 @@ async def is_admin(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
     res = json.loads(res.text)
-    if res['is_admin']:
+    if res["is_admin"]:
         return True
     else:
         return False
@@ -41,15 +42,10 @@ async def is_developer(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
     res = json.loads(res.text)
-    if res['is_superuser']:
+    if res["is_superuser"]:
         return True
     else:
         return False
-
-
-# Вообще по хорошему создать вспомогательный класс для homework, так будет удобней и красивше.
-async def add_homework(tguser_id, homework: dict):
-    pass
 
 
 def register_user(tguser_id, classid):
@@ -87,4 +83,21 @@ def register_class(tguser_id, data):
     if not response:
         return False
 
+    return True
+
+
+async def get_subjects_by_time(date_time=datetime.datetime.now()) -> list():
+    """По времени получает 2 ближайших предмета"""
+    return ["Русский🇷🇺", "Литература📚"]  # Затычка
+
+
+async def is_lessons_in_saturday():
+    """Делает запрос в БД и проверяет, есть ли уроки в субботу"""
+    return True
+
+
+async def add_homework(tguser_id, data, auto=False):
+    """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
+    # print(data)
+    # print(auto)
     return True

@@ -1,3 +1,5 @@
+import datetime
+
 import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
@@ -12,6 +14,8 @@ blueprint = flask.Blueprint(
     __name__,
     template_folder='templates'
 )
+
+
 @blueprint.route('/api/time_table/', methods=['POST'])
 def create_time_table():  # Создает расписание на основе входящего Json
     data = request.json
@@ -35,12 +39,17 @@ def create_time_table():  # Создает расписание на основ�
         return make_response(jsonify({'error': f'Пользователь не состоит в классе'}), 422)
     else:
         class_id = class_id[0]
-
+    b_h = int(data['begin_time'].split(':')[0])
+    b_m = int(data['begin_time'].split(':')[1])
+    e_h = int(data['end_time'].split(':')[0])
+    e_m = int(data['end_time'].split(':')[1])
+    begin_time = datetime.time(b_h, b_m)
+    end_time = datetime.time(e_h, e_m)
     time_table = TimeTable(
         class_id=class_id,
         number_of_lesson=data['lesson_number'],
-        begin_time=data['begin_time'],
-        end_time=data['end_time']
+        begin_time=begin_time,
+        end_time=end_time
     )
     db_sess.add(time_table)
     try:

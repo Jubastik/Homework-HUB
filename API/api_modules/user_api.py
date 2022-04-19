@@ -95,4 +95,17 @@ def edit_user(platform, user_id):  # Изменение пользователя
 
 @blueprint.route('/api/user/<platform>/<int:user_id>', methods=['DELETE'])
 def del_user(platform, user_id):  # Удаление пользователя
-    return "del_user"
+    try:
+        id = id_processing(platform, user_id)
+    except IDError as e:
+        return make_response(jsonify({'error': str(e)}), 404)
+    db_sess = db_session.create_session()
+    student = db_sess.query(Student).get(id)
+    if student.class_id is not None:
+        admins_in_class = db_sess.query(Student).join(Class).filter(Class.id == student.class_id,
+                                                                    Student.is_admin == True).count()
+        if admins_in_class == 1:
+            return make_response(jsonify({'error': 'Нельзя удалить последнего админа'}), 422)
+    db_sess.delete(student)
+    db_sess.commit()
+    return make_response('', 204)

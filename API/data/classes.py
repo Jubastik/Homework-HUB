@@ -9,7 +9,7 @@ class Class(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'classes'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String)
-    class_token = sqlalchemy.Column(sqlalchemy.Integer, unique=True)
+    class_token = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=False)
     vk_id = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=True)
     student = orm.relationship("Student", back_populates="my_class")
     schedules = orm.relationship("Schedule", back_populates="my_class")

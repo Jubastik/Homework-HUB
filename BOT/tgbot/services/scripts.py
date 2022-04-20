@@ -1,4 +1,6 @@
 from BOT.tgbot.services.restapi.restapi import is_lessons_in_saturday
+import datetime
+from BOT.CONSTANTS import WEEKDAYS
 
 
 def time_is_correct(time: list):
@@ -25,13 +27,26 @@ def convert_position(pos):
 
 def generate_dates() -> list:
     """Генерирует даты"""
+    dates = []
     saturday_lesson = is_lessons_in_saturday()
     # Вот так вот если is_lessons_in_saturday() возвращает True для 19.04
-    return [
-        "20.04 Среда",
-        "21.04 Четверг",
-        "22.04 Пятница",
-        "23.04 Суббота",
-        "25.04 Понедельник",
-        "26.04 Вторник",
-    ]
+    today = datetime.date.today()
+    c = 1
+    while c <= 7:
+        # дата числом
+        day = today + datetime.timedelta(days=c)
+        # день недели
+        day_name = datetime.datetime.weekday(day)
+        # воскресенье пропускаем
+        if saturday_lesson:
+            if day_name == 6:
+                pass
+            else:
+                dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}'])
+        else:
+            if day_name == 6 or day_name == 5:
+                pass
+            else:
+                dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}'])
+        c += 1
+    return dates

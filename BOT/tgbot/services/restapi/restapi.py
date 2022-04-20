@@ -4,7 +4,7 @@ import json
 import requests
 import random
 import datetime
-from BOT.CONSTANTS import URL_USER, URL_CLASS
+from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE
 
 
 # Tasks:
@@ -85,14 +85,24 @@ def register_class(tguser_id, data):
     return True
 
 
+def delete_user(tguser_id):
+    query = f"/tg/{tguser_id}"
+    res = requests.delete(URL_USER + query)
+
+
 async def get_subjects_by_time(date_time=datetime.datetime.now()) -> list():
     """По времени получает 2 ближайших предмета"""
     return ["Русский🇷🇺", "Литература📚"]  # Затычка
 
 
-async def is_lessons_in_saturday():
+async def is_lessons_in_saturday(tguser_id):
     """Делает запрос в БД и проверяет, есть ли уроки в субботу"""
-    return True
+    query = f"/tg/{tguser_id}/сб"
+    res = requests.get(URL_USER + query)
+    if res:
+        return True
+    else:
+        return False
 
 
 async def add_homework(tguser_id, data, auto=False):

@@ -5,6 +5,7 @@ import requests
 import random
 import datetime
 from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK
+from BOT.tgbot.services.sub_classes import SheduleData
 
 
 # Tasks:
@@ -75,8 +76,20 @@ def register_class(tguser_id, data):
     # уже потом регистрация класса
     response = requests.post(
         URL_CLASS,
-        json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"},
+        json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"}
     )
+    schedule = data['shedule'].SheduleData.get_shedule()
+    for el in schedule:
+        day_n = schedule[el]['day_name']
+        for ell in schedule[el]['shedule']:
+            response = requests.post(
+                URL_SCHEDULE,
+                json={"creator_platform": "tg",
+                      "creator_id": tguser_id,
+                      "day": day_n,
+                      "lesson_number": ell,
+                      "lesson": schedule[el]['shedule'][ell]}
+            )
     return True
 
 
@@ -107,4 +120,24 @@ async def add_homework(tguser_id, data, auto=False):
     """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
     # print(data)
     # print(auto)
+    # response = requests.post(
+    #     URL_HOMEWORK,
+    #     json={"creator_platform": "tg",
+    #           "creator_id": tguser_id,
+    #           "date": "26-04-2022",
+    #           "lesson": "Русс",
+    #           "text": "№5"}
+    # )
+    # if response.status_code == 200:
+    #     return True
+    # return False
     return True
+
+
+def get_homework(tguser_id):
+    """Возвращает домашку на сегодня"""
+    query = f"/tg/{tguser_id}/{datetime.date.today()}"
+    res = requests.get(URL_HOMEWORK + query)
+    if res.status_code == 200:
+        return json.loads(res.text)
+    return False

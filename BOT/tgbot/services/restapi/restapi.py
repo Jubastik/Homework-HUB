@@ -4,7 +4,7 @@ import json
 import requests
 import random
 import datetime
-from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE
+from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK
 
 
 # Tasks:
@@ -15,11 +15,11 @@ from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE
 async def is_student(tguser_id):
     # есть ли в базе
     query = f"/tg/{tguser_id}"
-    if requests.get(URL_USER + query):
-        res = requests.get(URL_USER + query)
-        res = json.loads(res.text)
-        return True
-    return False
+    res = requests.get(URL_USER + query)
+    if res.status_code == 404:
+        return False
+    res = json.loads(res.text)
+    return True
 
 
 async def is_unregistered(tguser_id):
@@ -59,10 +59,9 @@ def register_user(tguser_id, classid):
             "name": "Олег",
         },
     )
-    if response:
+    if response.status_code == 200:
         return True
-    else:
-        return False
+    return False
 
 
 def register_class(tguser_id, data):
@@ -71,23 +70,22 @@ def register_class(tguser_id, data):
     response = requests.post(
         URL_USER, json={"id": tguser_id, "platform": "tg", "name": "Олег"}
     )
-    print(response)
-    if not response:
+    if response.status_code == 404:
         return False
     # уже потом регистрация класса
     response = requests.post(
         URL_CLASS,
         json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"},
     )
-    if not response:
-        return False
-
     return True
 
 
 def delete_user(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query)
+    if res.status_code == 200:
+        return True
+    return False
 
 
 async def get_subjects_by_time(date_time=datetime.datetime.now()) -> list():
@@ -98,8 +96,8 @@ async def get_subjects_by_time(date_time=datetime.datetime.now()) -> list():
 async def is_lessons_in_saturday(tguser_id):
     """Делает запрос в БД и проверяет, есть ли уроки в субботу"""
     query = f"/tg/{tguser_id}/сб"
-    res = requests.get(URL_USER + query)
-    if res:
+    res = requests.get(URL_SCHEDULE + query)
+    if res.status_code == 200:
         return True
     else:
         return False

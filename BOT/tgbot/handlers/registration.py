@@ -1,28 +1,18 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 
-from bot import bot, dp
-from tgbot.filters.registration_filter import RegistrationFilter
-from tgbot.keyboards.inline.markup import (
-    markup_start,
-    markup_yes_or_no,
-    markup_check_subjects1,
-    markup_check_subjects2,
-    get_markup_shedule,
-    markup_shedule2
-)
-from tgbot.FSM.states import RegistrationStates
-from tgbot.services.restapi.restapi import register_user, register_class
-from tgbot.services.scripts import (
-    time_is_correct,
-    convert_time,
-    convert_position,
-)
-from tgbot.services.sub_classes import SheduleData
-from CONSTANTS import SUBJECTS
+
 
 
 # | start | start | start | start | start | start | start | start |
+from BOT.CONSTANTS import SUBJECTS
+from BOT.bot import dp, bot
+from BOT.tgbot.FSM.states import RegistrationStates
+from BOT.tgbot.filters import RegistrationFilter
+from BOT.tgbot.keyboards.inline.markup import markup_yes_or_no, markup_check_subjects1, markup_start, \
+    markup_check_subjects2, get_markup_shedule
+from BOT.tgbot.services.restapi.restapi import register_user, register_class
+from BOT.tgbot.services.scripts import convert_time, time_is_correct, convert_position
 
 
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
@@ -50,6 +40,10 @@ async def hanldler_start(msg: Message):
             "Привет! Я бот для быстрого сохранения домашки", reply_markup=markup_start
         )
         await RegistrationStates.StartBtn.set()
+
+
+class SheduleData:
+    pass
 
 
 @dp.callback_query_handler(

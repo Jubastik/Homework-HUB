@@ -4,7 +4,7 @@ import json
 import requests
 import random
 import datetime
-from CONSTANTS import URL_USER, URL_CLASS
+from BOT.CONSTANTS import URL_USER, URL_CLASS
 
 
 # Tasks:

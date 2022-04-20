@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from CONSTANTS import SUBJECTS
-from tgbot.keyboards.inline.callback_data import SubjectData, ArrowsData, CheckHomework
+from BOT.CONSTANTS import SUBJECTS
+from BOT.tgbot.keyboards.inline.callback_data import SubjectData, ArrowsData, CheckHomework
 
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |

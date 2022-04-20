@@ -1,4 +1,4 @@
-from tgbot.services.restapi.restapi import is_lessons_in_saturday
+from BOT.tgbot.services.restapi.restapi import is_lessons_in_saturday
 
 
 def time_is_correct(time: list):

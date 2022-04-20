@@ -1,11 +1,11 @@
 from aiogram.types import Message, CallbackQuery, ContentType, MediaGroup
 from aiogram.dispatcher import FSMContext
 
-from bot import dp
-from tgbot.FSM.states import StudentStates
-from tgbot.filters.student_filter import StudentFilter
-from tgbot.filters.admin_filter import AdminFilter
-from tgbot.keyboards.inline.markup import (
+from BOT.bot import dp
+from BOT.tgbot.FSM.states import StudentStates
+from BOT.tgbot.filters.student_filter import StudentFilter
+from BOT.tgbot.filters.admin_filter import AdminFilter
+from BOT.tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     get_markup_fast_add1,
     markup_profile,
@@ -13,7 +13,7 @@ from tgbot.keyboards.inline.markup import (
     markup_check_homework,
     markup_done,
 )
-from tgbot.services.restapi.restapi import (
+from BOT.tgbot.services.restapi.restapi import (
     get_subjects_by_time,
     is_admin,
     add_homework,

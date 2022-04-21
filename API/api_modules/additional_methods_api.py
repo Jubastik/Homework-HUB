@@ -29,7 +29,7 @@ def current_lessons(platform, user_id):
 
     now_time = datetime.time(13, 30)  # После отладки надо сделать нормально!!!!
     past_time = datetime.time(10, 30)
-    day = "вт"
+    day = "понедельник"
 
     print(datetime.datetime.today().weekday())
     now_lesson = db_sess.query(Schedule).join(WeekDay).join(TimeTable).join(Class).join(Student) \

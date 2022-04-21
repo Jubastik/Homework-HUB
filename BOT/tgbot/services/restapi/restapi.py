@@ -48,7 +48,7 @@ async def is_developer(tguser_id):
         return False
 
 
-def register_user(tguser_id, classid):
+def register_user(tguser_id, classid, user_name):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     response = requests.post(
@@ -57,7 +57,7 @@ def register_user(tguser_id, classid):
             "id": tguser_id,
             "platform": "tg",
             "class_token": classid,
-            "name": "Олег",
+            "name": user_name,
         },
     )
     if response.status_code == 200:
@@ -93,8 +93,8 @@ def register_class(tguser_id, data):
             URL_TIME_TABLE, json={"creator_platform": "tg",
                                   "creator_id": tguser_id,
                                   "lesson_number": i,
-                                  "begin_time": "10:30",
-                                  "end_time": "12:30"}
+                                  "begin_time": (d + datetime.timedelta(minutes=1)).time(),
+                                  "end_time": (d + datetime.timedelta(minutes=duration_lessons[i])).time()}
         )
         d = d + datetime.timedelta(minutes=duration_lessons[i])
         print(response)

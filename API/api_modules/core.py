@@ -37,6 +37,7 @@ def generate_token():
 
 
 def get_next_lesson(class_id, lesson):
+    print("test")
     pass
 
 

@@ -36,7 +36,6 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     year = date.split('-')[2]
     date = datetime.date(int(year), int(month), int(day))
     db_sess = db_session.create_session()
-    print(id)
     homeworks = db_sess.query(Homework).join(Schedule).join(Class).join(Student).filter(Student.id == id,
                                                                                         Homework.date == date).all()
     if len(homeworks) == 0:

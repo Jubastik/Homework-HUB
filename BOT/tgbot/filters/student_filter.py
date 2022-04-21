@@ -1,7 +1,7 @@
 from aiogram.dispatcher.filters import BoundFilter
 from aiogram import types
 
-from tgbot.Services.Restapi import is_student
+from BOT.tgbot.services.restapi.restapi import is_student
 
 
 class StudentFilter(BoundFilter):

@@ -1,7 +1,7 @@
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, types, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from tgbot.config import load_config
+from BOT.tgbot.config import load_config
 
 config = load_config("bot.ini")
 

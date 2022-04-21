@@ -4,7 +4,7 @@ import json
 import requests
 import random
 import datetime
-from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK
+from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK, URL_TIME_TABLE
 from BOT.tgbot.services.sub_classes import SheduleData
 
 
@@ -32,7 +32,7 @@ async def is_admin(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
     res = json.loads(res.text)
-    if res["is_admin"]:
+    if res["data"]['is_admin']:
         return True
     else:
         return False
@@ -42,7 +42,7 @@ async def is_developer(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
     res = json.loads(res.text)
-    if res["is_superuser"]:
+    if res["data"]["is_superuser"]:
         return True
     else:
         return False
@@ -69,7 +69,7 @@ def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     response = requests.post(
-        URL_USER, json={"id": tguser_id, "platform": "tg", "name": "Олег"}
+        URL_USER, json={"id": tguser_id, "platform": "tg", "name": data['user_name']}
     )
     if response.status_code == 404:
         return False
@@ -78,19 +78,41 @@ def register_class(tguser_id, data):
         URL_CLASS,
         json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"}
     )
-    schedule = data['shedule'].SheduleData.get_shedule()
-    for el in schedule:
-        day_n = schedule[el]['day_name']
-        for ell in schedule[el]['shedule']:
-            response = requests.post(
-                URL_SCHEDULE,
-                json={"creator_platform": "tg",
-                      "creator_id": tguser_id,
-                      "day": day_n,
-                      "lesson_number": ell,
-                      "lesson": schedule[el]['shedule'][ell]}
-            )
+    print(data)
+
+    # добавление звонков
+    duration_lessons = {1: 55, 2: 60, 3: 65, 4: 60, 5: 55, 6: 55, 7: 60, 8: 60}
+    start_time = data['start_time']
+    date_now = datetime.date.today()
+    start = datetime.time(int(start_time[0]), int(start_time[1]))
+    my_datetime = datetime.datetime.combine(date_now, start)
+    d = my_datetime
+    for i in range(1, 9):
+        print(d)
+        response = requests.post(
+            URL_TIME_TABLE, json={"creator_platform": "tg",
+                                  "creator_id": tguser_id,
+                                  "lesson_number": i,
+                                  "begin_time": "10:30",
+                                  "end_time": "12:30"}
+        )
+        d = d + datetime.timedelta(minutes=duration_lessons[i])
+        print(response)
     return True
+
+    # расписание уроков
+    # schedule = data['shedule'].get_shedule()
+    # for el in schedule:
+    #     day_n = schedule[el]['day_name']
+    #     for ell in schedule[el]['shedule']:
+    #         response = requests.post(
+    #             URL_SCHEDULE,
+    #             json={"creator_platform": "tg",
+    #                   "creator_id": tguser_id,
+    #                   "day": day_n,
+    #                   "lesson_number": ell + 1,
+    #                   "lesson": schedule[el]['shedule'][ell]}
+    #         )
 
 
 def delete_user(tguser_id):
@@ -108,7 +130,7 @@ async def get_subjects_by_time(date_time=datetime.datetime.now()) -> list():
 
 async def is_lessons_in_saturday(tguser_id):
     """Делает запрос в БД и проверяет, есть ли уроки в субботу"""
-    query = f"/tg/{tguser_id}/сб"
+    query = f"/tg/{tguser_id}/суббота"
     res = requests.get(URL_SCHEDULE + query)
     if res.status_code == 200:
         return True

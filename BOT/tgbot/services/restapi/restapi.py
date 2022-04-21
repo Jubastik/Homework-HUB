@@ -93,8 +93,9 @@ def register_class(tguser_id, data):
             URL_TIME_TABLE, json={"creator_platform": "tg",
                                   "creator_id": tguser_id,
                                   "lesson_number": i,
-                                  "begin_time": (d + datetime.timedelta(minutes=1)).time(),
-                                  "end_time": (d + datetime.timedelta(minutes=duration_lessons[i])).time()}
+                                  "begin_time": (d + datetime.timedelta(minutes=1)).time().strftime("%H:%M"),
+                                  "end_time": (d + datetime.timedelta(minutes=duration_lessons[i])).time().strftime(
+                                      "%H:%M")}
         )
         d = d + datetime.timedelta(minutes=duration_lessons[i])
         print(response)

@@ -20,8 +20,9 @@ async def hanldler_start(msg: Message):
     if "class_token" in msg.text:
         classid = msg.text.split("class_token")[-1]
         userid = msg.from_user.id
+        username = msg.from_user.full_name
         FSMContext = dp.current_state(user=userid)
-        if register_user(userid, classid):
+        if register_user(userid, classid, username):
             await msg.answer(
                 "Регистрация по ссылке успешна"
             )  # Тут надо сделать отправку менюшки студента
@@ -76,9 +77,9 @@ async def query_join_class(callback: CallbackQuery):
 async def handler_get_id(msg: Message):
     classid = msg.text
     userid = msg.from_user.id
+    username = msg.from_user.full_name
     FSMContext = dp.current_state(user=userid)
-    data = {"class_id": classid, "name": msg.from_user.full_name}
-    if register_user(userid, data):
+    if register_user(userid, classid, username):
         await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
         await msg.answer("*Менюшка студента*")
         await FSMContext.reset_state()

@@ -48,7 +48,7 @@ async def is_developer(tguser_id):
         return False
 
 
-def register_user(tguser_id, classid):
+def register_user(tguser_id, classid, username):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     response = requests.post(
@@ -68,28 +68,29 @@ def register_user(tguser_id, classid):
 def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
-    response = requests.post(
-        URL_USER, json={"id": tguser_id, "platform": "tg", "name": "Олег"}
-    )
-    if response.status_code == 404:
-        return False
-    # уже потом регистрация класса
-    response = requests.post(
-        URL_CLASS,
-        json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"}
-    )
-    schedule = data['shedule'].SheduleData.get_shedule()
-    for el in schedule:
-        day_n = schedule[el]['day_name']
-        for ell in schedule[el]['shedule']:
-            response = requests.post(
-                URL_SCHEDULE,
-                json={"creator_platform": "tg",
-                      "creator_id": tguser_id,
-                      "day": day_n,
-                      "lesson_number": ell,
-                      "lesson": schedule[el]['shedule'][ell]}
-            )
+    # response = requests.post(
+    #     URL_USER, json={"id": tguser_id, "platform": "tg", "name": "Олег"}
+    # )
+    # if response.status_code == 404:
+    #     return False
+    # # уже потом регистрация класса
+    # response = requests.post(
+    #     URL_CLASS,
+    #     json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"}
+    # )
+    # schedule = data['shedule'].SheduleData.get_shedule()
+    # for el in schedule:
+    #     day_n = schedule[el]['day_name']
+    #     for ell in schedule[el]['shedule']:
+    #         response = requests.post(
+    #             URL_SCHEDULE,
+    #             json={"creator_platform": "tg",
+    #                   "creator_id": tguser_id,
+    #                   "day": day_n,
+    #                   "lesson_number": ell,
+    #                   "lesson": schedule[el]['shedule'][ell]}
+    #         )
+    # return True
     return True
 
 

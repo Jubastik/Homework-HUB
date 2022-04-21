@@ -101,7 +101,7 @@ def delete_user(tguser_id):
     return False
 
 
-async def get_subjects_by_time(date_time=datetime.datetime.now()) -> list():
+async def get_subjects_by_time(tguser_id, date_time=datetime.datetime.now()) -> list():
     """По времени получает 2 ближайших предмета"""
     return ["Русский🇷🇺", "Литература📚"]  # Затычка
 
@@ -118,20 +118,17 @@ async def is_lessons_in_saturday(tguser_id):
 
 async def add_homework(tguser_id, data, auto=False):
     """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
-    # print(data)
-    # print(auto)
-    # response = requests.post(
-    #     URL_HOMEWORK,
-    #     json={"creator_platform": "tg",
-    #           "creator_id": tguser_id,
-    #           "date": "26-04-2022",
-    #           "lesson": "Русс",
-    #           "text": "№5"}
-    # )
-    # if response.status_code == 200:
-    #     return True
-    # return False
-    return True
+    response = requests.post(
+        URL_HOMEWORK,
+        json={"creator_platform": "tg",
+              "creator_id": tguser_id,
+              "date": "26-04-2022",
+              "lesson": "Русс",
+              "text": "№5"}
+    )
+    if response.status_code == 200:
+        return True
+    return False
 
 
 def get_homework(tguser_id):

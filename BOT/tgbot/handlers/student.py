@@ -85,13 +85,14 @@ async def query_get_homework(callback: CallbackQuery):
 async def query_fast_add(callback: CallbackQuery):
     await callback.answer()
     # Получение 2-х предметов по текущему времени из БД
+    userid = callback.from_user.id
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
         FSMdata["is_fast"] = True
     await StudentStates.FastAdd.set()
     await callback.message.answer(
         "На какой предмет добавить дз?",
-        reply_markup=get_markup_fast_add1(await get_subjects_by_time()),
+        reply_markup=get_markup_fast_add1(await get_subjects_by_time(userid)),
     )
 
 

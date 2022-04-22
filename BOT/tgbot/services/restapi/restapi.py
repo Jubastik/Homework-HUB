@@ -4,7 +4,7 @@ import json
 import requests
 import random
 import datetime
-from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK, URL_TIME_TABLE
+from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK, URL_TIME_TABLE, URL_CURRENT_LESSONS
 from BOT.tgbot.services.sub_classes import SheduleData
 
 
@@ -89,31 +89,34 @@ def register_class(tguser_id, data):
     d = my_datetime
     for i in range(1, 9):
         print(d)
+        a = (d + datetime.timedelta(minutes=1)).time()
+        start_time = a.strftime("%H:%M")
+        b = (d + datetime.timedelta(minutes=duration_lessons[i])).time()
+        end_time = b.strftime("%H:%M")
+        print(i, start_time, end_time)
         response = requests.post(
             URL_TIME_TABLE, json={"creator_platform": "tg",
                                   "creator_id": tguser_id,
                                   "lesson_number": i,
-                                  "begin_time": (d + datetime.timedelta(minutes=1)).time().strftime("%H:%M"),
-                                  "end_time": (d + datetime.timedelta(minutes=duration_lessons[i])).time().strftime(
-                                      "%H:%M")}
+                                  "begin_time": start_time,
+                                  "end_time": end_time}
         )
         d = d + datetime.timedelta(minutes=duration_lessons[i])
-        print(response)
-    return True
 
     # расписание уроков
-    # schedule = data['shedule'].get_shedule()
-    # for el in schedule:
-    #     day_n = schedule[el]['day_name']
-    #     for ell in schedule[el]['shedule']:
-    #         response = requests.post(
-    #             URL_SCHEDULE,
-    #             json={"creator_platform": "tg",
-    #                   "creator_id": tguser_id,
-    #                   "day": day_n,
-    #                   "lesson_number": ell + 1,
-    #                   "lesson": schedule[el]['shedule'][ell]}
-    #         )
+    schedule = data['shedule'].get_shedule()
+    for el in schedule:
+        day_n = schedule[el]['day_name']
+        for ell in schedule[el]['shedule']:
+            response = requests.post(
+                URL_SCHEDULE,
+                json={"creator_platform": "tg",
+                      "creator_id": tguser_id,
+                      "day": day_n,
+                      "lesson_number": ell + 1,
+                      "lesson": schedule[el]['shedule'][ell]}
+            )
+    return True
 
 
 def delete_user(tguser_id):
@@ -124,9 +127,12 @@ def delete_user(tguser_id):
     return False
 
 
-async def get_subjects_by_time(date_time=datetime.datetime.now()) -> list():
+async def get_subjects_by_time(tguser_id, date_time=datetime.datetime.now()) -> list():
     """По времени получает 2 ближайших предмета"""
-    return ["Русский🇷🇺", "Литература📚"]  # Затычка
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_CURRENT_LESSONS)
+    a = json.loads(res.text)
+    return [a[-2]['lesson_name'], a[-1]['lesson_name']]
 
 
 async def is_lessons_in_saturday(tguser_id):
@@ -141,26 +147,44 @@ async def is_lessons_in_saturday(tguser_id):
 
 async def add_homework(tguser_id, data, auto=False):
     """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
-    # print(data)
-    # print(auto)
-    # response = requests.post(
-    #     URL_HOMEWORK,
-    #     json={"creator_platform": "tg",
-    #           "creator_id": tguser_id,
-    #           "date": "26-04-2022",
-    #           "lesson": "Русс",
-    #           "text": "№5"}
-    # )
-    # if response.status_code == 200:
-    #     return True
-    # return False
-    return True
+    print(data)
+    print(auto)
+    response = requests.post(
+        URL_HOMEWORK,
+        json={"creator_platform": "tg",
+              "creator_id": tguser_id,
+              "date": datetime.date.today(),
+              "lesson": data['subject'],
+              "text": data['text']}
+    )
+    if response.status_code == 200:
+        return True
+    return False
 
 
-def get_homework(tguser_id):
-    """Возвращает домашку на сегодня"""
-    query = f"/tg/{tguser_id}/{datetime.date.today()}"
+def get_homework(tguser_id, date):
+    """Возвращает домашку на дату (дата в формате 25-04-2022)"""
+    query = f"/tg/{tguser_id}/{date}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
-        return json.loads(res.text)
+        a = json.loads(res.text)
+        hw = {}
+        for el in a:
+            hw['lesson'] = el['lesson']
+            hw['text'] = el['text']
+        return hw
     return False
+
+
+# def get_all_homework(tguser_id):
+#     query = f"/tg/{tguser_id}"
+#     res = requests.get(URL_HOMEWORK + query)
+#     if res.status_code == 200:
+#         a = json.loads(res.text)
+#         hw = {}
+#         for el in a:
+#             hw['date'] = el['date']
+#             hw['lesson'] = el['lesson']
+#             hw['text'] = el['text']
+#         return hw
+#     return False

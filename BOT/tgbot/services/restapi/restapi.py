@@ -105,14 +105,15 @@ async def register_class(tguser_id, data):
     for el in schedule:
         day_n = schedule[el]['day_name']
         for ell in schedule[el]['shedule']:
-            response = requests.post(
-                URL_SCHEDULE,
-                json={"creator_platform": "tg",
-                      "creator_id": tguser_id,
-                      "day": day_n,
-                      "lesson_number": ell + 1,
-                      "lesson": schedule[el]['shedule'][ell]}
-            )
+            if schedule[el]['shedule'][ell] != '-':
+                response = requests.post(
+                    URL_SCHEDULE,
+                    json={"creator_platform": "tg",
+                          "creator_id": tguser_id,
+                          "day": day_n.lower(),
+                          "lesson_number": ell + 1,
+                          "lesson": schedule[el]['shedule'][ell]}
+                )
     return True
 
 

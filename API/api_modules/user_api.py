@@ -55,7 +55,7 @@ def create_user():  # Создает пользователя на основе 
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
         return make_response(jsonify({'error': 'Такой пользователь уже существует'}), 400)
-    return make_response()
+    return make_response({"success": "Пользователь успешно создан"}, 201)
 
 
 # {
@@ -90,7 +90,7 @@ def edit_user(platform, user_id):  # Изменение пользователя
         else:
             return make_response(jsonify({'error': f'Неизвестный параметр {key}'}), 422)
     db_sess.commit()
-    return make_response()
+    return make_response({'success': 'Пользователь успешно изменен'}, 200)
 
 
 @blueprint.route('/api/user/<platform>/<int:user_id>', methods=['DELETE'])
@@ -108,4 +108,4 @@ def del_user(platform, user_id):  # Удаление пользователя
             return make_response(jsonify({'error': 'Нельзя удалить последнего админа'}), 422)
     db_sess.delete(student)
     db_sess.commit()
-    return make_response('', 204)
+    return make_response({'success': 'Пользователь успешно удален'}, 204)

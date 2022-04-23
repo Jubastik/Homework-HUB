@@ -97,7 +97,7 @@ def create_homework():  # Создает дз на основе входящег
         return make_response(jsonify({'error': 'доработка"'}), 422)
     db_sess.add(homework)
     db_sess.commit()
-    return make_response(jsonify({'success': f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 200)
+    return make_response(jsonify({'success': f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 201)
 
 
 @blueprint.route('/api/homework/<int:tg_id>/<int:date>', methods=['PUT'])

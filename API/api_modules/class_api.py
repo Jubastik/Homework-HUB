@@ -64,7 +64,7 @@ def create_class():  # Создает класс на основе входящ�
     student.is_admin = True
     student.class_id = my_class.id
     db_sess.commit()
-    return make_response()
+    return make_response(jsonify({'success': f'Класс создан. id:{my_class.id}'}), 201)
 
 
 @blueprint.route('/api/class/<platform>/<int:user_id>', methods=['PUT'])
@@ -96,7 +96,7 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
         else:
             return make_response(jsonify({'error': f'Неизвестный параметр {key}'}), 422)
     db_sess.commit()
-    return make_response()
+    return make_response({'success': f'Класс изменен. id:{my_class.id}'}, 200)
 
 
 @blueprint.route('/api/class/<platform>/<int:user_id>', methods=['DELETE'])

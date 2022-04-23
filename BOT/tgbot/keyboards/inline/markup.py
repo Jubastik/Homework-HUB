@@ -1,7 +1,12 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from BOT.CONSTANTS import SUBJECTS
-from BOT.tgbot.keyboards.inline.callback_data import SubjectData, ArrowsData, CheckHomework
+from BOT.tgbot.keyboards.inline.callback_data import (
+    SubjectData,
+    ArrowsData,
+    CheckHomework,
+    DatesData,
+)
 
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
@@ -76,7 +81,7 @@ markup_profile = InlineKeyboardMarkup(
 markup_add_homework = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Быстро добавить", callback_data="fast_add")],
-        [InlineKeyboardButton(text="Добавить на дату", callback_data="on_date")],
+        [InlineKeyboardButton(text="Добавить на дату", callback_data="on_date_add")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
 )
@@ -138,10 +143,28 @@ markup_done = InlineKeyboardMarkup(
     ]
 )
 
-# keyboard = InlineKeyboardMarkup(
-#     inline_keyboard=[
-#         [InlineKeyboardButton(text="Среда 20.04", callback_data="add_homework"), InlineKeyboardButton(text="Суббота 23.04", callback_data="add_homework")],
-#         [InlineKeyboardButton(text="Четверг 21.04", callback_data="add_homework"), InlineKeyboardButton(text="Понедельник 25.04", callback_data="add_homework")],
-#         [InlineKeyboardButton(text="Пятница 22.04", callback_data="add_homework"), InlineKeyboardButton(text="Вторник 26.04", callback_data="add_homework")],
-#     ]
-# )
+
+def get_markup_dates(dates):
+    keyboard = InlineKeyboardMarkup(row_width=3)
+    for date in dates:
+        keyboard.insert(
+            InlineKeyboardButton(
+                text=date[0],
+                callback_data=DatesData.new(date=date[1]),
+            )
+        )
+    keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
+    return keyboard
+
+
+def get_subjects_markup(subjects):
+    keyboard = InlineKeyboardMarkup(row_width=3)
+    for i in subjects:
+        keyboard.insert(
+            InlineKeyboardButton(
+                text=i,
+                callback_data=SubjectData.new(name=i),
+            )
+        )
+    keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
+    return keyboard

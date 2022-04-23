@@ -29,13 +29,14 @@ async def is_unregistered(tguser_id):
 
 async def is_admin(tguser_id):
     # админ или нет
-    query = f"/tg/{tguser_id}"
-    res = requests.get(URL_USER + query)
-    res = json.loads(res.text)
-    if res["is_admin"]:
-        return True
-    else:
-        return False
+    # query = f"/tg/{tguser_id}"
+    # res = requests.get(URL_USER + query)
+    # res = json.loads(res.text)
+    # if res["is_admin"]:
+    #     return True
+    # else:
+    #     return False
+    return True
 
 
 async def is_developer(tguser_id):
@@ -48,7 +49,7 @@ async def is_developer(tguser_id):
         return False
 
 
-def register_user(tguser_id, classid, username):
+async def register_user(tguser_id, classid, username):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     response = requests.post(
@@ -65,7 +66,7 @@ def register_user(tguser_id, classid, username):
     return False
 
 
-def register_class(tguser_id, data):
+async def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     # response = requests.post(
@@ -94,7 +95,7 @@ def register_class(tguser_id, data):
     return True
 
 
-def delete_user(tguser_id):
+async def delete_user(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query)
     if res.status_code == 200:
@@ -121,21 +122,34 @@ async def add_homework(tguser_id, data, auto=False):
     """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
     response = requests.post(
         URL_HOMEWORK,
-        json={"creator_platform": "tg",
-              "creator_id": tguser_id,
-              "date": "26-04-2022",
-              "lesson": "Русс",
-              "text": "№5"}
+        json={
+            "creator_platform": "tg",
+            "creator_id": tguser_id,
+            "date": "26-04-2022",
+            "lesson": "Русс",
+            "text": "№5",
+        },
     )
     if response.status_code == 200:
         return True
     return False
 
 
-def get_homework(tguser_id):
+async def get_homework(tguser_id):
     """Возвращает домашку на сегодня"""
     query = f"/tg/{tguser_id}/{datetime.date.today()}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
         return json.loads(res.text)
     return False
+
+
+async def get_schedule_on_date(tguser_id, date) -> list:
+    return [
+        "Русский🇷🇺",
+        "Литература📚",
+        "Алгебра🔢",
+        "Геометрия📐",
+        "Биология🌿",
+        "География🌐",
+    ]  # Затычка

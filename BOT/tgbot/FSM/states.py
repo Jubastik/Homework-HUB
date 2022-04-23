@@ -31,7 +31,10 @@ class StudentStates(StatesGroup):
 
     # Ветка AddHomework
     FastAdd = State()
-    Add = State()
+
+    GetDate = State()
+    GetSubjects = State()
+
     WaitHomework = State()  # общий для FastAdd и Add
     CheckHomework = State()
 

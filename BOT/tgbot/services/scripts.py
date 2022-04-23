@@ -25,10 +25,10 @@ def convert_position(pos):
     return [((pos) // 8), (pos % 8)]
 
 
-def generate_dates() -> list:
+async def generate_dates(tguser_id) -> list:
     """Генерирует даты"""
     dates = []
-    saturday_lesson = is_lessons_in_saturday()
+    saturday_lesson = await is_lessons_in_saturday(tguser_id)
     # Вот так вот если is_lessons_in_saturday() возвращает True для 19.04
     today = datetime.date.today()
     c = 1
@@ -42,11 +42,11 @@ def generate_dates() -> list:
             if day_name == 6:
                 pass
             else:
-                dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}'])
+                dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}', day])
         else:
             if day_name == 6 or day_name == 5:
                 pass
             else:
-                dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}'])
+                dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}', day])
         c += 1
     return dates

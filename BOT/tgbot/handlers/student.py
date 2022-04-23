@@ -1,5 +1,4 @@
-from email import message
-from aiogram.types import Message, CallbackQuery, ContentType, MediaGroup
+from aiogram.types import Message, CallbackQuery, ContentType
 from aiogram.dispatcher import FSMContext
 import datetime
 
@@ -17,12 +16,14 @@ from BOT.tgbot.keyboards.inline.markup import (
     markup_done,
     get_markup_dates,
     get_subjects_markup,
+    markup_are_u_sure,
 )
 from BOT.tgbot.services.restapi.restapi import (
     get_subjects_by_time,
     is_admin,
     add_homework,
     get_schedule_on_date,
+    delete_user,
 )
 
 
@@ -80,6 +81,42 @@ async def query_get_homework(callback: CallbackQuery):
         pass
     await StudentStates.GetHomework.set()
     await callback.message.answer("Меню выбора получения домашки")  # In work
+
+
+# | Profile | Profile | Profile | Profile | Profile | Profile | Profile | Profile |
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.Profile, text="delete_account"
+)
+async def query_get_homework(callback: CallbackQuery):
+    await callback.answer()
+    await StudentStates.DeleteAccount.set()
+    await callback.message.answer(
+        "Вы уверены что хотите удалить аккаунт?", reply_markup=markup_are_u_sure
+    )
+
+
+# | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount |
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.DeleteAccount, text="true"
+)
+async def query_get_homework(callback: CallbackQuery):
+    await callback.answer()
+    if await delete_user(callback.from_user.id):
+        await callback.message.answer("Ваш аккаунт удалён")
+    else:
+        await callback.message.answer("Ошибка")
+    # Соединение с регистрацией...
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.DeleteAccount, text="false"
+)
+async def query_get_homework(callback: CallbackQuery):
+    await query_profile(callback)  # ахахахах, оказываается так можно было...
 
 
 # | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework |

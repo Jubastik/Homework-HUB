@@ -168,3 +168,11 @@ def get_subjects_markup(subjects):
         )
     keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
     return keyboard
+
+
+markup_are_u_sure = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Да", callback_data="true")],
+        [InlineKeyboardButton(text="Отмена", callback_data="false")],
+    ]
+)

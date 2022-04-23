@@ -38,4 +38,5 @@ class StudentStates(StatesGroup):
     WaitHomework = State()  # общий для FastAdd и Add
     CheckHomework = State()
 
-
+    # Profile ветка
+    DeleteAccount = State()

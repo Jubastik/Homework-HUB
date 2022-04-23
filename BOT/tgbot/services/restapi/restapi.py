@@ -1,6 +1,8 @@
 # Функции запросов на rest api (использовать await!)
 # Пока что просто затычки => фильтры работают через жопу, надо в коде указывать кем воспринимать юзеров
 import json
+import time
+
 import requests
 import random
 import datetime
@@ -77,8 +79,6 @@ async def register_class(tguser_id, data):
         URL_CLASS,
         json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"}
     )
-    print(data)
-
     # добавление звонков
     duration_lessons = {1: 55, 2: 60, 3: 65, 4: 60, 5: 55, 6: 55, 7: 60, 8: 60}
     start_time = data['start_time']
@@ -91,13 +91,12 @@ async def register_class(tguser_id, data):
         start_time = a.strftime("%H:%M")
         b = (d + datetime.timedelta(minutes=duration_lessons[i])).time()
         end_time = b.strftime("%H:%M")
-        print(i, start_time, end_time)
         response = requests.post(
             URL_TIME_TABLE, json={"creator_platform": "tg",
                                   "creator_id": tguser_id,
                                   "lesson_number": i,
-                                  "begin_time": start_time,
-                                  "end_time": end_time}
+                                  "begin_time": str(start_time),
+                                  "end_time": str(end_time)}
         )
         d = d + datetime.timedelta(minutes=duration_lessons[i])
 
@@ -196,3 +195,7 @@ async def get_schedule_on_date(tguser_id, date) -> list:
         "Биология🌿",
         "География🌐",
     ]  # Затычка
+
+
+def get_all_users(tguser_id):
+    pass

@@ -16,7 +16,7 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/api/time_table/', methods=['POST'])
+@blueprint.route('/api/time_table', methods=['POST'])
 def create_time_table():  # Создает расписание на основе входящего Json
     data = request.json
     if not data:

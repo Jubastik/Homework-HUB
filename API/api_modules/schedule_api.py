@@ -45,7 +45,7 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
                              schedule in schedules]})
 
 
-@blueprint.route('/api/schedule/', methods=['POST'])
+@blueprint.route('/api/schedule', methods=['POST'])
 def create_schedule():  # Создает расписание на основе входящего Json
     data = request.json
     if not data:

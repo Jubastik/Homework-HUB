@@ -45,7 +45,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
                              homework in homeworks]})
 
 
-@blueprint.route('/api/homework/', methods=['POST'])
+@blueprint.route('/api/homework', methods=['POST'])
 def create_homework():  # Создает дз на основе входящего Json
     data = request.json
     if not data:

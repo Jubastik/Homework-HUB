@@ -17,6 +17,7 @@ from BOT.tgbot.keyboards.inline.markup import (
     get_markup_dates,
     get_subjects_markup,
     markup_are_u_sure,
+    markup_get_homework,
 )
 from BOT.tgbot.services.restapi.restapi import (
     get_subjects_by_time,
@@ -47,7 +48,7 @@ async def query_profile(callback: CallbackQuery):
 async def query_class_menu(callback: CallbackQuery):
     await callback.answer()
     await StudentStates.ClassPanel.set()
-    await callback.message.answer("Панель управления классом")  # In work
+    await callback.message.answer("Панель управления классом")
 
 
 @dp.callback_query_handler(
@@ -67,7 +68,7 @@ async def query_add_homework(callback: CallbackQuery):
     await StudentStates.AddHomework.set()
     await callback.message.answer(
         "Выбери способ добавления", reply_markup=markup_add_homework
-    )  # In work
+    )
 
 
 @dp.callback_query_handler(
@@ -80,7 +81,15 @@ async def query_get_homework(callback: CallbackQuery):
         # Установка дефолтных значений
         pass
     await StudentStates.GetHomework.set()
-    await callback.message.answer("Меню выбора получения домашки")  # In work
+    await callback.message.answer(
+        "Меню выбора получения домашки", reply_markup=markup_get_homework
+    )
+
+
+# | GetHomework | GetHomework | GetHomework | GetHomework | GetHomework | GetHomework | GetHomework | GetHomework |
+
+
+
 
 
 # | Profile | Profile | Profile | Profile | Profile | Profile | Profile | Profile |

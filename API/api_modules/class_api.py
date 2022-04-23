@@ -13,6 +13,18 @@ blueprint = flask.Blueprint(
 )
 
 
+@blueprint.route('/api/class/students/<platform>/<int:user_id>', methods=['GET'])
+def get_class_students(platform, user_id):  # Возвращает список учеников класса
+    try:
+        id = id_processing(platform, user_id)
+    except IDError as e:
+        return make_response(jsonify({'error': str(e)}), 404)
+    db_sess = db_session.create_session()
+    student = db_sess.query(Student).filter(Student.id == id).first()
+    students = student.my_class.student
+    return jsonify({'data': [s.to_dict(only=('id', 'name', 'tg_id')) for s in students]})
+
+
 @blueprint.route('/api/class/<platform>/<int:user_id>', methods=['GET'])
 def get_class(platform, user_id):  # Возвращает токен класса, vk_id класса и tg_id пользователей
     try:
@@ -24,7 +36,7 @@ def get_class(platform, user_id):  # Возвращает токен класс�
     my_class = student.my_class
     if my_class is None:
         return make_response(jsonify({'error': 'Вы не состоите в классе'}), 404)
-    return jsonify({'data': my_class.to_dict(only=('id', 'name', 'class_token', 'vk_id', 'student.id'))})
+    return jsonify({'data': my_class.to_dict(only=('id', 'name', 'class_token', 'vk_id'))})
 
 
 @blueprint.route('/api/class', methods=['POST'])

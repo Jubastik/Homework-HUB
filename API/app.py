@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, make_response
 from API.data import db_session
 from API.data.CONSTANTS import day_id_to_weekday
 from API.data.classes import Class
@@ -18,11 +18,13 @@ def main():
     app.register_blueprint(time_table_api.blueprint)
     app.register_blueprint(additional_methods_api.blueprint)
     app.run(debug=True)
+    init_weekday()
 
 
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
 
 @app.route('/init_weekday')
 def init_weekday():
@@ -30,9 +32,11 @@ def init_weekday():
     for weekday in day_id_to_weekday.values():
         wd = WeekDay(name=weekday)
         db_sess.add(wd)
-        db_sess.commit()
-    return 'success'
-
+        try:
+            db_sess.commit()
+        except IndentationError as e:
+            pass
+    return make_response('OK')
 
 
 if __name__ == '__main__':

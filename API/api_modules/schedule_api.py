@@ -38,14 +38,14 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
     schedules = db_sess.query(Schedule).join(WeekDay).join(Class).join(Student).filter(Student.id == id,
-                                                                                       WeekDay.name == day).all()
+                                                                                       WeekDay.name == day.lower()).all()
     if len(schedules) == 0:
         return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
     return jsonify({'data': [schedule.to_dict(only=('lesson.name', 'slot.number_of_lesson')) for
                              schedule in schedules]})
 
 
-@blueprint.route('/api/schedule/', methods=['POST'])
+@blueprint.route('/api/schedule', methods=['POST'])
 def create_schedule():  # Создает расписание на основе входящего Json
     data = request.json
     if not data:
@@ -68,7 +68,7 @@ def create_schedule():  # Создает расписание на основе 
         return make_response(jsonify({'error': f'Пользователь не состоит в классе'}), 422)
     else:
         class_id = class_id[0]
-    day_id = db_sess.query(WeekDay.id).filter(WeekDay.name == data['day'].lower()).first()
+    day_id = db_sess.query(WeekDay.id).filter(WeekDay.name == str(data['day']).lower()).first()
     lessons_id = db_sess.query(Lesson.id).filter(Lesson.name == data['lesson']).first()
     slot_id = db_sess.query(TimeTable.id).filter(TimeTable.class_id == class_id,
                                                  TimeTable.number_of_lesson == data['lesson_number']).first()

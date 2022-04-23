@@ -15,6 +15,13 @@ def time_is_correct(time: list):
         return False
 
 
+def return_error(response):
+    return {
+        'code': response.status_code,
+        'error': response.json()['error']
+    }
+
+
 def convert_time(time: list):
     if len(time[1]) == 1:
         time[1] = f"1{time[1]}"

@@ -28,13 +28,14 @@ async def is_unregistered(tguser_id):
 
 async def is_admin(tguser_id):
     # админ или нет
-    query = f"/tg/{tguser_id}"
-    res = requests.get(URL_USER + query)
-    res = json.loads(res.text)
-    if res["data"]['is_admin']:
-        return True
-    else:
-        return False
+    # query = f"/tg/{tguser_id}"
+    # res = requests.get(URL_USER + query)
+    # res = json.loads(res.text)
+    # if res["data"]['is_admin']:
+    #     return True
+    # else:
+    #     return False
+    return True
 
 
 async def is_developer(tguser_id):
@@ -47,7 +48,7 @@ async def is_developer(tguser_id):
         return False
 
 
-def register_user(tguser_id, classid, user_name):
+async def register_user(tguser_id, classid, user_name):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     response = requests.post(
@@ -63,7 +64,7 @@ def register_user(tguser_id, classid, user_name):
     return False
 
 
-def register_class(tguser_id, data):
+async def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
     # сначала регистрация полльзователя
     response = requests.post(
@@ -116,7 +117,7 @@ def register_class(tguser_id, data):
     return True
 
 
-def delete_user(tguser_id):
+async def delete_user(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query)
     res = json.loads(res.text)
@@ -145,8 +146,6 @@ async def is_lessons_in_saturday(tguser_id):
 
 async def add_homework(tguser_id, data, auto=False):
     """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
-    print(data)
-    print(auto)
     response = requests.post(
         URL_HOMEWORK,
         json={"creator_platform": "tg",
@@ -160,7 +159,7 @@ async def add_homework(tguser_id, data, auto=False):
     return False
 
 
-def get_homework(tguser_id, date):
+async def get_homework(tguser_id, date):
     """Возвращает домашку на дату (дата в формате 25-04-2022)"""
     query = f"/tg/{tguser_id}/{date}"
     res = requests.get(URL_HOMEWORK + query)
@@ -186,3 +185,14 @@ def get_homework(tguser_id, date):
 #             hw['text'] = el['text']
 #         return hw
 #     return False
+
+
+async def get_schedule_on_date(tguser_id, date) -> list:
+    return [
+        "Русский🇷🇺",
+        "Литература📚",
+        "Алгебра🔢",
+        "Геометрия📐",
+        "Биология🌿",
+        "География🌐",
+    ]  # Затычка

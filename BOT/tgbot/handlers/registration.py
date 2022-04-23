@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, User
 
 
 # | start | start | start | start | start | start | start | start |
@@ -6,8 +6,14 @@ from BOT.CONSTANTS import SUBJECTS
 from BOT.bot import dp, bot
 from BOT.tgbot.FSM.states import RegistrationStates
 from BOT.tgbot.filters import RegistrationFilter
-from BOT.tgbot.keyboards.inline.markup import markup_yes_or_no, markup_check_subjects1, markup_start, \
-    markup_check_subjects2, get_markup_shedule, markup_shedule2
+from BOT.tgbot.keyboards.inline.markup import (
+    markup_yes_or_no,
+    markup_check_subjects1,
+    markup_start,
+    markup_check_subjects2,
+    get_markup_shedule,
+    markup_shedule2,
+)
 from BOT.tgbot.services.restapi.restapi import register_user, register_class
 from BOT.tgbot.services.scripts import convert_time, time_is_correct, convert_position
 from BOT.tgbot.services.sub_classes import SheduleData
@@ -111,7 +117,7 @@ async def query_check_start_time_true(callback: CallbackQuery):
             "\n".join(
                 [
                     "Есть ли тут все ваши школьные предметы?",
-                    "Если нет - отправте название предмета, который хотите добавить в список",
+                    "Если нет - отправьте название предмета, который хотите добавить в список",
                 ]
             ),
             reply_markup=markup_check_subjects1,
@@ -183,7 +189,7 @@ async def handler_add_time(msg: Message):
 async def query_check_subjects_back(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
-    async with FSMContext.proxy() as FSMdata:  # Создание дефолтной FSMdata
+    async with FSMContext.proxy() as FSMdata:
         await RegistrationStates.CheckStartTime.set()
         await callback.message.answer(
             f"Ваши уроки начинаются в {' : '.join(convert_time(FSMdata['start_time']))}?",
@@ -338,9 +344,9 @@ async def query_shedule_done(callback: CallbackQuery):
             "shedule": FSMdata["shedule"],
             "subjects": FSMdata["extra_subjects"],
             "start_time": FSMdata["start_time"],
-            "user_name": callback.from_user.full_name,
+            "user_name": User.get_current()["username"],
         }
-        register_class(userid, data)
+        await register_class(userid, data)
         await FSMContext.reset_state()
         await callback.message.answer("Регистрация успешна")
         await callback.message.answer("*Менюшка студента (is_admin=True)*")
@@ -352,27 +358,4 @@ async def query_shedule_done(callback: CallbackQuery):
     text="back",
 )
 async def query_add_shedule_back(callback: CallbackQuery):
-    await callback.answer()
-    FSMContext = dp.current_state(user=callback.from_user.id)
-    await RegistrationStates.CheckSubjects.set()
-    async with FSMContext.proxy() as FSMdata:
-        subjects_msg = await callback.message.answer(
-            "\n".join(
-                [
-                    "Предметы:",
-                    *SUBJECTS,
-                    *FSMdata["extra_subjects"],
-                ]
-            )
-        )
-        await callback.message.answer(
-            "\n".join(
-                [
-                    "Есть ли тут все ваши школьные предметы?",
-                    "Если нет - отправьте название предмета, который хотите добавить в список",
-                ]
-            ),
-            reply_markup=markup_check_subjects1,
-        )
-        subjects_msg_id = subjects_msg.message_id
-        FSMdata["subjects_msg_id"] = subjects_msg_id
+    await query_check_start_time_true(callback)

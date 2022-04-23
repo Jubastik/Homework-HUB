@@ -1,10 +1,12 @@
-from aiogram.types import Message, CallbackQuery, ContentType, MediaGroup
+from aiogram.types import Message, CallbackQuery, ContentType
 from aiogram.dispatcher import FSMContext
+import datetime
 
 from BOT.bot import dp
 from BOT.tgbot.FSM.states import StudentStates
 from BOT.tgbot.filters.student_filter import StudentFilter
 from BOT.tgbot.filters.admin_filter import AdminFilter
+from BOT.tgbot.services.scripts import generate_dates
 from BOT.tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     get_markup_fast_add1,
@@ -12,11 +14,16 @@ from BOT.tgbot.keyboards.inline.markup import (
     markup_add_homework,
     markup_check_homework,
     markup_done,
+    get_markup_dates,
+    get_subjects_markup,
+    markup_are_u_sure,
 )
 from BOT.tgbot.services.restapi.restapi import (
     get_subjects_by_time,
     is_admin,
     add_homework,
+    get_schedule_on_date,
+    delete_user,
 )
 
 
@@ -76,6 +83,42 @@ async def query_get_homework(callback: CallbackQuery):
     await callback.message.answer("Меню выбора получения домашки")  # In work
 
 
+# | Profile | Profile | Profile | Profile | Profile | Profile | Profile | Profile |
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.Profile, text="delete_account"
+)
+async def query_get_homework(callback: CallbackQuery):
+    await callback.answer()
+    await StudentStates.DeleteAccount.set()
+    await callback.message.answer(
+        "Вы уверены что хотите удалить аккаунт?", reply_markup=markup_are_u_sure
+    )
+
+
+# | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount |
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.DeleteAccount, text="true"
+)
+async def query_get_homework(callback: CallbackQuery):
+    await callback.answer()
+    if await delete_user(callback.from_user.id):
+        await callback.message.answer("Ваш аккаунт удалён")
+    else:
+        await callback.message.answer("Ошибка")
+    # Соединение с регистрацией...
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.DeleteAccount, text="false"
+)
+async def query_get_homework(callback: CallbackQuery):
+    await query_profile(callback)  # ахахахах, оказываается так можно было...
+
+
 # | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework | Add Homework |
 
 
@@ -93,6 +136,61 @@ async def query_fast_add(callback: CallbackQuery):
     await callback.message.answer(
         "На какой предмет добавить дз?",
         reply_markup=get_markup_fast_add1(await get_subjects_by_time(userid)),
+    )
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.AddHomework, text="on_date_add"
+)
+async def query_fast_add(callback: CallbackQuery):
+    await callback.answer()
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["is_fast"] = False
+    await StudentStates.GetDate.set()
+    await callback.message.answer(
+        "Выберете дату, на которую хотите добавить домашнее задание:",
+        reply_markup=get_markup_dates(await generate_dates(callback.from_user.id)),
+    )
+
+
+# | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date |
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.GetDate, text_contains="add_date"
+)
+async def query_fast_add(callback: CallbackQuery):
+    await callback.answer()
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    str_date = list(map(int, callback.data.split(":")[1].split("-")))
+    date = datetime.date(year=str_date[0], month=str_date[1], day=str_date[2])
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["date"] = date
+    await StudentStates.GetSubjects.set()
+    await callback.message.answer(
+        f"Выберете предмет из расписания на {date}",
+        reply_markup=get_subjects_markup(
+            await get_schedule_on_date(callback.from_user.id, date)
+        ),
+    )
+
+
+# | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject |
+
+
+@dp.callback_query_handler(
+    StudentFilter(), state=StudentStates.GetSubjects, text_contains="subject"
+)
+async def query_fast_add(callback: CallbackQuery):
+    await callback.answer()
+    subject = callback.data.split(":")[1]
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["subject"] = subject
+    await StudentStates.WaitHomework.set()
+    await callback.message.answer(
+        "Отправьте домашнее задание👇🏻 (можно прикрепить фото)", reply_markup=markup_done
     )
 
 

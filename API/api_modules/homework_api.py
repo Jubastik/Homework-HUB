@@ -73,6 +73,8 @@ def create_homework():  # Создает дз на основе входящег
         my_class = my_class[0]
     if data['date'] == 'auto':
         date = get_next_lesson(my_class, data['lesson'])
+        if date is None:
+            return make_response(jsonify({'error': f'Авто дата не нашла урок. {data["lesson"]}'}), 422)
     else:
         day = data['date'].split('-')[0]
         month = data['date'].split('-')[1]

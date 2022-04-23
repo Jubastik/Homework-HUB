@@ -7,6 +7,7 @@ import requests
 import random
 import datetime
 from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK, URL_TIME_TABLE, URL_CURRENT_LESSONS
+from BOT.tgbot.services.scripts import return_error
 from BOT.tgbot.services.sub_classes import SheduleData
 
 
@@ -156,7 +157,7 @@ async def add_homework(tguser_id, data, auto=False):
     )
     if response.status_code == 200:
         return True
-    return False
+    return return_error(response)
 
 
 async def get_homework(tguser_id, date):

@@ -17,10 +17,9 @@ async def is_student(tguser_id):
     # есть ли в базе
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
-    if res.status_code == 404:
-        return False
-    res = json.loads(res.text)
-    return True
+    if res.status_code == 200:
+        return True
+    return False
 
 
 async def is_unregistered(tguser_id):
@@ -58,7 +57,7 @@ def register_user(tguser_id, classid, user_name):
             "platform": "tg",
             "class_token": classid,
             "name": user_name,
-        },
+        }, verify=False
     )
     if response.status_code == 200:
         return True
@@ -71,7 +70,7 @@ def register_class(tguser_id, data):
     response = requests.post(
         URL_USER, json={"id": tguser_id, "platform": "tg", "name": data['user_name']}
     )
-    if response.status_code == 404:
+    if response.status_code != 200:
         return False
     # уже потом регистрация класса
     response = requests.post(
@@ -88,7 +87,6 @@ def register_class(tguser_id, data):
     my_datetime = datetime.datetime.combine(date_now, start)
     d = my_datetime
     for i in range(1, 9):
-        print(d)
         a = (d + datetime.timedelta(minutes=1)).time()
         start_time = a.strftime("%H:%M")
         b = (d + datetime.timedelta(minutes=duration_lessons[i])).time()
@@ -122,17 +120,18 @@ def register_class(tguser_id, data):
 def delete_user(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query)
+    res = json.loads(res.text)
     if res.status_code == 200:
         return True
-    return False
+    return res['error']
 
 
 async def get_subjects_by_time(tguser_id, date_time=datetime.datetime.now()) -> list():
     """По времени получает 2 ближайших предмета"""
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_CURRENT_LESSONS)
-    a = json.loads(res.text)
-    return [a[-2]['lesson_name'], a[-1]['lesson_name']]
+    res = json.loads(res.text)
+    return [res[-2]['lesson_name'], res[-1]['lesson_name']]
 
 
 async def is_lessons_in_saturday(tguser_id):

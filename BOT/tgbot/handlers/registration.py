@@ -284,7 +284,7 @@ async def query_move_cursor(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     move_num = int(callback.data.split(":")[1])
     async with FSMContext.proxy() as FSMdata:
-        if 0 <= (FSMdata["current_pos"] + move_num) <= 48:
+        if 0 <= (FSMdata["current_pos"] + move_num) <= 47:
             FSMdata["current_pos"] += move_num
             pos = convert_position(FSMdata["current_pos"])
             msgid = FSMdata["shedule_msg_id"]
@@ -314,7 +314,7 @@ async def query_add_shedule(callback: CallbackQuery):
         msgid = FSMdata["shedule_msg_id"]
         pos = convert_position(FSMdata["current_pos"])
         FSMdata["shedule"].add_lesson(subject, pos)
-        if FSMdata["current_pos"] + 1 <= 48:
+        if FSMdata["current_pos"] + 1 <= 47:
             FSMdata["current_pos"] += 1
             pos = convert_position(FSMdata["current_pos"])
         await bot.edit_message_text(

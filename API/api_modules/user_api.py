@@ -110,4 +110,4 @@ def del_user(platform, user_id):  # Удаление пользователя
             return make_response(jsonify({'error': 'Нельзя удалить последнего админа в классе с учениками'}), 422)
     db_sess.delete(student)
     db_sess.commit()
-    return make_response({'success': 'Пользователь успешно удален'}, 204)
+    return make_response(jsonify({'success': 'Пользователь успешно удален'}), 204)

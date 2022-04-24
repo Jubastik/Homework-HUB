@@ -11,6 +11,7 @@ from API.data.homeworks import Homework
 from API.data.lessons import Lesson
 from API.data.schedules import Schedule
 from API.data.students import Student
+from API.data.tg_photos import TgPhoto
 from API.data.week_days import WeekDay
 
 blueprint = flask.Blueprint(
@@ -41,7 +42,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     if len(homeworks) == 0:
         return make_response(jsonify({'error': 'Нет домашнего задания на эту дату'}), 404)
     return jsonify({'data': [homework.to_dict(
-        only=('text_homework', 'photo_tg_id', 'schedule.lesson.name', 'schedule.slot.number_of_lesson')) for
+        only=('text_homework', 'photo_tg_id.photo_id', 'schedule.lesson.name', 'schedule.slot.number_of_lesson')) for
                              homework in homeworks]})
 
 
@@ -57,9 +58,9 @@ def create_homework():  # Создает дз на основе входящег
             {
                 'error': 'Отсутствуют поля "creator_id", "creator_platform", "lesson", "date"'}),
             422)
-    elif 'photo' not in data and 'text' not in data and 'photo_tg_id' not in data:
+    elif 'photo' not in data and 'text' not in data and 'photos_tg_id' not in data:
         return make_response(jsonify(
-            {'error': 'Отсутствуют поля "photo" или "text" или "photo_tg_id"'}), 422)
+            {'error': 'Отсутствуют поля "photo" или "text" или "photos_tg_id"'}), 422)
     try:
         creator_id = id_processing(data['creator_platform'], data['creator_id'])
     except IDError as e:
@@ -93,11 +94,13 @@ def create_homework():  # Создает дз на основе входящег
         schedule_id = schedule_id[0]
     if 'text' in data:
         homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id, text_homework=data['text'])
-    elif 'photo_tg_id' in data:
-        homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id, photo_tg_id=data['photo_tg_id'])
-    else:
+        db_sess.add(homework)
+    if 'photos_tg_id' in data:
+        for photo_tg_id in data['photos_tg_id']:
+            tg_p = TgPhoto(photo_id=photo_tg_id)
+            db_sess.add(tg_p)
+    if 'photo' in data:
         return make_response(jsonify({'error': 'доработка"'}), 422)
-    db_sess.add(homework)
     db_sess.commit()
     return make_response(jsonify({'success': f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 201)
 

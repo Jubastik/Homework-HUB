@@ -3,6 +3,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 class RegistrationStates(StatesGroup):
     """Состояния регистрации"""
+
     # Вход:
     StartBtn = State()
     GetGroupId = State()
@@ -18,25 +19,35 @@ class RegistrationStates(StatesGroup):
     IsCorrect = State()
 
 
-class StudentStates(StatesGroup):
-    """Состояния студента и админа"""
-    # General
-    StudentMenu = State()
-
-    # StudentMenu
-    Profile = State()
-    ClassPanel = State()
-    AddHomework = State()
-    GetHomework = State()
-
+class StudentAddHomework(StatesGroup):
     # Ветка AddHomework
+    AddHomework = State()
     FastAdd = State()
 
     GetDate = State()
     GetSubjects = State()
 
     WaitHomework = State()  # общий для FastAdd и Add
-    CheckHomework = State()
+    CheckHomework = State()  # общий для FastAdd и Add
 
-    # Profile ветка
+
+class StudentProfile(StatesGroup):
+    # Ветка Profile
+    Profile = State()
     DeleteAccount = State()
+
+
+class StudentMenu(StatesGroup):
+    # Менюшка
+    Menu = State()
+
+
+class StudentClass(StatesGroup):
+    # Ветка панели управления классом
+    ClassPanel = State()
+
+
+class StudentGetHomework(StatesGroup):
+    # Ветка полечения домашки
+    GetHomework = State()
+    GetDate = State()

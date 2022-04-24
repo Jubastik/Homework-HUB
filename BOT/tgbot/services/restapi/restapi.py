@@ -22,8 +22,9 @@ async def is_student(tguser_id):
     res = requests.get(URL_USER + query)
     if res.status_code == 200:
         return True
-    error = res.json()
-    return error['error']
+    if res.status_code == 404:
+        return False
+    return return_error(res)
 
 
 async def is_unregistered(tguser_id):
@@ -35,28 +36,26 @@ async def is_admin(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
     if res.status_code == 200:
-        res = res.json()
-        if res['data']['is_admin']:
+        data = res.json()
+        if data['data']['is_admin']:
             return True
         return False
-    res = res.json()
-    return res['error']
+    return return_error(res)
 
 
 async def is_developer(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
     if res.status_code == 200:
-        res = res.json()
-        if res['data']['is_superuser']:
+        data = res.json()
+        if data['data']['is_superuser']:
             return True
         return False
-    res = res.json()
-    return res['error']
+    return return_error(res)
 
 
 async def register_user(tguser_id, classid, user_name):
-    """Добавление юзера в бд к классу по ссылке, возвращает True если успешно, в противном случае False"""
+    """Добавление юзера в бд к классу по ссылке, возвращает True если успешно"""
     # сначала регистрация полльзователя
     response = requests.post(
         URL_USER,
@@ -68,11 +67,11 @@ async def register_user(tguser_id, classid, user_name):
         })
     if response.status_code == 201:
         return True
-    return response.json()['error']
+    return return_error(response)
 
 
 async def register_class(tguser_id, data):
-    """Добавление юзера в бд и создание класса, возвращает True если успешно, в противном случае False"""
+    """Добавление юзера в бд и создание класса, возвращает True если успешно"""
     # сначала регистрация полльзователя
     response = requests.post(
         URL_USER, json={"id": tguser_id, "platform": "tg", "name": data['user_name']}
@@ -138,11 +137,11 @@ async def delete_user(tguser_id):
     res = res.json()
     if res.status_code == 204:
         return True
-    return res['error']
+    return return_error(res)
 
 
 async def get_subjects_by_time(tguser_id, date_time=datetime.datetime.now()) -> list():
-    """По времени получает 2 ближайших предмета"""
+    """По времени получает 2 ближайших предмета и возвращает список их названий"""
     """!!НЕ ДОДЕЛАНА!!"""
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_CURRENT_LESSONS)

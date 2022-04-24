@@ -178,7 +178,7 @@ async def add_homework(tguser_id, data, auto=False):
     if auto:
         payload['date'] = 'auto'
     else:
-        payload['date'] = data['date']
+        payload['date'] = data['date'].strftime("%d-%m-%Y")
     if data['text']:
         payload['text'] = data['text']
     if data['files_tgid']:

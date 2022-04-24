@@ -1,4 +1,6 @@
 from flask import Flask, make_response
+
+from API.api_modules.core import get_next_lesson
 from API.data import db_session
 from API.data.CONSTANTS import day_id_to_weekday
 from API.data.classes import Class
@@ -25,6 +27,10 @@ def main():
 def hello_world():
     return 'Hello World!'
 
+# @app.route('/test')
+# def test():
+#     print(get_next_lesson('27', "Русский"))
+#     return 'Hello World!'
 
 @app.route('/init_weekday')
 def init_weekday():

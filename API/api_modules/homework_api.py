@@ -39,7 +39,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     homeworks = db_sess.query(Homework).join(Schedule).join(Class).join(Student).filter(Student.id == id,
                                                                                         Homework.date == date).all()
     if len(homeworks) == 0:
-        return make_response(jsonify({'error': 'Нет дз на эту дату'}), 404)
+        return make_response(jsonify({'error': 'Нет домашнего задания на эту дату'}), 404)
     return jsonify({'data': [homework.to_dict(
         only=('text_homework', 'photo_tg_id', 'schedule.lesson.name', 'schedule.slot.number_of_lesson')) for
                              homework in homeworks]})
@@ -73,6 +73,8 @@ def create_homework():  # Создает дз на основе входящег
         my_class = my_class[0]
     if data['date'] == 'auto':
         date = get_next_lesson(my_class, data['lesson'])
+        if date is None:
+            return make_response(jsonify({'error': f'Авто дата не нашла урок. {data["lesson"]}'}), 422)
     else:
         day = data['date'].split('-')[0]
         month = data['date'].split('-')[1]
@@ -97,7 +99,7 @@ def create_homework():  # Создает дз на основе входящег
         return make_response(jsonify({'error': 'доработка"'}), 422)
     db_sess.add(homework)
     db_sess.commit()
-    return make_response(jsonify({'success': f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 200)
+    return make_response(jsonify({'success': f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 201)
 
 
 @blueprint.route('/api/homework/<int:tg_id>/<int:date>', methods=['PUT'])

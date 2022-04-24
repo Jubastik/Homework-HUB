@@ -100,7 +100,7 @@ def create_schedule():  # Создает расписание на основе 
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
         return make_response(jsonify({'error': 'Расписание уже существует'}), 422)
-    return make_response()
+    return make_response({'success': f'Расписание успешно создано.'}, 201)
 
 
 @blueprint.route('/api/schedule/<int:tg_id>/<int:day>', methods=['PUT'])

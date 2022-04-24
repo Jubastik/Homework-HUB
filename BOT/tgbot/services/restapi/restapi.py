@@ -134,6 +134,7 @@ async def register_class(tguser_id, data):
                 )
                 if response.status_code != 201:
                     await delete_user(tguser_id, force=True)
+                    await send_error(tguser_id, response, menu=False)
                     return return_error(response)
     return True
 
@@ -227,9 +228,8 @@ async def get_homework(tguser_id, date):
 
 
 async def get_schedule_on_date(tguser_id, date) -> list:
-    print(date)
-    query = f"/tg/{tguser_id}"
-    res = requests.get(URL_SCHEDULE + query)
+    # query = f"/tg/{tguser_id}"
+    # res = requests.get(URL_SCHEDULE + query)
     return [
         "Русский🇷🇺",
         "Литература📚",

@@ -16,7 +16,6 @@ from BOT.tgbot.filters.admin_filter import AdminFilter
 from BOT.tgbot.services.scripts import generate_dates
 from BOT.tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
-    get_markup_fast_add1,
     markup_profile,
     markup_add_homework,
     markup_check_homework,
@@ -54,11 +53,12 @@ async def query_get_homework(callback: CallbackQuery):
 )
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()
-    if await delete_user(callback.from_user.id):
-        await callback.message.answer("Ваш аккаунт удалён")
+    res = await delete_user(callback.from_user.id)
+    if isinstance(res, dict):
         await FSMContext.reset_state()
-    else:
-        await callback.message.answer("Ошибка")
+        return
+    await callback.message.answer("Ваш аккаунт удалён")
+    await FSMContext.reset_state()
     # Соединение с регистрацией...
 
 

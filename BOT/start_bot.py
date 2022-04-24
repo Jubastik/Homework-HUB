@@ -1,6 +1,3 @@
-# Tasks:
-# 1) Создание Redis
-# 2) Кеширование
 import logging
 
 from aiogram.utils import executor
@@ -8,6 +5,10 @@ from aiogram.utils import executor
 from BOT import tgbot
 import tgbot.filters, tgbot.handlers
 from BOT.bot import dp
+
+# Tasks:
+# 1) Создание Redis
+# 2) Кеширование
 
 
 async def on_startup(dp):

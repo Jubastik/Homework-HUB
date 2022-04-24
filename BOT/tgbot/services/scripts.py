@@ -1,4 +1,4 @@
-from BOT.tgbot.services.restapi.restapi import is_lessons_in_saturday
+from BOT.tgbot.services.restapi.restapi import is_lessons_in_saturday, get_homework
 import datetime
 from BOT.CONSTANTS import WEEKDAYS
 
@@ -29,6 +29,8 @@ async def generate_dates(tguser_id) -> list:
     """Генерирует даты"""
     dates = []
     saturday_lesson = await is_lessons_in_saturday(tguser_id)
+    if isinstance(saturday_lesson, dict):
+        return saturday_lesson
     # Вот так вот если is_lessons_in_saturday() возвращает True для 19.04
     today = datetime.date.today()
     c = 1
@@ -52,6 +54,10 @@ async def generate_dates(tguser_id) -> list:
     return dates
 
 
-async def get_homework_on_date(tguser_id, date) -> str:
-    # формат вывода: ["Текст домашек", ["id фотки 1", "id фотки 2"]]
+async def get_homework_on_date(tguser_id, date) -> dict:
+    data = await get_homework(tguser_id, date)
+    if "error" in data:
+        return data
+    res = {"text": "", "Photo": []}
+    
     return ""

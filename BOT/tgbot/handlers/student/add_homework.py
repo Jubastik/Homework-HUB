@@ -15,22 +15,15 @@ from BOT.tgbot.filters.admin_filter import AdminFilter
 from BOT.tgbot.services.scripts import generate_dates
 from BOT.tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
-    get_markup_fast_add1,
-    markup_profile,
-    markup_add_homework,
     markup_check_homework,
     markup_done,
     get_markup_dates,
     get_subjects_markup,
-    markup_are_u_sure,
-    markup_get_homework,
 )
 from BOT.tgbot.services.restapi.restapi import (
     get_subjects_by_time,
-    is_admin,
     add_homework,
     get_schedule_on_date,
-    delete_user,
 )
 
 
@@ -40,14 +33,17 @@ from BOT.tgbot.services.restapi.restapi import (
 async def query_fast_add(callback: CallbackQuery):
     await callback.answer()
     # Получение 2-х предметов по текущему времени из БД
-    userid = callback.from_user.id
     FSMContext = dp.current_state(user=callback.from_user.id)
+    res = await get_subjects_by_time(callback.from_user.id)
+    if isinstance(res, dict):
+        await FSMContext.reset_state()
+        return
     async with FSMContext.proxy() as FSMdata:
         FSMdata["is_fast"] = True
     await StudentAddHomework.FastAdd.set()
     await callback.message.answer(
-        "На какой предмет добавить дз?",
-        reply_markup=get_markup_fast_add1(await get_subjects_by_time(userid)),
+        "На какой предмет добавить домашнее задание?",
+        reply_markup=get_subjects_markup(res),
     )
 
 
@@ -57,6 +53,10 @@ async def query_fast_add(callback: CallbackQuery):
 async def query_fast_add(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
+    res = await generate_dates(callback.from_user.id)
+    if isinstance(res, dict):
+        await FSMContext.reset_state()
+        return
     async with FSMContext.proxy() as FSMdata:
         FSMdata["is_fast"] = False
     await StudentAddHomework.GetDate.set()
@@ -77,6 +77,10 @@ async def query_fast_add(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     str_date = list(map(int, callback.data.split(":")[1].split("-")))
     date = datetime.date(year=str_date[0], month=str_date[1], day=str_date[2])
+    res = await get_schedule_on_date(callback.from_user.id, date)
+    if isinstance(res, dict):
+        await FSMContext.reset_state()
+        return
     async with FSMContext.proxy() as FSMdata:
         FSMdata["date"] = date
     await StudentAddHomework.GetSubjects.set()
@@ -147,14 +151,14 @@ async def query_homework_check(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
-        if FSMdata["text"] is None and len(FSMdata["files_tgid"]) == 0:
+        if len(FSMdata["text"]) == 0 and len(FSMdata["files_tgid"]) == 0:
             await callback.message.answer("Не получено никакой информации")
         else:
             await StudentAddHomework.CheckHomework.set()
             await callback.message.answer(
                 "\n".join(
                     [
-                        f"Записываю домашнее задание на *число* {FSMdata['subject']}",
+                        f"Записываю домашнее задание на {FSMdata['subject']}",
                         "Верно?",
                     ]
                 ),
@@ -183,12 +187,10 @@ async def query_homework_check(callback: CallbackQuery):
                 "files_tgid": FSMdata["files_tgid"],
                 "date": FSMdata["date"],
             }
-            res = await add_homework(userid, params, auto=FSMdata["is_fast"])
-            if res is True:
-                await callback.message.answer("Домашнее задание успешно записано")
+            await add_homework(userid, params, auto=FSMdata["is_fast"])
     await FSMContext.reset_state()
     await StudentMenu.Menu.set()
     await callback.message.answer(
         "Меню",
-        reply_markup=get_markup_student_menu(await is_admin(callback.from_user.id)),
+        reply_markup=get_markup_student_menu(True),
     )

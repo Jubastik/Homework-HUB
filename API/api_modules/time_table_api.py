@@ -58,4 +58,4 @@ def create_time_table():  # Создает расписание на основ�
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
         return make_response(jsonify({'error': 'Слот уже существует'}), 422)
-    return make_response({'success': 'Слот успешно создан'}, 201)
+    return make_response(jsonify({'success': 'Слот успешно создан'}), 201)

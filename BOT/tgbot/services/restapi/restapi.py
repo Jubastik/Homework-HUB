@@ -142,7 +142,7 @@ async def register_class(tguser_id, data):
 async def delete_user(tguser_id, force=False):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query + "?force=" + str(force))
-    res = res.json()
+    # res = res.json() # разобраться с этим!!!!!!!!!!!!!!!!!!!
     if res.status_code == 204:
         return True
     await send_error(tguser_id, res)
@@ -212,7 +212,6 @@ async def get_homework(tguser_id, date):
                 hw_dict[lesson_name]['text'].append(lesson_data['text_homework'])
             if lesson_data['photo_tg_id']:
                 hw_dict[lesson_name]['photos'].append(lesson_data['photo_tg_id'])
-        print(hw_dict)
         return hw_dict
     await send_error(tguser_id, res)
     return return_error(res)

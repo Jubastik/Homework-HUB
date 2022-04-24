@@ -27,12 +27,12 @@ def main():
 def hello_world():
     return 'Hello World!'
 
+
 # @app.route('/test')
 # def test():
 #     print(get_next_lesson('27', "Русский"))
 #     return 'Hello World!'
 
-@app.route('/init_weekday')
 def init_weekday():
     db_sess = db_session.create_session()
     for weekday in day_id_to_weekday.values():

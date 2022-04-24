@@ -54,7 +54,7 @@ def create_user():  # Создает пользователя на основе 
     try:
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
-        return make_response(jsonify({'error': 'Такой пользователь уже существует'}), 400)
+        return make_response(jsonify({'error': 'Такой пользователь уже существует'}), 422)
     return make_response({"success": "Пользователь успешно создан"}, 201)
 
 

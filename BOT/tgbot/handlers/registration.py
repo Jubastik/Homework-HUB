@@ -85,7 +85,7 @@ async def handler_get_id(msg: Message):
     userid = msg.from_user.id
     username = msg.from_user.full_name
     FSMContext = dp.current_state(user=userid)
-    if register_user(userid, classid, username):
+    if await register_user(userid, classid, username):
         await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
         await msg.answer("*Менюшка студента*")
         await FSMContext.reset_state()

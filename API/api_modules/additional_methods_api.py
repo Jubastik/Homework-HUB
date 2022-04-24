@@ -36,10 +36,6 @@ def current_lessons(platform, user_id):
         .filter(Student.id == id, WeekDay.name == day,
                 TimeTable.begin_time >= past_time,
                 TimeTable.end_time < now_time).all()
-
-    return jsonify({'lessons': [_.to_dict(only=('lesson.name',)) for _ in now_lesson]})
-    if user_schedules is None:
+    if len(now_lesson) == 0:
         return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
-    print(user_schedules)
-    return jsonify({'data': [schedule.to_dict(only=('day.name', 'lesson.name', 'slot.number_of_lesson')) for
-                             schedule in user_schedules]})
+    return jsonify({'lessons': [_.to_dict(only=('lesson.name',)) for _ in now_lesson]})

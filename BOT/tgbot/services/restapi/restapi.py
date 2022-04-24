@@ -202,7 +202,9 @@ async def get_homework(tguser_id, date):
         lessons = res.json()['data']
         hw_dict = {}
         for lesson in lessons:
-            hw_dict[lesson["schedule"]["lesson"]["name"]] = [lessons["text_homework"], lessons["photo_tg_id"]]
+            if hw_dict[lesson["schedule"]["lesson"]["name"]] not in hw_dict:
+                hw_dict[lesson["schedule"]["lesson"]["name"]] = []
+            hw_dict[lesson["schedule"]["lesson"]["name"]].append([lessons["text_homework"], lessons["photo_tg_id"]])
         return hw_dict
     await send_error(tguser_id, res)
     return return_error(res)

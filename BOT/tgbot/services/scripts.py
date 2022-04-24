@@ -50,3 +50,8 @@ async def generate_dates(tguser_id) -> list:
                 dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}', day])
         c += 1
     return dates
+
+
+async def get_homework_on_date(tguser_id, date) -> str:
+    # формат вывода: ["Текст домашек", ["id фотки 1", "id фотки 2"]]
+    return ""

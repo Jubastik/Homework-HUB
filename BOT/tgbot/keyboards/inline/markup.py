@@ -176,3 +176,11 @@ markup_are_u_sure = InlineKeyboardMarkup(
         [InlineKeyboardButton(text="Отмена", callback_data="false")],
     ]
 )
+
+markup_get_homework = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="На завтра", callback_data="fast_get")],
+        [InlineKeyboardButton(text="На дату", callback_data="on_date_get")],
+        [InlineKeyboardButton(text="Меню", callback_data="menu")],
+    ]
+)

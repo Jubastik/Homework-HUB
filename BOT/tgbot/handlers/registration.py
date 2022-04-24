@@ -28,16 +28,15 @@ async def hanldler_start(msg: Message):
         userid = msg.from_user.id
         username = msg.from_user.full_name
         FSMContext = dp.current_state(user=userid)
-        if register_user(userid, classid, username):
-            await msg.answer(
-                "Регистрация по ссылке успешна"
-            )  # Тут надо сделать отправку менюшки студента
-            await msg.answer("*Менюшка студента*")
+        res = register_user(userid, classid, username)
+        if isinstance(res, dict):
             await FSMContext.reset_state()
-        else:
-            await msg.answer(
-                "Неправильный формат id, либо пользователь уже зарегестрирован"
-            )
+            return
+        await msg.answer(
+            "Регистрация по ссылке успешна"
+        )  # Тут надо сделать отправку менюшки студента
+        await msg.answer("*Менюшка студента*")
+        await FSMContext.reset_state()
     else:
         FSMContext = dp.current_state(user=msg.from_user.id)
         await FSMContext.reset_state()
@@ -85,12 +84,13 @@ async def handler_get_id(msg: Message):
     userid = msg.from_user.id
     username = msg.from_user.full_name
     FSMContext = dp.current_state(user=userid)
-    if await register_user(userid, classid, username):
-        await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
-        await msg.answer("*Менюшка студента*")
+    res = register_user(userid, classid, username)
+    if isinstance(res, dict):
         await FSMContext.reset_state()
-    else:
-        await msg.answer("Неправильный формат id")
+        return
+    await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
+    await msg.answer("*Менюшка студента*")
+    await FSMContext.reset_state()
 
 
 # | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime |
@@ -346,7 +346,10 @@ async def query_shedule_done(callback: CallbackQuery):
             "start_time": FSMdata["start_time"],
             "user_name": User.get_current()["username"],
         }
-        await register_class(userid, data)
+        res = await register_class(userid, data)
+        if isinstance(res, dict):
+            await FSMContext.reset_state()
+            return
         await FSMContext.reset_state()
         await callback.message.answer("Регистрация успешна")
         await callback.message.answer("*Менюшка студента (is_admin=True)*")

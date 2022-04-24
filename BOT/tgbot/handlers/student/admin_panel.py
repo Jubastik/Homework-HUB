@@ -9,7 +9,6 @@ from BOT.tgbot.filters.admin_filter import AdminFilter
 from BOT.tgbot.services.scripts import generate_dates
 from BOT.tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
-    get_markup_fast_add1,
     markup_profile,
     markup_add_homework,
     markup_check_homework,
@@ -21,8 +20,12 @@ from BOT.tgbot.keyboards.inline.markup import (
 )
 from BOT.tgbot.services.restapi.restapi import (
     get_subjects_by_time,
-    is_admin,
     add_homework,
     get_schedule_on_date,
     delete_user,
 )
+
+
+@dp.message_handler(AdminFilter(), commands=["admin_panel"], state="*")
+async def admin_panel(msg: Message):
+    await msg.answer("Админка")

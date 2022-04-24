@@ -103,25 +103,6 @@ def get_markup_student_menu(is_admin) -> InlineKeyboardMarkup:
     return keyboard
 
 
-def get_markup_fast_add1(subjects) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text=subjects[0], callback_data=SubjectData.new(name=subjects[0])
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text=subjects[1], callback_data=SubjectData.new(name=subjects[1])
-                )
-            ],
-            [InlineKeyboardButton(text="Меню", callback_data="menu")],
-        ]
-    )
-    return keyboard
-
-
 markup_check_homework = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -184,3 +165,4 @@ markup_get_homework = InlineKeyboardMarkup(
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
 )
+markup_menu = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Вернуться в меню", callback_data="menu")]])

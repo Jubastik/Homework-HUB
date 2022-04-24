@@ -152,11 +152,10 @@ async def get_subjects_by_time(tguser_id):
     if res.status_code == 200:
         data = res.json()['lessons']
         if len(data) == 1:
-            return [data[-1]['lesson']['name'], '-']  # надо как то иначе обработать
+            return [data[-1]['lesson']['name']]
         return [data[-2]['lesson']['name'], data[-1]['lesson']['name']]
     await send_error(tguser_id, res)
-    return ['Нет данных', 'Нет данных']
-    # return return_error(res)
+    return return_error(res)
 
 
 async def is_lessons_in_saturday(tguser_id):

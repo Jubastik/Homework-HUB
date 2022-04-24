@@ -94,10 +94,14 @@ def create_homework():  # Создает дз на основе входящег
         schedule_id = schedule_id[0]
     if 'text' in data:
         homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id, text_homework=data['text'])
-        db_sess.add(homework)
+    else:
+        homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id)
+    db_sess.add(homework)
+    db_sess.flush()
     if 'photos_tg_id' in data:
+        print(data['photos_tg_id'])
         for photo_tg_id in data['photos_tg_id']:
-            tg_p = TgPhoto(photo_id=photo_tg_id)
+            tg_p = TgPhoto(homework_id=homework.id, photo_id=photo_tg_id)
             db_sess.add(tg_p)
     if 'photo' in data:
         return make_response(jsonify({'error': 'доработка"'}), 422)

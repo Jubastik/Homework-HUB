@@ -185,7 +185,7 @@ async def add_homework(tguser_id, data, auto=False):
     if data['text']:
         payload['text'] = data['text']
     if data['files_tgid']:
-        payload['photo_tg_id'] = data['files_tgid']
+        payload['photos_tg_id'] = data['files_tgid']
 
     response = requests.post(
         URL_HOMEWORK,
@@ -204,10 +204,15 @@ async def get_homework(tguser_id, date):
     if res.status_code == 200:
         lessons = res.json()['data']
         hw_dict = {}
-        for lesson in lessons:
-            if hw_dict[lesson["schedule"]["lesson"]["name"]] not in hw_dict:
-                hw_dict[lesson["schedule"]["lesson"]["name"]] = []
-            hw_dict[lesson["schedule"]["lesson"]["name"]].append([lessons["text_homework"], lessons["photo_tg_id"]])
+        for lesson_data in lessons:
+            lesson_name = lesson_data["schedule"]["lesson"]["name"]
+            if hw_dict[lesson_name] not in hw_dict:
+                hw_dict[lesson_name] = {'photos': [], 'text': []}
+            if lesson_data['text_homework']:
+                hw_dict[lesson_name]['text'].append(lesson_data['text_homework'])
+            if lesson_data['photo_tg_id']:
+                hw_dict[lesson_name]['photos'].append(lesson_data['photo_tg_id'])
+        print(hw_dict)
         return hw_dict
     await send_error(tguser_id, res)
     return return_error(res)

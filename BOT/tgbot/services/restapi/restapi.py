@@ -196,17 +196,16 @@ async def add_homework(tguser_id, data, auto=False):
 
 async def get_homework(tguser_id, date):
     """Возвращает домашку на дату (дата в формате 25-04-2022)"""
-    """!!НЕ ДОДЕЛАНА!!"""
-    query = f"/tg/{tguser_id}/{date.strftime('%Y-%m-%d')}"
+    query = f"/tg/{tguser_id}/{date.strftime('%d-%m-%Y')}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
-        a = res.json()
-        hw = {}
-        for el in a:
-            hw['lesson'] = el['lesson']
-            hw['text'] = el['text']
-        return hw
-    return res.json()['error']
+        lessons = res.json()['data']
+        hw_dict = {}
+        for lesson in lessons:
+            hw_dict[lesson["schedule"]["lesson"]["name"]] = [lessons["text_homework"], lessons["photo_tg_id"]]
+        return hw_dict
+    await send_error(tguser_id, res)
+    return return_error(res)
 
 
 # def get_all_homework(tguser_id):
@@ -225,6 +224,8 @@ async def get_homework(tguser_id, date):
 
 async def get_schedule_on_date(tguser_id, date) -> list:
     print(date)
+    # query = f"/tg/{tguser_id}"
+    # res = requests.get(URL_SCHEDULE + query)
     return [
         "Русский🇷🇺",
         "Литература📚",

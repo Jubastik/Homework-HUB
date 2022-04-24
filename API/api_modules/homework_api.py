@@ -39,7 +39,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     homeworks = db_sess.query(Homework).join(Schedule).join(Class).join(Student).filter(Student.id == id,
                                                                                         Homework.date == date).all()
     if len(homeworks) == 0:
-        return make_response(jsonify({'error': 'Нет дз на эту дату'}), 404)
+        return make_response(jsonify({'error': 'Нет домашнего задания на эту дату'}), 404)
     return jsonify({'data': [homework.to_dict(
         only=('text_homework', 'photo_tg_id', 'schedule.lesson.name', 'schedule.slot.number_of_lesson')) for
                              homework in homeworks]})

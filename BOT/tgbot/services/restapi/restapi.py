@@ -90,6 +90,7 @@ async def register_class(tguser_id, data):
         json={"creator_platform": "tg", "creator_id": tguser_id, "name": f"Класс {data['user_name']}а"}
     )
     if response.status_code != 201:
+        await delete_user(tguser_id, force=True)
         return return_error(response)
 
     # добавление звонков
@@ -113,6 +114,7 @@ async def register_class(tguser_id, data):
         )
         d = d + datetime.timedelta(minutes=duration_lessons[i])
         if response.status_code != 201:
+            await delete_user(tguser_id, force=True)
             return return_error(response)
 
     # расписание уроков
@@ -131,13 +133,14 @@ async def register_class(tguser_id, data):
                           "lesson": lesson_name}
                 )
                 if response.status_code != 201:
+                    await delete_user(tguser_id, force=True)
                     return return_error(response)
     return True
 
 
-async def delete_user(tguser_id):
+async def delete_user(tguser_id, force=False):
     query = f"/tg/{tguser_id}"
-    res = requests.delete(URL_USER + query)
+    res = requests.delete(URL_USER + query + "?force=" + str(force))
     res = res.json()
     if res.status_code == 204:
         return True

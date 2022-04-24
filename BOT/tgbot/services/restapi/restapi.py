@@ -8,7 +8,7 @@ import random
 import datetime
 
 from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK, URL_TIME_TABLE, URL_CURRENT_LESSONS
-from BOT.tgbot.services.restapi.scripts import return_error, send_error
+from BOT.tgbot.services.restapi.scripts import return_error, send_error, send_success
 
 
 # from BOT.tgbot.services.sub_classes import SheduleData
@@ -141,6 +141,7 @@ async def delete_user(tguser_id):
     res = res.json()
     if res.status_code == 204:
         return True
+    await send_error(tguser_id, res)
     return return_error(res)
 
 
@@ -164,25 +165,33 @@ async def is_lessons_in_saturday(tguser_id):
     res = requests.get(URL_SCHEDULE + query)
     if res.status_code == 200:
         return True
-    return res.json()['error']
+    if res.status_code == 404 and res.json()['error'] == 'Расписание на этот день не существует':
+        return False
+    return return_error(res)
 
 
 async def add_homework(tguser_id, data, auto=False):
     """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
-    """!!НЕ ДОДЕЛАНА!!"""
-    print(data)
-    if not auto:
-        response = requests.post(
-            URL_HOMEWORK,
-            json={"creator_platform": "tg",
-                  "creator_id": tguser_id,
-                  "date": data['date'].strftime("%Y-%m-%d"),
-                  "lesson": data['subject'],
-                  "text": data['text']}
-        )
-        if response.status_code == 201:
-            return True
-        return response.json()['error']
+    payload = {"creator_platform": "tg",
+               "creator_id": tguser_id,
+               "lesson": data['subject']}
+    if auto:
+        payload['date'] = 'auto'
+    else:
+        payload['date'] = data['date']
+    if data['text']:
+        payload['text'] = data['text']
+    if data['files_tgid']:
+        payload['photo_tg_id'] = data['files_tgid']
+
+    response = requests.post(
+        URL_HOMEWORK,
+        json=payload)
+    if response.status_code == 201:
+        await send_success(tguser_id, response)
+        return True
+    await send_error(tguser_id, response)
+    return return_error(response)
 
 
 async def get_homework(tguser_id, date):

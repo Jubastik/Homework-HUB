@@ -102,11 +102,12 @@ def del_user(platform, user_id):  # Удаление пользователя
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).get(id)
-    if student.class_id is not None and not force_delete:
+    if student.is_admin is True and not force_delete:
         admins_in_class = db_sess.query(Student).join(Class).filter(Class.id == student.class_id,
                                                                     Student.is_admin == True).count()
-        if admins_in_class == 1:
-            return make_response(jsonify({'error': 'Нельзя удалить последнего админа'}), 422)
+        students_in_class = db_sess.query(Student).join(Class).filter(Class.id == student.class_id).count()
+        if admins_in_class == 1 and students_in_class != 1:
+            return make_response(jsonify({'error': 'Нельзя удалить последнего админа в классе с учениками'}), 422)
     db_sess.delete(student)
     db_sess.commit()
     return make_response({'success': 'Пользователь успешно удален'}, 204)

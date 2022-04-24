@@ -21,7 +21,8 @@ async def is_student(tguser_id):
     res = requests.get(URL_USER + query)
     if res.status_code == 200:
         return True
-    return False
+    error = res.json()
+    return error['error']
 
 
 async def is_unregistered(tguser_id):
@@ -30,24 +31,27 @@ async def is_unregistered(tguser_id):
 
 async def is_admin(tguser_id):
     # админ или нет
-    # query = f"/tg/{tguser_id}"
-    # res = requests.get(URL_USER + query)
-    # res = json.loads(res.text)
-    # if res["data"]['is_admin']:
-    #     return True
-    # else:
-    #     return False
-    return True
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_USER + query)
+    if res.status_code == 200:
+        res = res.json()
+        if res['data']['is_admin']:
+            return True
+        return False
+    res = res.json()
+    return res['error']
 
 
 async def is_developer(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
-    res = json.loads(res.text)
-    if res["data"]["is_superuser"]:
-        return True
-    else:
+    if res.status_code == 200:
+        res = res.json()
+        if res['data']['is_superuser']:
+            return True
         return False
+    res = res.json()
+    return res['error']
 
 
 async def register_user(tguser_id, classid, user_name):
@@ -61,9 +65,9 @@ async def register_user(tguser_id, classid, user_name):
             "class_token": classid,
             "name": user_name,
         })
-    if response.status_code == 200:
+    if response.status_code == 201:
         return True
-    return False
+    return response.json()['error']
 
 
 async def register_class(tguser_id, data):
@@ -72,13 +76,16 @@ async def register_class(tguser_id, data):
     response = requests.post(
         URL_USER, json={"id": tguser_id, "platform": "tg", "name": data['user_name']}
     )
-    if response.status_code != 200:
-        return False
+    if response.status_code != 201:
+        return response.json()['error']
     # уже потом регистрация класса
     response = requests.post(
         URL_CLASS,
         json={"creator_platform": "tg", "creator_id": tguser_id, "name": "10A"}
     )
+    if response.status_code != 201:
+        return response.json()['error']
+
     # добавление звонков
     duration_lessons = {1: 55, 2: 60, 3: 65, 4: 60, 5: 55, 6: 55, 7: 60, 8: 60}
     start_time = data['start_time']
@@ -99,6 +106,8 @@ async def register_class(tguser_id, data):
                                   "end_time": str(end_time)}
         )
         d = d + datetime.timedelta(minutes=duration_lessons[i])
+        if response.status_code != 201:
+            return response.json()['error']
 
     # расписание уроков
     schedule = data['shedule'].get_shedule()
@@ -106,6 +115,9 @@ async def register_class(tguser_id, data):
         day_n = schedule[el]['day_name']
         for ell in schedule[el]['shedule']:
             if schedule[el]['shedule'][ell] != '-':
+                print("day", day_n.lower(),
+                      "lesson_number", ell + 1,
+                      "lesson", schedule[el]['shedule'][ell])
                 response = requests.post(
                     URL_SCHEDULE,
                     json={"creator_platform": "tg",
@@ -114,24 +126,29 @@ async def register_class(tguser_id, data):
                           "lesson_number": ell + 1,
                           "lesson": schedule[el]['shedule'][ell]}
                 )
+                if response.status_code != 201:
+                    return response.json()['error']
     return True
 
 
 async def delete_user(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query)
-    res = json.loads(res.text)
-    if res.status_code == 200:
+    res = res.json()
+    if res.status_code == 204:
         return True
     return res['error']
 
 
 async def get_subjects_by_time(tguser_id, date_time=datetime.datetime.now()) -> list():
     """По времени получает 2 ближайших предмета"""
+    """!!НЕ ДОДЕЛАНА!!"""
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_CURRENT_LESSONS)
-    res = json.loads(res.text)
-    return [res[-2]['lesson_name'], res[-1]['lesson_name']]
+    res = res.json()
+    if res.status_code == 200:
+        return [res[-2]['lesson_name'], res[-1]['lesson_name']]
+    return res['error']
 
 
 async def is_lessons_in_saturday(tguser_id):
@@ -140,37 +157,40 @@ async def is_lessons_in_saturday(tguser_id):
     res = requests.get(URL_SCHEDULE + query)
     if res.status_code == 200:
         return True
-    else:
-        return False
+    return res.json()['error']
 
 
 async def add_homework(tguser_id, data, auto=False):
     """Добавляет домашку, если API вернуло ошибку - возвращает текст ошибки, иначе возвращает True"""
-    response = requests.post(
-        URL_HOMEWORK,
-        json={"creator_platform": "tg",
-              "creator_id": tguser_id,
-              "date": datetime.date.today(),
-              "lesson": data['subject'],
-              "text": data['text']}
-    )
-    if response.status_code == 200:
-        return True
-    return False
+    """!!НЕ ДОДЕЛАНА!!"""
+    print(data)
+    if not auto:
+        response = requests.post(
+            URL_HOMEWORK,
+            json={"creator_platform": "tg",
+                  "creator_id": tguser_id,
+                  "date": data['date'].strftime("%Y-%m-%d"),
+                  "lesson": data['subject'],
+                  "text": data['text']}
+        )
+        if response.status_code == 201:
+            return True
+        return response.json()['error']
 
 
 async def get_homework(tguser_id, date):
     """Возвращает домашку на дату (дата в формате 25-04-2022)"""
-    query = f"/tg/{tguser_id}/{date}"
+    """!!НЕ ДОДЕЛАНА!!"""
+    query = f"/tg/{tguser_id}/{date.strftime('%Y-%m-%d')}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
-        a = json.loads(res.text)
+        a = res.json()
         hw = {}
         for el in a:
             hw['lesson'] = el['lesson']
             hw['text'] = el['text']
         return hw
-    return False
+    return res.json()['error']
 
 
 # def get_all_homework(tguser_id):
@@ -188,6 +208,7 @@ async def get_homework(tguser_id, date):
 
 
 async def get_schedule_on_date(tguser_id, date) -> list:
+    print(date)
     return [
         "Русский🇷🇺",
         "Литература📚",

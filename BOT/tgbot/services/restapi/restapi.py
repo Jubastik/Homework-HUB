@@ -143,7 +143,7 @@ async def delete_user(tguser_id, force=False):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query + "?force=" + str(force))
     # res = res.json() # разобраться с этим!!!!!!!!!!!!!!!!!!!
-    if res.status_code == 204:
+    if res.status_code == 200:
         return True
     await send_error(tguser_id, res)
     return return_error(res)

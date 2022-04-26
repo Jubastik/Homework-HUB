@@ -205,7 +205,7 @@ async def add_homework(tguser_id, data, auto=False):
 
 
 async def get_homework(tguser_id, date):
-    """Возвращает домашку на дату (дата в формате 25-04-2022)"""
+    """Возвращает домашку на дату"""
     query = f"/tg/{tguser_id}/{date.strftime('%d-%m-%Y')}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
@@ -260,5 +260,30 @@ def get_names_classmates(tguser_id):
         for student in students:
             students_names[student["tg_id"]] = student["name"]
         return students_names
+    send_error(tguser_id, res)
+    return return_error(res)
+
+
+def get_student_info(tguser_id):
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_USER + query)
+    if res.status_code == 200:
+        student = res.json()['data']
+        students_info = {
+            'name': student['name'],
+            'is_admin': student['is_admin'],
+            'class_token': student['my_class']['class_token'],
+            'admins': student['class_admins']
+        }
+        return students_info
+    send_error(tguser_id, res)
+    return return_error(res)
+
+
+def change_class_token(tguser_id):
+    query = f"/tg/{tguser_id}"
+    res = requests.patch(URL_CLASS + query, json={'class_token': 'auto'})
+    if res.status_code == 200:
+        return True
     send_error(tguser_id, res)
     return return_error(res)

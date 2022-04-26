@@ -1,4 +1,5 @@
 import flask
+import sqlalchemy
 from flask import request, make_response, jsonify
 
 from API.api_modules.core import id_processing, generate_token, IDError
@@ -14,7 +15,10 @@ blueprint = flask.Blueprint(
 
 
 @blueprint.route('/api/class/students/<platform>/<int:user_id>', methods=['GET'])
-def get_class_students(platform, user_id):  # Возвращает список учеников класса
+def get_class_students(platform, user_id):
+    """
+    Возвращает список учеников класса
+    """
     try:
         id = id_processing(platform, user_id)
     except IDError as e:
@@ -26,7 +30,7 @@ def get_class_students(platform, user_id):  # Возвращает список 
 
 
 @blueprint.route('/api/class/<platform>/<int:user_id>', methods=['GET'])
-def get_class(platform, user_id):  # Возвращает токен класса, vk_id класса и tg_id пользователей
+def get_class(platform, user_id):
     try:
         id = id_processing(platform, user_id)
     except IDError as e:
@@ -88,15 +92,21 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
     my_class = student.my_class
     for key, data in json_data.items():
         if key == "class_token":
-            my_class.class_token = data
+            if data == 'auto':
+                my_class.class_token = generate_token()
+            else:
+                my_class.class_token = data
         elif key == "vk_id":
             my_class.vk_id = data
         elif key == 'name':
             my_class.name = data
         else:
             return make_response(jsonify({'error': f'Неизвестный параметр {key}'}), 422)
-    db_sess.commit()
-    return make_response(jsonify({'success': f'Класс изменен. id:{my_class.id}'}), 200)
+    try:
+        db_sess.commit()
+    except sqlalchemy.exc.IntegrityError:
+        return make_response(jsonify({'error': 'Попробуйте снова'}), 500)
+    return make_response(jsonify({'success': f'Класс изменен'}), 200)
 
 
 @blueprint.route('/api/class/<platform>/<int:user_id>', methods=['DELETE'])

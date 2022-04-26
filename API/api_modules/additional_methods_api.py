@@ -21,6 +21,9 @@ blueprint = flask.Blueprint(
 
 @blueprint.route('/api/current_lessons/<platform>/<int:user_id>', methods=['GET'])
 def current_lessons(platform, user_id):
+    """
+    Получение названий  ближайших уроков
+    """
     try:
         id = id_processing(platform, user_id)
     except IDError as e:

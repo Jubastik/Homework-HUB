@@ -14,6 +14,11 @@ blueprint = flask.Blueprint(
 )
 
 
+# @blueprint.route('/api/user/check/<platform>/<int:user_id>', methods=['GET'])
+# def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
+#
+#     return jsonify({'data': data})
+
 @blueprint.route('/api/user/<platform>/<int:user_id>', methods=['GET'])
 def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
     try:
@@ -22,7 +27,10 @@ def get_user(platform, user_id):  # Возвращает базовую инфо
         return make_response(jsonify({'error': str(e)}), 404)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
-    return jsonify({'data': student.to_dict(only=('id', 'name', 'class_id', 'is_admin'))})
+    class_admins = [_.name for _ in student.my_class.student if _.is_admin]
+    data = student.to_dict(only=('name', 'is_admin', 'my_class.class_token'))
+    data['class_admins'] = class_admins
+    return jsonify({'data': data})
 
 
 @blueprint.route('/api/user', methods=['POST'])

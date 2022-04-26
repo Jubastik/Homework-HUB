@@ -20,20 +20,16 @@ class IDError(Exception):
 
 
 def id_processing(platform, id):
+    db_sess = db_session.create_session()
     if platform == TG:
-        db_sess = db_session.create_session()
         id = db_sess.query(Student.id).filter(Student.tg_id == id).first()
-        if id is None:
-            raise IDError('Ошибка в ID')
-        return id[0]
     elif platform == 'no':
-        db_sess = db_session.create_session()
         id = db_sess.query(Student.id).filter(Student.id == id).first()
-        if id is None:
-            raise IDError('Ошибка в ID')
-        return id[0]
     else:
         raise IDError('Платформа не поддерживается')
+    if id is None:
+        raise IDError('Ошибка в ID')
+    return id[0]
 
 
 def generate_token():

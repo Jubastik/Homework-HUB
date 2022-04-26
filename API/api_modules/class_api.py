@@ -22,7 +22,7 @@ def get_class_students(platform, user_id):  # Возвращает список 
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     students = student.my_class.student
-    return jsonify({'data': [s.to_dict(only=('id', 'name', 'tg_id')) for s in students]})
+    return jsonify({'data': [s.to_dict(only=('name', 'tg_id')) for s in students]})
 
 
 @blueprint.route('/api/class/<platform>/<int:user_id>', methods=['GET'])

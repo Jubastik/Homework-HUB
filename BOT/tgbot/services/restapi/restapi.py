@@ -214,9 +214,9 @@ async def get_homework(tguser_id, date):
         for data in lessons:
             lesson = data["schedule"]["lesson"]["name"]
             lesson_data = {
-            "count": data["schedule"]["slot"]["number_of_lesson"],
-            "text": data["text_homework"],
-            "photos": [photo_id["photo_id"] for photo_id in data["photo_tg_id"]]
+                "count": data["schedule"]["slot"]["number_of_lesson"],
+                "text": data["text_homework"],
+                "photos": [photo_id["photo_id"] for photo_id in data["photo_tg_id"]]
             }
             if lesson in hw:
                 hw[lesson].append(lesson_data)
@@ -251,5 +251,12 @@ async def get_schedule_on_date(tguser_id, date) -> list:
     return ret
 
 
-def get_all_users(tguser_id):
-    pass
+def get_names_classmates(tguser_id):
+    query = f"/students/tg/{tguser_id}"
+    res = requests.get(URL_CLASS + query)
+    if res.status_code == 200:
+        students = res.json()['data']
+        students_names = [_["name"] for _ in students]
+        return students_names
+    send_error(tguser_id, res)
+    return return_error(res)

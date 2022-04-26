@@ -256,7 +256,9 @@ def get_names_classmates(tguser_id):
     res = requests.get(URL_CLASS + query)
     if res.status_code == 200:
         students = res.json()['data']
-        students_names = [_["name"] for _ in students]
+        students_names = {}
+        for student in students:
+            students_names[student["tg_id"]] = student["name"]
         return students_names
     send_error(tguser_id, res)
     return return_error(res)

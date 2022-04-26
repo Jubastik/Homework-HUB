@@ -54,3 +54,9 @@ class SheduleData:
     def load_shedule(self, shedule):
         # Мб пригодится, когда будем делать блок студента
         pass
+
+
+class RestErorr:
+    def __init__(self, response):
+        self.status_code = response.status_code
+        self.error_message = response.json()['error']

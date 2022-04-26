@@ -16,7 +16,7 @@ from BOT.tgbot.keyboards.inline.markup import (
 )
 from BOT.tgbot.services.restapi.restapi import register_user, register_class
 from BOT.tgbot.services.scripts import convert_time, time_is_correct, convert_position
-from BOT.tgbot.services.sub_classes import SheduleData
+from BOT.tgbot.services.sub_classes import RestErorr, SheduleData
 
 
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
@@ -28,8 +28,8 @@ async def hanldler_start(msg: Message):
         userid = msg.from_user.id
         username = msg.from_user.full_name
         FSMContext = dp.current_state(user=userid)
-        res = register_user(userid, classid, username)
-        if isinstance(res, dict):
+        res = await register_user(userid, classid, username)
+        if isinstance(res, RestErorr):
             await FSMContext.reset_state()
             return
         await msg.answer(
@@ -84,8 +84,8 @@ async def handler_get_id(msg: Message):
     userid = msg.from_user.id
     username = msg.from_user.full_name
     FSMContext = dp.current_state(user=userid)
-    res = register_user(userid, classid, username)
-    if isinstance(res, dict):
+    res = await register_user(userid, classid, username)
+    if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
     await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
@@ -347,7 +347,7 @@ async def query_shedule_done(callback: CallbackQuery):
             "user_name": User.get_current()["username"],
         }
         res = await register_class(userid, data)
-        if isinstance(res, dict):
+        if isinstance(res, RestErorr):
             await FSMContext.reset_state()
             return
         await FSMContext.reset_state()

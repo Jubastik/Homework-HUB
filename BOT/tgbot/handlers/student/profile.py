@@ -1,37 +1,13 @@
-from aiogram.types import Message, CallbackQuery, ContentType
+from aiogram.types import CallbackQuery
 from aiogram.dispatcher import FSMContext
-import datetime
 
 from BOT.bot import dp
 from BOT.tgbot.handlers.student.menu import query_profile
-from BOT.tgbot.FSM.states import (
-    StudentAddHomework,
-    StudentProfile,
-    StudentMenu,
-    StudentGetHomework,
-    StudentClass,
-)
+from BOT.tgbot.FSM.states import StudentProfile
 from BOT.tgbot.filters.student_filter import StudentFilter
-from BOT.tgbot.filters.admin_filter import AdminFilter
-from BOT.tgbot.services.scripts import generate_dates
-from BOT.tgbot.keyboards.inline.markup import (
-    get_markup_student_menu,
-    markup_profile,
-    markup_add_homework,
-    markup_check_homework,
-    markup_done,
-    get_markup_dates,
-    get_subjects_markup,
-    markup_are_u_sure,
-    markup_get_homework,
-)
-from BOT.tgbot.services.restapi.restapi import (
-    get_subjects_by_time,
-    is_admin,
-    add_homework,
-    get_schedule_on_date,
-    delete_user,
-)
+from BOT.tgbot.services.sub_classes import RestErorr
+from BOT.tgbot.keyboards.inline.markup import markup_are_u_sure
+from BOT.tgbot.services.restapi.restapi import delete_user
 
 
 @dp.callback_query_handler(
@@ -53,8 +29,9 @@ async def query_get_homework(callback: CallbackQuery):
 )
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()
+    FSMContext = dp.current_state(user=callback.from_user.id)
     res = await delete_user(callback.from_user.id)
-    if isinstance(res, dict):
+    if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
     await callback.message.answer("Ваш аккаунт удалён")

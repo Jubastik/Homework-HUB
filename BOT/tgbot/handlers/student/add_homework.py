@@ -26,6 +26,7 @@ from BOT.tgbot.services.restapi.restapi import (
     get_schedule_on_date,
     is_lessons_in_saturday,
 )
+from BOT.tgbot.services.sub_classes import RestErorr
 
 
 @dp.callback_query_handler(
@@ -36,7 +37,7 @@ async def query_fast_add(callback: CallbackQuery):
     # Получение 2-х предметов по текущему времени из БД
     FSMContext = dp.current_state(user=callback.from_user.id)
     res = await get_subjects_by_time(callback.from_user.id)
-    if isinstance(res, dict):
+    if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
     async with FSMContext.proxy() as FSMdata:
@@ -55,7 +56,7 @@ async def query_fast_add(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     res = await is_lessons_in_saturday(callback.from_user.id)
-    if isinstance(res, dict):
+    if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
     async with FSMContext.proxy() as FSMdata:
@@ -79,7 +80,7 @@ async def query_fast_add(callback: CallbackQuery):
     str_date = list(map(int, callback.data.split(":")[1].split("-")))
     date = datetime.date(year=str_date[0], month=str_date[1], day=str_date[2])
     res = await get_schedule_on_date(callback.from_user.id, date)
-    if isinstance(res, dict):
+    if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
     async with FSMContext.proxy() as FSMdata:

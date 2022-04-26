@@ -17,12 +17,13 @@ from BOT.tgbot.services.restapi.restapi import (
     get_homework,
     is_lessons_in_saturday,
 )
+from BOT.tgbot.services.sub_classes import RestErorr
 
 
 async def send_homework(callback: CallbackQuery, date):
     res = await get_homework(callback.from_user.id, date)
     FSMContext = dp.current_state(user=callback.from_user.id)
-    if not isinstance(res, dict):
+    if not isinstance(res, RestErorr):
         data = convert_homework(res[0])
         for lesson in data:
             if len(lesson["photos"]) != 0:
@@ -60,7 +61,7 @@ async def query_fast_get(callback: CallbackQuery):
 async def query_get_date(callback: CallbackQuery):
     await callback.answer()
     res = await is_lessons_in_saturday(callback.from_user.id)
-    if isinstance(res, dict):
+    if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
     await StudentGetHomework.GetDate.set()

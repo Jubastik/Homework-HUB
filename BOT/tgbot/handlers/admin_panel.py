@@ -29,3 +29,8 @@ from BOT.tgbot.services.restapi.restapi import (
 @dp.message_handler(AdminFilter(), commands=["admin_panel"], state="*")
 async def admin_panel(msg: Message):
     await msg.answer("Админка")
+
+
+# 1) [{tg_id: student_name}]
+# 2) {name: str, is_admin: Bool, class_token: int, admins: [str, str]}
+# 3) str

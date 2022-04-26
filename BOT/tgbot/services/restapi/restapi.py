@@ -7,7 +7,8 @@ import requests
 import random
 import datetime
 
-from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK, URL_TIME_TABLE, URL_CURRENT_LESSONS
+from BOT.CONSTANTS import URL_USER, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK, URL_TIME_TABLE, URL_CURRENT_LESSONS, \
+    day_id_to_weekday
 from BOT.tgbot.services.restapi.scripts import return_error, send_error, send_success
 
 
@@ -142,9 +143,9 @@ async def register_class(tguser_id, data):
 async def delete_user(tguser_id, force=False):
     query = f"/tg/{tguser_id}"
     res = requests.delete(URL_USER + query + "?force=" + str(force))
-    # res = res.json() # разобраться с этим!!!!!!!!!!!!!!!!!!!
-    if res.status_code == 204:
+    if res.status_code == 200:
         return True
+    res = res.json()
     await send_error(tguser_id, res)
     return return_error(res)
 
@@ -232,16 +233,13 @@ async def get_homework(tguser_id, date):
 
 
 async def get_schedule_on_date(tguser_id, date) -> list:
-    # query = f"/tg/{tguser_id}"
-    # res = requests.get(URL_SCHEDULE + query)
-    return [
-        "Русский🇷🇺",
-        "Литература📚",
-        "Алгебра🔢",
-        "Геометрия📐",
-        "Биология🌿",
-        "География🌐",
-    ]  # Затычка
+    query = f"/tg/{tguser_id}/{day_id_to_weekday[date.weekday()]}"
+    res = requests.get(URL_SCHEDULE + query)
+    ret = []
+    if res.status_code == 200:
+        for lesson in res.json()['data']:
+            ret.append(lesson['lesson']['name'])
+    return ret
 
 
 def get_all_users(tguser_id):

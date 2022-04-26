@@ -1,3 +1,4 @@
+import sqlalchemy
 from flask import Flask, make_response
 
 from API.api_modules.core import get_next_lesson
@@ -19,8 +20,9 @@ def main():
     app.register_blueprint(schedule_api.blueprint)
     app.register_blueprint(time_table_api.blueprint)
     app.register_blueprint(additional_methods_api.blueprint)
-    app.run(debug=True)
     init_weekday()
+    app.run(debug=True)
+
 
 
 @app.route('/')
@@ -40,9 +42,9 @@ def init_weekday():
         db_sess.add(wd)
         try:
             db_sess.commit()
-        except IndentationError as e:
+        except Exception as e:
             pass
-    return make_response('OK')
+    return 'OK'
 
 
 if __name__ == '__main__':

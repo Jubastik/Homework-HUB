@@ -55,9 +55,9 @@ async def generate_dates(tguser_id) -> list:
 
 
 async def get_homework_on_date(tguser_id, date) -> dict:
+    print(type(date), date)
     data = await get_homework(tguser_id, date)
     if "error" in data:
         return data
     res = {"text": "", "Photo": []}
-    
-    return ""
+    return res

@@ -4,10 +4,10 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from API.api_modules.core import id_processing, IDError
-from API.data import db_session
-from API.data.students import Student
-from API.data.time_tables import TimeTable
+from api_modules.core import id_processing, IDError
+from data import db_session
+from data.students import Student
+from data.time_tables import TimeTable
 
 blueprint = flask.Blueprint(
     'time_table',

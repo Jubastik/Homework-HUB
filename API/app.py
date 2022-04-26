@@ -1,12 +1,9 @@
 import sqlalchemy
 from flask import Flask, make_response
 
-from API.api_modules.core import get_next_lesson
-from API.data import db_session
-from API.data.CONSTANTS import day_id_to_weekday
-from API.data.classes import Class
-from API.data.students import Student
-from API.data.week_days import WeekDay
+from data import db_session
+from data.CONSTANTS import day_id_to_weekday
+from data.week_days import WeekDay
 from api_modules import user_api, homework_api, class_api, schedule_api, time_table_api, additional_methods_api
 
 app = Flask(__name__)

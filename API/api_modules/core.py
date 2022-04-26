@@ -5,12 +5,11 @@ from PIL import Image
 from random import randint
 from tkinter import Image
 
-from API.data import db_session
-from API.data.classes import Class
-from API.data.schedules import Schedule
-from API.data.students import Student
-from API.data.CONSTANTS import day_id_to_weekday
-from API.data.week_days import WeekDay
+from data import db_session
+from data.schedules import Schedule
+from data.students import Student
+from data.CONSTANTS import day_id_to_weekday
+from data.week_days import WeekDay
 
 TG = 'tg'
 

@@ -4,15 +4,15 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from API.api_modules.core import id_processing, IDError, get_next_lesson, day_to_weekday
-from API.data import db_session
-from API.data.classes import Class
-from API.data.homeworks import Homework
-from API.data.lessons import Lesson
-from API.data.schedules import Schedule
-from API.data.students import Student
-from API.data.tg_photos import TgPhoto
-from API.data.week_days import WeekDay
+from api_modules.core import id_processing, IDError, get_next_lesson, day_to_weekday
+from data import db_session
+from data.classes import Class
+from data.homeworks import Homework
+from data.lessons import Lesson
+from data.schedules import Schedule
+from data.students import Student
+from data.tg_photos import TgPhoto
+from data.week_days import WeekDay
 
 blueprint = flask.Blueprint(
     'homework',

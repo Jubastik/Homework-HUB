@@ -26,7 +26,7 @@ from BOT.tgbot.services.restapi.scripts import return_error, send_error, send_su
 # !1) Реализация используемых фильтрами is_student, is_admin, is_developer
 # 2) add_user
 
-# fmt: off
+
 async def is_student(tguser_id):
     # есть ли в базе
     query = f"/tg/{tguser_id}"
@@ -152,7 +152,6 @@ async def delete_user(tguser_id, force=False):
     res = requests.delete(URL_USER + query + "?force=" + str(force))
     if res.status_code == 200:
         return True
-    res = res.json()
     await send_error(tguser_id, res)
     return return_error(res)
 
@@ -207,7 +206,6 @@ async def add_homework(tguser_id, data, auto=False):
 
 async def get_homework(tguser_id, date):
     """Возвращает домашку на дату (дата в формате 25-04-2022)"""
-    # fmt: on
     query = f"/tg/{tguser_id}/{date.strftime('%d-%m-%Y')}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
@@ -215,10 +213,10 @@ async def get_homework(tguser_id, date):
         hw = {}
         for data in lessons:
             lesson = data["schedule"]["lesson"]["name"]
-            lesson_data = { 
-            "count": data["schedule"]["slot"]["number_of_lesson"], 
-            "text": data["text_homework"],
-            "photos": [photo_id["photo_id"] for photo_id in data["photo_tg_id"]]
+            lesson_data = {
+                "count": data["schedule"]["slot"]["number_of_lesson"],
+                "text": data["text_homework"],
+                "photos": [photo_id["photo_id"] for photo_id in data["photo_tg_id"]]
             }
             if lesson in hw:
                 hw[lesson].append(lesson_data)
@@ -227,7 +225,6 @@ async def get_homework(tguser_id, date):
         return [hw]
     await send_error(tguser_id, res)
     return return_error(res)
-    # fmt: off
 
 
 # def get_all_homework(tguser_id):
@@ -254,5 +251,12 @@ async def get_schedule_on_date(tguser_id, date) -> list:
     return ret
 
 
-def get_all_users(tguser_id):
-    pass
+def get_names_classmates(tguser_id):
+    query = f"/students/tg/{tguser_id}"
+    res = requests.get(URL_CLASS + query)
+    if res.status_code == 200:
+        students = res.json()['data']
+        students_names = [_["name"] for _ in students]
+        return students_names
+    send_error(tguser_id, res)
+    return return_error(res)

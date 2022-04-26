@@ -25,10 +25,9 @@ def convert_position(pos):
     return [((pos) // 8), (pos % 8)]
 
 
-async def generate_dates(tguser_id) -> list:
+def generate_dates(saturday_lesson) -> list:
     """Генерирует даты"""
     dates = []
-    saturday_lesson = await is_lessons_in_saturday(tguser_id)
     if isinstance(saturday_lesson, dict):
         return saturday_lesson
     # Вот так вот если is_lessons_in_saturday() возвращает True для 19.04
@@ -54,10 +53,15 @@ async def generate_dates(tguser_id) -> list:
     return dates
 
 
-async def get_homework_on_date(tguser_id, date) -> dict:
-    print(type(date), date)
-    data = await get_homework(tguser_id, date)
-    if "error" in data:
-        return data
-    res = {"text": "", "Photo": []}
+def convert_homework(data) -> dict:
+    res = []
+    for lesson, lesson_data in data.items():
+        # Какой-то алгоритм выбора домашки, которого нету ._.
+        lesson_data = lesson_data[0]
+        # Формирование текста и фото
+        info = {
+            "text": "\n".join([f"{lesson}:", lesson_data["text"]]),
+            "photos": lesson_data["photos"],
+        }
+        res.append(info)
     return res

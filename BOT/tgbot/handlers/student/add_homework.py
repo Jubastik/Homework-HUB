@@ -24,6 +24,7 @@ from BOT.tgbot.services.restapi.restapi import (
     get_subjects_by_time,
     add_homework,
     get_schedule_on_date,
+    is_lessons_in_saturday,
 )
 
 
@@ -53,7 +54,7 @@ async def query_fast_add(callback: CallbackQuery):
 async def query_fast_add(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
-    res = await generate_dates(callback.from_user.id)
+    res = await is_lessons_in_saturday(callback.from_user.id)
     if isinstance(res, dict):
         await FSMContext.reset_state()
         return
@@ -62,7 +63,7 @@ async def query_fast_add(callback: CallbackQuery):
     await StudentAddHomework.GetDate.set()
     await callback.message.answer(
         "Выберете дату, на которую хотите добавить домашнее задание:",
-        reply_markup=get_markup_dates(await generate_dates(callback.from_user.id)),
+        reply_markup=get_markup_dates(generate_dates(res)),
     )
 
 

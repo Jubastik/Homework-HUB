@@ -32,11 +32,11 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     db_sess = db_session.create_session()
     homeworks = (
         db_sess.query(Homework)
-        .join(Schedule)
-        .join(Class)
-        .join(Student)
-        .filter(Student.id == id, Homework.date == date)
-        .all()
+            .join(Schedule)
+            .join(Class)
+            .join(Student)
+            .filter(Student.id == id, Homework.date == date)
+            .all()
     )
     if len(homeworks) == 0:
         return make_response(
@@ -65,7 +65,7 @@ def create_homework():  # Создает дз на основе входящег
     if not data:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     elif not all(
-        key in data for key in ["creator_id", "creator_platform", "lesson", "date"]
+            key in data for key in ["creator_id", "creator_platform", "lesson", "date"]
     ):
         return make_response(
             jsonify(
@@ -111,14 +111,14 @@ def create_homework():  # Создает дз на основе входящег
     day_of_week = day_to_weekday(date)
     schedule_id = (
         db_sess.query(Schedule.id)
-        .join(WeekDay)
-        .join(Lesson)
-        .filter(
+            .join(WeekDay)
+            .join(Lesson)
+            .filter(
             WeekDay.name == day_of_week,
             Schedule.class_id == my_class,
             Lesson.name == data["lesson"],
         )
-        .first()
+            .first()
     )
     if schedule_id is None:
         return make_response(

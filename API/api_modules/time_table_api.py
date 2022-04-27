@@ -18,15 +18,14 @@ def create_time_table():  # Создает расписание на основ�
     if not data:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     elif not all(
-        key in request.json
-        for key in [
-            "creator_id",
-            "creator_platform",
-            "lesson_number",
-            "begin_time",
-            "end_time",
-        ]
-    ):
+            key in request.json
+            for key in [
+                "creator_id",
+                "creator_platform",
+                "lesson_number",
+                "begin_time",
+                "end_time",
+            ]):
         return make_response(
             jsonify(
                 {

@@ -32,17 +32,17 @@ def current_lessons(platform, user_id):
     print(datetime.datetime.today().weekday())
     now_lesson = (
         db_sess.query(Schedule)
-        .join(WeekDay)
-        .join(TimeTable)
-        .join(Class)
-        .join(Student)
-        .filter(
+            .join(WeekDay)
+            .join(TimeTable)
+            .join(Class)
+            .join(Student)
+            .filter(
             Student.id == id,
             WeekDay.name == day,
             TimeTable.begin_time >= past_time,
             TimeTable.end_time < now_time,
         )
-        .all()
+            .all()
     )
     if len(now_lesson) == 0:
         return make_response(

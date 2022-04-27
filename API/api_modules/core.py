@@ -50,12 +50,12 @@ def get_next_lesson(class_id, lesson):
         db_sess = db_session.create_session()
         schedules = (
             db_sess.query(Schedule)
-            .join(WeekDay)
-            .filter(
+                .join(WeekDay)
+                .filter(
                 Schedule.class_id == class_id,
                 WeekDay.name == day_id_to_weekday[weekday],
             )
-            .all()
+                .all()
         )
         for schedule in schedules:
             if schedule.lesson.name == lesson:

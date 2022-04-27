@@ -1,17 +1,14 @@
 import datetime
-import io
-import base64
-from PIL import Image
 from random import randint
-from tkinter import Image
 
 from data import db_session
 from data.schedules import Schedule
 from data.students import Student
-from data.CONSTANTS import day_id_to_weekday
+from CONSTANTS import day_id_to_weekday
 from data.week_days import WeekDay
 
 TG = 'tg'
+NO = 'no'
 
 
 class IDError(Exception):
@@ -22,7 +19,7 @@ def id_processing(platform, id):
     db_sess = db_session.create_session()
     if platform == TG:
         id = db_sess.query(Student.id).filter(Student.tg_id == id).first()
-    elif platform == 'no':
+    elif platform == NO:
         id = db_sess.query(Student.id).filter(Student.id == id).first()
     else:
         raise IDError('Платформа не поддерживается')
@@ -36,6 +33,9 @@ def generate_token():
 
 
 def get_next_lesson(class_id, lesson):
+    """
+    Получение дня недели, в котором присутствует необходимый нам урок
+    """
     now_date = datetime.date.today()
     weekday = datetime.datetime.today().weekday()
     count = 0
@@ -58,18 +58,8 @@ def get_next_lesson(class_id, lesson):
 
 
 def day_to_weekday(day):
+    """
+    Конвертация дня недели в название дня недели
+    """
     day_id = day.weekday()
     return day_id_to_weekday[day_id]
-
-
-def decode_image(im_b64):
-    img_bytes = base64.b64decode(im_b64.encode('utf-8'))
-    img = Image.open(io.BytesIO(img_bytes))
-    return img
-
-
-def encode_image(image_path):
-    with open(image_path, "rb") as f:
-        im_bytes = f.read()
-    im_b64 = base64.b64encode(im_bytes).decode("utf8")
-    return im_b64

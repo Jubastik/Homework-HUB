@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import id_processing, IDError
+from api_modules.core import id_processing, IDError, TG
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -13,11 +13,6 @@ blueprint = flask.Blueprint(
     template_folder='templates'
 )
 
-
-# @blueprint.route('/api/user/check/<platform>/<int:user_id>', methods=['GET'])
-# def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
-#
-#     return jsonify({'data': data})
 
 @blueprint.route('/api/user/<platform>/<int:user_id>', methods=['GET'])
 def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
@@ -35,7 +30,6 @@ def get_user(platform, user_id):  # Возвращает базовую инфо
 
 @blueprint.route('/api/user', methods=['POST'])
 def create_user():  # Создает пользователя на основе входящего Json
-    # получить тело с tg_id
     if not request.json:
         return make_response(jsonify({'error': 'Пустой json'}), 400)
     elif not all(key in request.json for key in
@@ -50,7 +44,7 @@ def create_user():  # Создает пользователя на основе 
             class_id = class_id[0]
         else:
             return make_response(jsonify({'error': 'Нет такого класса'}), 404)
-    if data['platform'] == "tg":
+    if data['platform'] == TG:
         student = Student(
             tg_id=data['id'],
             name=data['name'],
@@ -64,17 +58,6 @@ def create_user():  # Создает пользователя на основе 
     except sqlalchemy.exc.IntegrityError:
         return make_response(jsonify({'error': 'Такой пользователь уже существует'}), 422)
     return make_response(jsonify({"success": "Пользователь успешно создан"}), 201)
-
-
-# {
-#     platform:
-#     id:
-#     name:
-# }
-
-@blueprint.route('/api/user/<platform>/<int:user_id>', methods=['PUT'])
-def full_edit_user(platform, user_id):  # Полное Изменение пользователя на основе входящего Json
-    return "full edit_user"
 
 
 @blueprint.route('/api/user/<platform>/<int:user_id>', methods=['PATCH'])

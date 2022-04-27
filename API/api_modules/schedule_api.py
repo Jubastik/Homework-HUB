@@ -101,18 +101,3 @@ def create_schedule():  # Создает расписание на основе 
     except sqlalchemy.exc.IntegrityError:
         return make_response(jsonify({'error': 'Расписание уже существует'}), 422)
     return make_response(jsonify({'success': f'Расписание успешно создано.'}), 201)
-
-
-@blueprint.route('/api/schedule/<int:tg_id>/<int:day>', methods=['PUT'])
-def full_edit_schedule(tg_id, day):  # Полное Изменение расписания на основе входящего Json
-    return "full edit_schedule"
-
-
-@blueprint.route('/api/schedule/<int:tg_id>/<int:day>', methods=['PATCH'])
-def edit_schedule(tg_id, day):  # Изменение расписания на основе входящего Json
-    return "edit_schedule"
-
-
-@blueprint.route('/api/schedule/<int:tg_id>/<int:day>', methods=['DELETE'])
-def del_schedule(tg_id, day):  # Удаление расписание
-    return "del_schedule"

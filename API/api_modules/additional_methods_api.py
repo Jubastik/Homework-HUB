@@ -1,8 +1,7 @@
 import datetime
 
 import flask
-import sqlalchemy
-from flask import request, jsonify, make_response
+from flask import jsonify, make_response
 
 from api_modules.core import id_processing, IDError
 from data import db_session

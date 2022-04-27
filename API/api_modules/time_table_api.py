@@ -40,7 +40,7 @@ def create_time_table():  # Создает расписание на основ�
     else:
         class_id = class_id[0]
     if len(data['begin_time'].split(':')) != 2 or len(data['end_time'].split(':')) != 2:
-        return make_response(jsonify({'error': 'Неверный формат времени'}), 422)
+        return make_response(jsonify({'error': 'Формат времени должен быть час:минуты'}), 422)
     b_h = int(data['begin_time'].split(':')[0])
     b_m = int(data['begin_time'].split(':')[1])
     e_h = int(data['end_time'].split(':')[0])

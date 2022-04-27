@@ -1,8 +1,7 @@
-import sqlalchemy
-from flask import Flask, make_response
+from flask import Flask
 
 from data import db_session
-from data.CONSTANTS import day_id_to_weekday
+from API.CONSTANTS import day_id_to_weekday
 from data.week_days import WeekDay
 from api_modules import user_api, homework_api, class_api, schedule_api, time_table_api, additional_methods_api
 
@@ -10,6 +9,7 @@ app = Flask(__name__)
 
 
 def main():
+    """Регистрация модулей и запуск приложения"""
     db_session.global_init("db/API.db")
     app.register_blueprint(user_api.blueprint)
     app.register_blueprint(homework_api.blueprint)
@@ -21,18 +21,13 @@ def main():
     app.run(debug=True)
 
 
-
 @app.route('/')
 def hello_world():
     return 'Hello World!'
 
 
-# @app.route('/test')
-# def test():
-#     print(get_next_lesson('27', "Русский"))
-#     return 'Hello World!'
-
 def init_weekday():
+    """Инициализация дней недели в бд"""
     db_sess = db_session.create_session()
     for weekday in day_id_to_weekday.values():
         wd = WeekDay(name=weekday)

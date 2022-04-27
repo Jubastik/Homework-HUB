@@ -63,17 +63,12 @@ def create_class():  # Создает класс на основе входящ�
     )
 
     db_sess.add(my_class)
-
+    # Назначения ученика админом нового класса
     student = db_sess.query(Student).filter(Student.id == creator_id).first()
     student.is_admin = True
     student.class_id = my_class.id
     db_sess.commit()
     return make_response(jsonify({'success': f'Класс создан. id:{my_class.id}'}), 201)
-
-
-@blueprint.route('/api/class/<platform>/<int:user_id>', methods=['PUT'])
-def full_edit_class(tg_id, day):  # Полное Изменение класс на основе входящего Json (изменение токена, vk_id)
-    return "full_edit_class"
 
 
 @blueprint.route('/api/class/<platform>/<int:user_id>', methods=['PATCH'])
@@ -104,11 +99,6 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
             return make_response(jsonify({'error': f'Неизвестный параметр {key}'}), 422)
     try:
         db_sess.commit()
-    except sqlalchemy.exc.IntegrityError:
+    except sqlalchemy.exc.IntegrityError:  # Если класс с таким токеном уже существует
         return make_response(jsonify({'error': 'Попробуйте снова'}), 500)
     return make_response(jsonify({'success': f'Класс изменен'}), 200)
-
-
-@blueprint.route('/api/class/<platform>/<int:user_id>', methods=['DELETE'])
-def del_class(platform, user_id):  # Удаление класса
-    return "del_class"

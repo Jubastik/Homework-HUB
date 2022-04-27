@@ -21,20 +21,15 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/api/homework/<int:tg_id>', methods=['GET'])
-def get_homework(tg_id):  # Возвращает дз на неделю
-    return "get_homework"
-
-
 @blueprint.route('/api/homework/<platform>/<int:user_id>/<date>', methods=['GET'])
 def get_homework_date(platform, user_id, date):  # Возвращает дз на дату
     try:
         id = id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({'error': str(e)}), 404)
-    day = date.split('-')[0]
-    month = date.split('-')[1]
-    year = date.split('-')[2]
+    if len(date.split('-')) != 3:
+        return make_response(jsonify({'error': 'Формат даты должен быть день-месяц-год'}), 422)
+    day, month, year = date.split('-')
     date = datetime.date(int(year), int(month), int(day))
     db_sess = db_session.create_session()
     homeworks = db_sess.query(Homework).join(Schedule).join(Class).join(Student).filter(Student.id == id,
@@ -43,7 +38,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
         return make_response(jsonify({'error': 'Нет домашнего задания на эту дату'}), 404)
     return jsonify({'data': [homework.to_dict(
         only=('text_homework', 'photo_tg_id.photo_id', 'schedule.lesson.name', 'schedule.slot.number_of_lesson')) for
-                             homework in homeworks]})
+        homework in homeworks]})
 
 
 @blueprint.route('/api/homework', methods=['POST'])
@@ -77,9 +72,9 @@ def create_homework():  # Создает дз на основе входящег
         if date is None:
             return make_response(jsonify({'error': f'Авто дата не нашла урок. {data["lesson"]}'}), 422)
     else:
-        day = data['date'].split('-')[0]
-        month = data['date'].split('-')[1]
-        year = data['date'].split('-')[2]
+        if len(data['date'].split('-')) != 3:
+            return make_response(jsonify({'error': 'Формат даты должен быть день-месяц-год'}), 422)
+        day, month, year = data['date'].split('-')
         date = datetime.date(int(year), int(month), int(day))
     if date < datetime.datetime.now().date():
         return make_response(jsonify({'error': 'Дата уже прошла'}), 422)
@@ -94,31 +89,14 @@ def create_homework():  # Создает дз на основе входящег
         schedule_id = schedule_id[0]
     if 'text' in data:
         homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id, text_homework=data['text'])
-    else:
-        homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id)
+    homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id)
     db_sess.add(homework)
     db_sess.flush()
     if 'photos_tg_id' in data:
-        print(data['photos_tg_id'])
         for photo_tg_id in data['photos_tg_id']:
             tg_p = TgPhoto(homework_id=homework.id, photo_id=photo_tg_id)
             db_sess.add(tg_p)
     if 'photo' in data:
-        return make_response(jsonify({'error': 'доработка"'}), 422)
+        return make_response(jsonify({'error': 'Отправка фото пока что недоступна"'}), 422)
     db_sess.commit()
     return make_response(jsonify({'success': f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 201)
-
-
-@blueprint.route('/api/homework/<int:tg_id>/<int:date>', methods=['PUT'])
-def full_edit_homework(tg_id, date):  # Полное Изменение дз на основе входящего Json
-    return "full edit_homework"
-
-
-@blueprint.route('/api/homework/<int:tg_id>/<int:date>', methods=['PATCH'])
-def edit_homework(tg_id, date):  # Изменение дз на основе входящего Json
-    return "edit_homework"
-
-
-@blueprint.route('/api/homework/<int:tg_id>/<int:date>', methods=['DELETE'])
-def del_homework(tg_id, date):  # Удаление дз
-    return "del_homework"

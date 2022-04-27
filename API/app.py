@@ -1,7 +1,7 @@
 from flask import Flask
 
 from data import db_session
-from API.CONSTANTS import day_id_to_weekday
+from CONSTANTS import day_id_to_weekday
 from data.week_days import WeekDay
 from api_modules import (
     user_api,

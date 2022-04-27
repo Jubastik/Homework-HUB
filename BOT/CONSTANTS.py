@@ -13,7 +13,7 @@ SUBJECTS = [
     "Физика⚡️",
     "Информатика📡",
 ]
-SERVER = "http://165.22.75.179:8080"
+SERVER = "http://127.0.0.1:5000"
 URL_USER = SERVER + '/api/user'
 URL_CLASS = SERVER + '/api/class'
 URL_SCHEDULE = SERVER + '/api/schedule'

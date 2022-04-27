@@ -10,24 +10,28 @@ from BOT.tgbot.FSM.states import (
 )
 from BOT.tgbot.filters.student_filter import StudentFilter
 from BOT.tgbot.filters.admin_filter import AdminFilter
-from BOT.tgbot.services.scripts import generate_dates
 from BOT.tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     markup_profile,
     markup_add_homework,
     markup_get_homework,
 )
-from BOT.tgbot.services.restapi.restapi import is_admin
+from BOT.tgbot.services.restapi.restapi import is_admin, get_student_info
 from BOT.tgbot.services.sub_classes import RestErorr
+from BOT.tgbot.services.scripts import convert_user_info
 
 
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="profile")
 async def query_profile(callback: CallbackQuery):
     await callback.answer()
+    res = await get_student_info(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        return
+    txt = convert_user_info(res)
     await StudentProfile.Profile.set()
     await callback.message.answer(
-        "Профиль: ...\nINFO ABOUT USER", reply_markup=markup_profile
-    )  # In work
+        txt, reply_markup=markup_profile
+    )
 
 
 @dp.callback_query_handler(
@@ -60,10 +64,6 @@ async def query_add_homework(callback: CallbackQuery):
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="get_homework")
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()
-    FSMContext = dp.current_state(user=callback.from_user.id)
-    async with FSMContext.proxy() as FSMdata:
-        # Установка дефолтных значений
-        pass
     await StudentGetHomework.GetHomework.set()
     await callback.message.answer(
         "Меню выбора получения домашки", reply_markup=markup_get_homework

@@ -1,14 +1,10 @@
 from aiogram.types import Message, CallbackQuery, ContentType
-from aiogram.dispatcher import FSMContext
 import datetime
 
 from BOT.bot import dp
 from BOT.tgbot.FSM.states import (
     StudentAddHomework,
-    StudentProfile,
     StudentMenu,
-    StudentGetHomework,
-    StudentClass,
 )
 from BOT.tgbot.filters.student_filter import StudentFilter
 from BOT.tgbot.filters.admin_filter import AdminFilter

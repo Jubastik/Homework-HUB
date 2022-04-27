@@ -1,3 +1,4 @@
+from unicodedata import name
 from BOT.tgbot.services.restapi.restapi import is_lessons_in_saturday, get_homework
 import datetime
 from BOT.CONSTANTS import WEEKDAYS
@@ -59,9 +60,23 @@ def convert_homework(data) -> dict:
         # Какой-то алгоритм выбора домашки, которого нету ._.
         lesson_data = lesson_data[0]
         # Формирование текста и фото
+        txt = lesson_data["text"] if lesson_data["text"] is not None else ""
         info = {
-            "text": "\n".join([f"{lesson}:", lesson_data["text"]]),
+            "text": "\n".join([f"{lesson}:", txt]),
             "photos": lesson_data["photos"],
         }
         res.append(info)
+    return res
+
+
+def convert_user_info(data) -> str:
+    res = "\n".join(
+        [
+            "Профиль:",
+            f"Имя: @{data['name']}",
+            "Админ: ✅" if data["is_admin"] else "Админ: ❌",
+            f"Токен класса: {data['class_token']}",
+            f"Админы класса: {' '.join(['@' + i for i in data['admins']])}",
+        ]
+    )
     return res

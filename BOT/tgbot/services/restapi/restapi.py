@@ -251,7 +251,7 @@ async def get_schedule_on_date(tguser_id, date) -> list:
     return ret
 
 
-def get_names_classmates(tguser_id):
+async def get_names_classmates(tguser_id):
     query = f"/students/tg/{tguser_id}"
     res = requests.get(URL_CLASS + query)
     if res.status_code == 200:
@@ -260,11 +260,11 @@ def get_names_classmates(tguser_id):
         for student in students:
             students_names[student["tg_id"]] = student["name"]
         return students_names
-    send_error(tguser_id, res)
+    await send_error(tguser_id, res)
     return return_error(res)
 
 
-def get_student_info(tguser_id):
+async def get_student_info(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.get(URL_USER + query)
     if res.status_code == 200:
@@ -276,14 +276,14 @@ def get_student_info(tguser_id):
             'admins': student['class_admins']
         }
         return students_info
-    send_error(tguser_id, res)
+    await send_error(tguser_id, res)
     return return_error(res)
 
 
-def change_class_token(tguser_id):
+async def change_class_token(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.patch(URL_CLASS + query, json={'class_token': 'auto'})
     if res.status_code == 200:
         return True
-    send_error(tguser_id, res)
+    await send_error(tguser_id, res)
     return return_error(res)

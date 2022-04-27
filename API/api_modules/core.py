@@ -7,8 +7,8 @@ from data.students import Student
 from CONSTANTS import day_id_to_weekday
 from data.week_days import WeekDay
 
-TG = 'tg'
-NO = 'no'
+TG = "tg"
+NO = "no"
 
 
 class IDError(Exception):
@@ -22,9 +22,9 @@ def id_processing(platform, id):
     elif platform == NO:
         id = db_sess.query(Student.id).filter(Student.id == id).first()
     else:
-        raise IDError('Платформа не поддерживается')
+        raise IDError("Платформа не поддерживается")
     if id is None:
-        raise IDError('Ошибка в ID')
+        raise IDError("Ошибка в ID")
     return id[0]
 
 
@@ -48,9 +48,15 @@ def get_next_lesson(class_id, lesson):
             weekday = 0
 
         db_sess = db_session.create_session()
-        schedules = db_sess.query(Schedule).join(WeekDay).filter(Schedule.class_id == class_id,
-                                                                 WeekDay.name == day_id_to_weekday[
-                                                                     weekday]).all()
+        schedules = (
+            db_sess.query(Schedule)
+            .join(WeekDay)
+            .filter(
+                Schedule.class_id == class_id,
+                WeekDay.name == day_id_to_weekday[weekday],
+            )
+            .all()
+        )
         for schedule in schedules:
             if schedule.lesson.name == lesson:
                 return now_date + datetime.timedelta(days=count)

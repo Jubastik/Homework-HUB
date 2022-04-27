@@ -3,7 +3,14 @@ from flask import Flask
 from data import db_session
 from API.CONSTANTS import day_id_to_weekday
 from data.week_days import WeekDay
-from api_modules import user_api, homework_api, class_api, schedule_api, time_table_api, additional_methods_api
+from api_modules import (
+    user_api,
+    homework_api,
+    class_api,
+    schedule_api,
+    time_table_api,
+    additional_methods_api,
+)
 
 app = Flask(__name__)
 
@@ -21,9 +28,9 @@ def main():
     app.run(debug=True)
 
 
-@app.route('/')
+@app.route("/")
 def hello_world():
-    return 'Hello World!'
+    return "Hello World!"
 
 
 def init_weekday():
@@ -36,8 +43,8 @@ def init_weekday():
             db_sess.commit()
         except Exception as e:
             pass
-    return 'OK'
+    return "OK"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

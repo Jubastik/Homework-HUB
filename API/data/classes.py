@@ -6,7 +6,7 @@ from .db_session import SqlAlchemyBase
 
 
 class Class(SqlAlchemyBase, SerializerMixin):
-    __tablename__ = 'classes'
+    __tablename__ = "classes"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String)
     class_token = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=False)
@@ -15,4 +15,4 @@ class Class(SqlAlchemyBase, SerializerMixin):
     schedules = orm.relationship("Schedule", back_populates="my_class")
 
     def __repr__(self):
-        return f'<Class> {self.id} {self.name} {self.vk_id}'
+        return f"<Class> {self.id} {self.name} {self.vk_id}"

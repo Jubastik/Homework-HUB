@@ -11,78 +11,122 @@ from data.students import Student
 from data.time_tables import TimeTable
 from data.week_days import WeekDay
 
-blueprint = flask.Blueprint(
-    'schedule',
-    __name__,
-    template_folder='templates'
-)
+blueprint = flask.Blueprint("schedule", __name__, template_folder="templates")
 
 
-@blueprint.route('/api/schedule/<platform>/<int:user_id>', methods=['GET'])
+@blueprint.route("/api/schedule/<platform>/<int:user_id>", methods=["GET"])
 def get_schedule(platform, user_id):  # Возвращает все расписание
     try:
         id = id_processing(platform, user_id)
     except IDError as e:
-        return make_response(jsonify({'error': str(e)}), 404)
+        return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
-    schedules = db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
-    return jsonify({'data': [schedule.to_dict(only=('day.name', 'lesson.name', 'slot.number_of_lesson')) for
-                             schedule in schedules]})
+    schedules = (
+        db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
+    )
+    return jsonify(
+        {
+            "data": [
+                schedule.to_dict(
+                    only=("day.name", "lesson.name", "slot.number_of_lesson")
+                )
+                for schedule in schedules
+            ]
+        }
+    )
 
 
-@blueprint.route('/api/schedule/<platform>/<int:user_id>/<day>', methods=['GET'])
+@blueprint.route("/api/schedule/<platform>/<int:user_id>/<day>", methods=["GET"])
 def get_schedule_day(platform, user_id, day):  # Возвращает расписание на день
     try:
         id = id_processing(platform, user_id)
     except IDError as e:
-        return make_response(jsonify({'error': str(e)}), 404)
+        return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
-    schedules = db_sess.query(Schedule).join(WeekDay).join(Class).join(Student).filter(Student.id == id,
-                                                                                       WeekDay.name == day.lower()).all()
+    schedules = (
+        db_sess.query(Schedule)
+        .join(WeekDay)
+        .join(Class)
+        .join(Student)
+        .filter(Student.id == id, WeekDay.name == day.lower())
+        .all()
+    )
     if len(schedules) == 0:
-        return make_response(jsonify({'error': 'Расписание на этот день не существует'}), 404)
-    return jsonify({'data': [schedule.to_dict(only=('lesson.name', 'slot.number_of_lesson')) for
-                             schedule in schedules]})
+        return make_response(
+            jsonify({"error": "Расписание на этот день не существует"}), 404
+        )
+    return jsonify(
+        {
+            "data": [
+                schedule.to_dict(only=("lesson.name", "slot.number_of_lesson"))
+                for schedule in schedules
+            ]
+        }
+    )
 
 
-@blueprint.route('/api/schedule', methods=['POST'])
+@blueprint.route("/api/schedule", methods=["POST"])
 def create_schedule():  # Создает расписание на основе входящего Json
     data = request.json
     if not data:
-        return make_response(jsonify({'error': 'Пустой json'}), 400)
+        return make_response(jsonify({"error": "Пустой json"}), 400)
     elif not all(
-            key in request.json for key in
-            ["creator_id", "creator_platform", "day", "lesson_number", "lesson"]):
-        return make_response(jsonify(
-            {
-                'error': 'Отсутствуют поля "creator_id", "creator_platform", "day", "lesson_number", "lesson"'}),
-            422)
+        key in request.json
+        for key in ["creator_id", "creator_platform", "day", "lesson_number", "lesson"]
+    ):
+        return make_response(
+            jsonify(
+                {
+                    "error": 'Отсутствуют поля "creator_id", "creator_platform", "day", "lesson_number", "lesson"'
+                }
+            ),
+            422,
+        )
     try:
-        creator_id = id_processing(data['creator_platform'], data['creator_id'])
+        creator_id = id_processing(data["creator_platform"], data["creator_id"])
     except IDError as e:
-        return make_response(jsonify({'error': str(e)}), 404)
+        return make_response(jsonify({"error": str(e)}), 404)
 
     db_sess = db_session.create_session()
     class_id = db_sess.query(Student.class_id).filter(Student.id == creator_id).first()
     if class_id is None:
-        return make_response(jsonify({'error': f'Пользователь не состоит в классе'}), 422)
+        return make_response(
+            jsonify({"error": f"Пользователь не состоит в классе"}), 422
+        )
     else:
         class_id = class_id[0]
-    day_id = db_sess.query(WeekDay.id).filter(WeekDay.name == str(data['day']).lower()).first()
-    lessons_id = db_sess.query(Lesson.id).filter(Lesson.name == data['lesson']).first()
-    slot_id = db_sess.query(TimeTable.id).filter(TimeTable.class_id == class_id,
-                                                 TimeTable.number_of_lesson == data['lesson_number']).first()
+    day_id = (
+        db_sess.query(WeekDay.id)
+        .filter(WeekDay.name == str(data["day"]).lower())
+        .first()
+    )
+    lessons_id = db_sess.query(Lesson.id).filter(Lesson.name == data["lesson"]).first()
+    slot_id = (
+        db_sess.query(TimeTable.id)
+        .filter(
+            TimeTable.class_id == class_id,
+            TimeTable.number_of_lesson == data["lesson_number"],
+        )
+        .first()
+    )
 
     if slot_id is None:
-        return make_response(jsonify({'error': f'У класса отсутствует временной слот {data["lesson_number"]}'}), 422)
+        return make_response(
+            jsonify(
+                {
+                    "error": f'У класса отсутствует временной слот {data["lesson_number"]}'
+                }
+            ),
+            422,
+        )
     else:
         slot_id = slot_id[0]
     if day_id is None:
-        return make_response(jsonify({'error': f'Неизвестный день {data["day"]}'}), 422)
+        return make_response(jsonify({"error": f'Неизвестный день {data["day"]}'}), 422)
     else:
         day_id = day_id[0]
     if lessons_id is None:
-        lesson = Lesson(name=data['lesson'])
+        lesson = Lesson(name=data["lesson"])
         db_sess.add(lesson)
         db_sess.flush()
         lessons_id = lesson.id
@@ -99,5 +143,5 @@ def create_schedule():  # Создает расписание на основе 
     try:
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
-        return make_response(jsonify({'error': 'Расписание уже существует'}), 422)
-    return make_response(jsonify({'success': f'Расписание успешно создано.'}), 201)
+        return make_response(jsonify({"error": "Расписание уже существует"}), 422)
+    return make_response(jsonify({"success": f"Расписание успешно создано."}), 201)

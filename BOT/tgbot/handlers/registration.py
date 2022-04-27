@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery, User
 # | start | start | start | start | start | start | start | start |
 from BOT.CONSTANTS import SUBJECTS
 from BOT.bot import dp, bot
-from BOT.tgbot.FSM.states import RegistrationStates
+from BOT.tgbot.FSM.states import RegistrationStates, StudentMenu
 from BOT.tgbot.filters import RegistrationFilter
 from BOT.tgbot.keyboards.inline.markup import (
     markup_yes_or_no,
@@ -13,8 +13,9 @@ from BOT.tgbot.keyboards.inline.markup import (
     markup_check_subjects2,
     get_markup_shedule,
     markup_shedule2,
+    get_markup_student_menu,
 )
-from BOT.tgbot.services.restapi.restapi import register_user, register_class
+from BOT.tgbot.services.restapi.restapi import register_user, register_class, is_admin
 from BOT.tgbot.services.scripts import convert_time, time_is_correct, convert_position
 from BOT.tgbot.services.sub_classes import RestErorr, SheduleData
 
@@ -26,7 +27,7 @@ async def hanldler_start(msg: Message):
     if "class_token" in msg.text:
         classid = msg.text.split("class_token")[-1]
         userid = msg.from_user.id
-        username = msg.from_user.full_name
+        username = User.get_current()["username"]
         FSMContext = dp.current_state(user=userid)
         res = await register_user(userid, classid, username)
         if isinstance(res, RestErorr):
@@ -35,8 +36,15 @@ async def hanldler_start(msg: Message):
         await msg.answer(
             "Регистрация по ссылке успешна"
         )  # Тут надо сделать отправку менюшки студента
-        await msg.answer("*Менюшка студента*")
+        res = await is_admin(msg.from_user.id)
+        if isinstance(res, RestErorr):
+            return
         await FSMContext.reset_state()
+        await StudentMenu.Menu.set()
+        await msg.answer(
+            "Меню",
+            reply_markup=get_markup_student_menu(res),
+        )
     else:
         FSMContext = dp.current_state(user=msg.from_user.id)
         await FSMContext.reset_state()
@@ -82,15 +90,21 @@ async def query_join_class(callback: CallbackQuery):
 async def handler_get_id(msg: Message):
     classid = msg.text
     userid = msg.from_user.id
-    username = msg.from_user.full_name
+    username = User.get_current()["username"]
     FSMContext = dp.current_state(user=userid)
     res = await register_user(userid, classid, username)
     if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
-    await msg.answer("по ссылке ")  # Тут надо сделать отправку менюшки студента
-    await msg.answer("*Менюшка студента*")
     await FSMContext.reset_state()
+    await StudentMenu.Menu.set()
+    res = await is_admin(msg.from_user.id)
+    if isinstance(res, RestErorr):
+        return
+    await msg.answer(
+        "Меню",
+        reply_markup=get_markup_student_menu(res),
+    )
 
 
 # | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime | CheckStartTime |
@@ -266,7 +280,12 @@ async def query_check_subjects_undo(callback: CallbackQuery):
         FSMdata["shedule_msg_id"] = msg.message_id
         await RegistrationStates.AddShedule.set()
         await callback.message.answer(
-            "\n".join(["Давай заполним расписание", "*инструкция*"]),
+            "\n".join(
+                [
+                    "Давай заполним расписание",
+                    "P.s. Ожидайте, пока на кнопках будут часики и только потом нажимайте следующую кнопку",
+                ]
+            ),
             reply_markup=get_markup_shedule([*SUBJECTS, *FSMdata["extra_subjects"]]),
         )
 
@@ -352,7 +371,14 @@ async def query_shedule_done(callback: CallbackQuery):
             return
         await FSMContext.reset_state()
         await callback.message.answer("Регистрация успешна")
-        await callback.message.answer("*Менюшка студента (is_admin=True)*")
+        res = await is_admin(callback.from_user.id)
+        if isinstance(res, RestErorr):
+            return
+        await StudentMenu.Menu.set()
+        await callback.message.answer(
+            "Меню",
+            reply_markup=get_markup_student_menu(res),
+        )
 
 
 @dp.callback_query_handler(

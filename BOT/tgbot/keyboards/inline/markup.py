@@ -6,6 +6,7 @@ from BOT.tgbot.keyboards.inline.callback_data import (
     ArrowsData,
     CheckHomework,
     DatesData,
+    StudentsData,
 )
 
 
@@ -165,4 +166,32 @@ markup_get_homework = InlineKeyboardMarkup(
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
 )
-markup_menu = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Вернуться в меню", callback_data="menu")]])
+markup_menu = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Вернуться в меню", callback_data="menu")]
+    ]
+)
+
+
+markup_class_panel = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Добавить администратора", callback_data="add_admin"
+            )
+        ],
+        [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
+        [InlineKeyboardButton(text="Кикнуть одноклассника", callback_data="kick")],
+        [InlineKeyboardButton(text="Меню", callback_data="menu")],
+    ]
+)
+
+
+def get_markup_classmates(data):
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    for key in data.keys():
+        keyboard.insert(
+            InlineKeyboardButton(text=data[key], callback_data=StudentsData.new(key))
+        )
+    keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
+    return keyboard

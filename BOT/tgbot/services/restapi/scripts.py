@@ -13,7 +13,7 @@ def return_error(response):
 
 
 async def send_error(tguser_id, response, menu=True):
-    error_txt = f"Ошибка: {response.json()['error']}"
+    error_txt = f"Ошибка: {response.json()['error']} /start"
     if menu:
         await bot.send_message(tguser_id, error_txt, reply_markup=markup_menu)
     else:

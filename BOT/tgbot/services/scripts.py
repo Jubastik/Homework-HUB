@@ -80,3 +80,14 @@ def convert_user_info(data) -> str:
         ]
     )
     return res
+
+
+def convert_users(data):
+    txt = "\n".join(
+        [
+            "Панель управления классом⭐️",
+            "Список одноклассников:",
+            *["@" + data[i] for i in data.keys()],
+        ]
+    )
+    return txt

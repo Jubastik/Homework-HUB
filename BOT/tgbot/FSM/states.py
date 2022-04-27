@@ -45,6 +45,8 @@ class StudentMenu(StatesGroup):
 class StudentClass(StatesGroup):
     # Ветка панели управления классом
     ClassPanel = State()
+    AddAdmin = State()
+    KickClassmate = State()
 
 
 class StudentGetHomework(StatesGroup):

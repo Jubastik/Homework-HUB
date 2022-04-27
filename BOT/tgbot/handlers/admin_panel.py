@@ -1,34 +1,111 @@
-from aiogram.types import Message, CallbackQuery, ContentType
-from aiogram.dispatcher import FSMContext
-import datetime
+from aiogram.types import CallbackQuery
 
 from BOT.bot import dp
-from BOT.tgbot.FSM.states import StudentAddHomework, StudentProfile, StudentMenu, StudentGetHomework, StudentClass
+from BOT.tgbot.FSM.states import (
+    StudentClass,
+)
 from BOT.tgbot.filters.student_filter import StudentFilter
 from BOT.tgbot.filters.admin_filter import AdminFilter
-from BOT.tgbot.services.scripts import generate_dates
-from BOT.tgbot.keyboards.inline.markup import (
-    get_markup_student_menu,
-    markup_profile,
-    markup_add_homework,
-    markup_check_homework,
-    markup_done,
-    get_markup_dates,
-    get_subjects_markup,
-    markup_are_u_sure,
-    markup_get_homework,
-)
+from BOT.tgbot.keyboards.inline.markup import get_markup_classmates, markup_class_panel
 from BOT.tgbot.services.restapi.restapi import (
-    get_subjects_by_time,
-    add_homework,
-    get_schedule_on_date,
+    get_names_classmates,
     delete_user,
+    assign_admin,
+    change_class_token,
 )
+from BOT.tgbot.services.sub_classes import RestErorr
+from BOT.tgbot.services.scripts import convert_users
 
 
-@dp.message_handler(AdminFilter(), commands=["admin_panel"], state="*")
-async def admin_panel(msg: Message):
-    await msg.answer("Админка")
+async def send_panel(callback: CallbackQuery):
+    res = await get_names_classmates(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        FSMContext = dp.current_state(user=callback.from_user.id)
+        await FSMContext.reset_state()
+        return
+    txt = convert_users(res)
+    await callback.message.answer(
+        txt, reply_markup=markup_class_panel
+    )
+
+
+
+@dp.callback_query_handler(
+    StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="add_admin"
+)
+async def query_add_admin(callback: CallbackQuery):
+    await callback.answer()
+    await StudentClass.AddAdmin.set()
+    res = await get_names_classmates(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        FSMContext = dp.current_state(user=callback.from_user.id)
+        await FSMContext.reset_state()
+        return
+    await callback.message.answer(
+        "Выберете одноклассника:", reply_markup=get_markup_classmates(res)
+    )
+
+
+@dp.callback_query_handler(
+    StudentFilter(),
+    AdminFilter(),
+    state=StudentClass.AddAdmin,
+    text_contains="student_name",
+)
+async def query_add_admin(callback: CallbackQuery):
+    await callback.answer()
+    data = callback.data.split(":")[1]
+    res = await assign_admin(data)
+    if isinstance(res, RestErorr):
+        FSMContext = dp.current_state(user=callback.from_user.id)
+        await FSMContext.reset_state()
+        return
+    await StudentClass.ClassPanel.set()
+    await send_panel(callback)
+
+@dp.callback_query_handler(
+    StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="kick"
+)
+async def query_kick(callback: CallbackQuery):
+    await callback.answer()
+    await StudentClass.KickClassmate.set()
+    res = await get_names_classmates(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        FSMContext = dp.current_state(user=callback.from_user.id)
+        await FSMContext.reset_state()
+        return
+    await callback.message.answer(
+        "Выберете одноклассника:", reply_markup=get_markup_classmates(res)
+    )
+
+
+@dp.callback_query_handler(
+    StudentFilter(),
+    AdminFilter(),
+    state=StudentClass.KickClassmate,
+    text_contains="student_name",
+)
+async def query_delete_user(callback: CallbackQuery):
+    await callback.answer()
+    data = callback.data.split(":")[1]
+    res = await delete_user(data)
+    if isinstance(res, RestErorr):
+        FSMContext = dp.current_state(user=callback.from_user.id)
+        await FSMContext.reset_state()
+        return
+
+
+@dp.callback_query_handler(
+    StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="remove_token"
+)
+async def query_remove_token(callback: CallbackQuery):
+    await callback.answer()
+    res = await change_class_token(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        FSMContext = dp.current_state(user=callback.from_user.id)
+        await FSMContext.reset_state()
+        return
+    await send_panel(callback)
 
 
 # 1) [{tg_id: student_name}]

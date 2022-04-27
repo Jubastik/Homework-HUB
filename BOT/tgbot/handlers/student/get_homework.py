@@ -2,22 +2,22 @@ from aiogram.types import Message, CallbackQuery, ContentType, InputMediaPhoto
 from aiogram.dispatcher import FSMContext
 import datetime
 
-from BOT.bot import dp
-from BOT.tgbot.FSM.states import (
+from bot import dp
+from tgbot.FSM.states import (
     StudentMenu,
     StudentGetHomework,
 )
-from BOT.tgbot.filters.student_filter import StudentFilter
-from BOT.tgbot.services.scripts import generate_dates, convert_homework
-from BOT.tgbot.keyboards.inline.markup import (
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.services.scripts import generate_dates, convert_homework
+from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     get_markup_dates,
 )
-from BOT.tgbot.services.restapi.restapi import (
+from tgbot.services.restapi.restapi import (
     get_homework,
     is_lessons_in_saturday,
 )
-from BOT.tgbot.services.sub_classes import RestErorr
+from tgbot.services.sub_classes import RestErorr
 
 
 async def send_homework(callback: CallbackQuery, date):

@@ -1,13 +1,7 @@
-# Функции запросов на rest api (использовать await!)
-# Пока что просто затычки => фильтры работают через жопу, надо в коде указывать кем воспринимать юзеров
-import json
-import time
-
 import requests
-import random
 import datetime
 
-from BOT.CONSTANTS import (
+from CONSTANTS import (
     URL_USER,
     URL_CLASS,
     URL_SCHEDULE,
@@ -16,15 +10,8 @@ from BOT.CONSTANTS import (
     URL_CURRENT_LESSONS,
     WEEKDAYS,
 )
-from BOT.tgbot.services.restapi.scripts import return_error, send_error, send_success
+from tgbot.services.restapi.scripts import return_error, send_error, send_success
 
-
-# from BOT.tgbot.services.sub_classes import SheduleData
-
-
-# Tasks:
-# !1) Реализация используемых фильтрами is_student, is_admin, is_developer
-# 2) add_user
 
 
 async def is_student(tguser_id):

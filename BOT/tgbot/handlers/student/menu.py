@@ -1,25 +1,25 @@
 from aiogram.types import Message, CallbackQuery
 
-from BOT.bot import dp
-from BOT.tgbot.FSM.states import (
+from bot import dp
+from tgbot.FSM.states import (
     StudentAddHomework,
     StudentProfile,
     StudentMenu,
     StudentGetHomework,
     StudentClass,
 )
-from BOT.tgbot.filters.student_filter import StudentFilter
-from BOT.tgbot.filters.admin_filter import AdminFilter
-from BOT.tgbot.keyboards.inline.markup import (
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.filters.admin_filter import AdminFilter
+from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     markup_profile,
     markup_add_homework,
     markup_get_homework,
     markup_class_panel,
 )
-from BOT.tgbot.services.restapi.restapi import is_admin, get_student_info, get_names_classmates
-from BOT.tgbot.services.sub_classes import RestErorr
-from BOT.tgbot.services.scripts import convert_user_info, convert_users
+from tgbot.services.restapi.restapi import is_admin, get_student_info, get_names_classmates
+from tgbot.services.sub_classes import RestErorr
+from tgbot.services.scripts import convert_user_info, convert_users
 
 
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="profile")

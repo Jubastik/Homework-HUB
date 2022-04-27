@@ -1,7 +1,5 @@
-from unicodedata import name
-from BOT.tgbot.services.restapi.restapi import is_lessons_in_saturday, get_homework
 import datetime
-from BOT.CONSTANTS import WEEKDAYS
+from CONSTANTS import WEEKDAYS
 
 
 def time_is_correct(time: list):

@@ -1,28 +1,28 @@
 from aiogram.types import Message, CallbackQuery, ContentType
 import datetime
 
-from BOT.bot import dp
-from BOT.tgbot.FSM.states import (
+from bot import dp
+from tgbot.FSM.states import (
     StudentAddHomework,
     StudentMenu,
 )
-from BOT.tgbot.filters.student_filter import StudentFilter
-from BOT.tgbot.filters.admin_filter import AdminFilter
-from BOT.tgbot.services.scripts import generate_dates
-from BOT.tgbot.keyboards.inline.markup import (
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.filters.admin_filter import AdminFilter
+from tgbot.services.scripts import generate_dates
+from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     markup_check_homework,
     markup_done,
     get_markup_dates,
     get_subjects_markup,
 )
-from BOT.tgbot.services.restapi.restapi import (
+from tgbot.services.restapi.restapi import (
     get_subjects_by_time,
     add_homework,
     get_schedule_on_date,
     is_lessons_in_saturday,
 )
-from BOT.tgbot.services.sub_classes import RestErorr
+from tgbot.services.sub_classes import RestErorr
 
 
 @dp.callback_query_handler(

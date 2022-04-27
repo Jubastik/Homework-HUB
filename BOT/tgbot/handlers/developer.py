@@ -1,8 +1,8 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 
-from BOT.bot import dp
-from BOT.tgbot.filters.developer_filter import DeveloperFilter
+from bot import dp
+from tgbot.filters.developer_filter import DeveloperFilter
 
 # Tasks:
 # 1) Создание рассылок

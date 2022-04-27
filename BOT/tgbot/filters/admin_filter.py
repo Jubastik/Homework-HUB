@@ -1,7 +1,7 @@
 from aiogram.dispatcher.filters import BoundFilter
 from aiogram import types
 
-from BOT.tgbot.services.restapi.restapi import is_admin
+from tgbot.services.restapi.restapi import is_admin
 
 
 class AdminFilter(BoundFilter):

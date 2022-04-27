@@ -2,11 +2,11 @@ from aiogram.types import Message, CallbackQuery, User
 
 
 # | start | start | start | start | start | start | start | start |
-from BOT.CONSTANTS import SUBJECTS
-from BOT.bot import dp, bot
-from BOT.tgbot.FSM.states import RegistrationStates, StudentMenu
-from BOT.tgbot.filters import RegistrationFilter
-from BOT.tgbot.keyboards.inline.markup import (
+from CONSTANTS import SUBJECTS
+from bot import dp, bot
+from tgbot.FSM.states import RegistrationStates, StudentMenu
+from tgbot.filters import RegistrationFilter
+from tgbot.keyboards.inline.markup import (
     markup_yes_or_no,
     markup_check_subjects1,
     markup_start,
@@ -15,9 +15,9 @@ from BOT.tgbot.keyboards.inline.markup import (
     markup_shedule2,
     get_markup_student_menu,
 )
-from BOT.tgbot.services.restapi.restapi import register_user, register_class, is_admin
-from BOT.tgbot.services.scripts import convert_time, time_is_correct, convert_position
-from BOT.tgbot.services.sub_classes import RestErorr, SheduleData
+from tgbot.services.restapi.restapi import register_user, register_class, is_admin
+from tgbot.services.scripts import convert_time, time_is_correct, convert_position
+from tgbot.services.sub_classes import RestErorr, SheduleData
 
 
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")

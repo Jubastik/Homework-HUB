@@ -2,9 +2,9 @@ import logging
 
 from aiogram.utils import executor
 
-from BOT import tgbot
+import tgbot
 import tgbot.filters, tgbot.handlers
-from BOT.bot import dp
+from bot import dp
 
 # Tasks:
 # 1) Создание Redis

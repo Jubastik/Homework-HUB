@@ -1,20 +1,20 @@
 from aiogram.types import CallbackQuery
 
-from BOT.bot import dp
-from BOT.tgbot.FSM.states import (
+from bot import dp
+from tgbot.FSM.states import (
     StudentClass,
 )
-from BOT.tgbot.filters.student_filter import StudentFilter
-from BOT.tgbot.filters.admin_filter import AdminFilter
-from BOT.tgbot.keyboards.inline.markup import get_markup_classmates, markup_class_panel
-from BOT.tgbot.services.restapi.restapi import (
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.filters.admin_filter import AdminFilter
+from tgbot.keyboards.inline.markup import get_markup_classmates, markup_class_panel
+from tgbot.services.restapi.restapi import (
     get_names_classmates,
     delete_user,
     assign_admin,
     change_class_token,
 )
-from BOT.tgbot.services.sub_classes import RestErorr
-from BOT.tgbot.services.scripts import convert_users
+from tgbot.services.sub_classes import RestErorr
+from tgbot.services.scripts import convert_users
 
 
 async def send_panel(callback: CallbackQuery):

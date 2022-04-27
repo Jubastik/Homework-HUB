@@ -1,13 +1,13 @@
 from aiogram.types import CallbackQuery
 from aiogram.dispatcher import FSMContext
 
-from BOT.bot import dp
-from BOT.tgbot.handlers.student.menu import query_profile
-from BOT.tgbot.FSM.states import StudentProfile
-from BOT.tgbot.filters.student_filter import StudentFilter
-from BOT.tgbot.services.sub_classes import RestErorr
-from BOT.tgbot.keyboards.inline.markup import markup_are_u_sure
-from BOT.tgbot.services.restapi.restapi import delete_user
+from bot import dp
+from tgbot.handlers.student.menu import query_profile
+from tgbot.FSM.states import StudentProfile
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.services.sub_classes import RestErorr
+from tgbot.keyboards.inline.markup import markup_are_u_sure
+from tgbot.services.restapi.restapi import delete_user
 
 
 @dp.callback_query_handler(

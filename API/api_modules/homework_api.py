@@ -138,7 +138,8 @@ def create_homework():  # Создает дз на основе входящег
             schedule_id=schedule_id,
             text_homework=data["text"],
         )
-    homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id)
+    else:
+        homework = Homework(author_id=creator_id, date=date, schedule_id=schedule_id)
     db_sess.add(homework)
     db_sess.flush()
     if "photos_tg_id" in data:

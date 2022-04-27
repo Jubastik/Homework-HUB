@@ -18,15 +18,14 @@ def create_time_table():  # Создает расписание на основ�
     if not data:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     elif not all(
-        key in request.json
-        for key in [
-            "creator_id",
-            "creator_platform",
-            "lesson_number",
-            "begin_time",
-            "end_time",
-        ]
-    ):
+            key in request.json
+            for key in [
+                "creator_id",
+                "creator_platform",
+                "lesson_number",
+                "begin_time",
+                "end_time",
+            ]):
         return make_response(
             jsonify(
                 {
@@ -52,12 +51,10 @@ def create_time_table():  # Создает расписание на основ�
         return make_response(
             jsonify({"error": "Формат времени должен быть час:минуты"}), 422
         )
-    b_h = int(data["begin_time"].split(":")[0])
-    b_m = int(data["begin_time"].split(":")[1])
-    e_h = int(data["end_time"].split(":")[0])
-    e_m = int(data["end_time"].split(":")[1])
-    begin_time = datetime.time(b_h, b_m)
-    end_time = datetime.time(e_h, e_m)
+    b_h, b_m = data["begin_time"].split(":")
+    e_h, e_m = data["end_time"].split(":")
+    begin_time = datetime.time(int(b_h), int(b_m))
+    end_time = datetime.time(int(e_h), int(e_m))
     time_table = TimeTable(
         class_id=class_id,
         number_of_lesson=data["lesson_number"],

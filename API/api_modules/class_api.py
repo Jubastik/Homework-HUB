@@ -46,7 +46,7 @@ def create_class():  # Создает класс на основе входящ�
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     elif not all(
-        key in request.json for key in ["creator_platform", "creator_id", "name"]
+            key in request.json for key in ["creator_platform", "creator_id", "name"]
     ):
         return make_response(
             jsonify(
@@ -74,9 +74,7 @@ def create_class():  # Создает класс на основе входящ�
 
 
 @blueprint.route("/api/class/<platform>/<int:user_id>", methods=["PATCH"])
-def edit_class(
-    platform, user_id
-):  # Изменение класс на основе входящего Json (изменение токена, vk_id)
+def edit_class(platform, user_id):  # Изменение класс на основе входящего Json (изменение токена, vk_id)
     json_data = request.json
     if not json_data:
         return make_response(jsonify({"error": "Пустой json"}), 400)

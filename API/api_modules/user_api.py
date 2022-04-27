@@ -38,8 +38,8 @@ def create_user():  # Создает пользователя на основе 
     if "class_token" in data:
         class_id = (
             db_sess.query(Class.id)
-            .filter(Class.class_token == data["class_token"])
-            .first()
+                .filter(Class.class_token == data["class_token"])
+                .first()
         )
         if class_id is not None:
             class_id = class_id[0]
@@ -95,15 +95,15 @@ def del_user(platform, user_id):  # Удаление пользователя
     if student.is_admin is True and not force_delete:
         admins_in_class = (
             db_sess.query(Student)
-            .join(Class)
-            .filter(Class.id == student.class_id, Student.is_admin == True)
-            .count()
+                .join(Class)
+                .filter(Class.id == student.class_id, Student.is_admin == True)
+                .count()
         )
         students_in_class = (
             db_sess.query(Student)
-            .join(Class)
-            .filter(Class.id == student.class_id)
-            .count()
+                .join(Class)
+                .filter(Class.id == student.class_id)
+                .count()
         )
         if admins_in_class == 1 and students_in_class != 1:
             return make_response(

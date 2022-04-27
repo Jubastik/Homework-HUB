@@ -45,11 +45,11 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
     db_sess = db_session.create_session()
     schedules = (
         db_sess.query(Schedule)
-        .join(WeekDay)
-        .join(Class)
-        .join(Student)
-        .filter(Student.id == id, WeekDay.name == day.lower())
-        .all()
+            .join(WeekDay)
+            .join(Class)
+            .join(Student)
+            .filter(Student.id == id, WeekDay.name == day.lower())
+            .all()
     )
     if len(schedules) == 0:
         return make_response(
@@ -71,8 +71,8 @@ def create_schedule():  # Создает расписание на основе 
     if not data:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     elif not all(
-        key in request.json
-        for key in ["creator_id", "creator_platform", "day", "lesson_number", "lesson"]
+            key in request.json
+            for key in ["creator_id", "creator_platform", "day", "lesson_number", "lesson"]
     ):
         return make_response(
             jsonify(
@@ -97,17 +97,17 @@ def create_schedule():  # Создает расписание на основе 
         class_id = class_id[0]
     day_id = (
         db_sess.query(WeekDay.id)
-        .filter(WeekDay.name == str(data["day"]).lower())
-        .first()
+            .filter(WeekDay.name == str(data["day"]).lower())
+            .first()
     )
     lessons_id = db_sess.query(Lesson.id).filter(Lesson.name == data["lesson"]).first()
     slot_id = (
         db_sess.query(TimeTable.id)
-        .filter(
+            .filter(
             TimeTable.class_id == class_id,
             TimeTable.number_of_lesson == data["lesson_number"],
         )
-        .first()
+            .first()
     )
 
     if slot_id is None:

@@ -13,7 +13,7 @@ from tgbot.services.restapi.restapi import delete_user
 @dp.callback_query_handler(
     StudentFilter(), state=StudentProfile.Profile, text="delete_account"
 )
-async def query_get_homework(callback: CallbackQuery):
+async def query_delete_watning(callback: CallbackQuery):
     await callback.answer()
     await StudentProfile.DeleteAccount.set()
     await callback.message.answer(
@@ -27,7 +27,7 @@ async def query_get_homework(callback: CallbackQuery):
 @dp.callback_query_handler(
     StudentFilter(), state=StudentProfile.DeleteAccount, text="true"
 )
-async def query_get_homework(callback: CallbackQuery):
+async def query_delete_true(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     res = await delete_user(callback.from_user.id)
@@ -42,5 +42,5 @@ async def query_get_homework(callback: CallbackQuery):
 @dp.callback_query_handler(
     StudentFilter(), state=StudentProfile.DeleteAccount, text="false"
 )
-async def query_get_homework(callback: CallbackQuery):
+async def query_delete_false(callback: CallbackQuery):
     await query_profile(callback)

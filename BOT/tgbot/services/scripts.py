@@ -74,6 +74,7 @@ def convert_user_info(data) -> str:
             f"Имя: @{data['name']}",
             "Админ: ✅" if data["is_admin"] else "Админ: ❌",
             f"Токен класса: {data['class_token']}",
+            f"Ссылка приглашение: t.me/YandexLyceum_rulka_bot?start={data['class_token']}",
             f"Админы класса: {' '.join(['@' + i for i in data['admins']])}",
         ]
     )

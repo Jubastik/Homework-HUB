@@ -33,7 +33,7 @@ async def send_panel(callback: CallbackQuery):
 @dp.callback_query_handler(
     StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="add_admin"
 )
-async def query_add_admin(callback: CallbackQuery):
+async def query_get_classmate(callback: CallbackQuery):
     await callback.answer()
     await StudentClass.AddAdmin.set()
     res = await get_names_classmates(callback.from_user.id)

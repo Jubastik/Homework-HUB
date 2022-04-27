@@ -48,7 +48,7 @@ async def query_fast_add(callback: CallbackQuery):
 @dp.callback_query_handler(
     StudentFilter(), state=StudentAddHomework.AddHomework, text="on_date_add"
 )
-async def query_fast_add(callback: CallbackQuery):
+async def query_add_on_date(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     res = await is_lessons_in_saturday(callback.from_user.id)
@@ -70,7 +70,7 @@ async def query_fast_add(callback: CallbackQuery):
 @dp.callback_query_handler(
     StudentFilter(), state=StudentAddHomework.GetDate, text_contains="add_date"
 )
-async def query_fast_add(callback: CallbackQuery):
+async def query_get_date(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     str_date = list(map(int, callback.data.split(":")[1].split("-")))
@@ -96,7 +96,7 @@ async def query_fast_add(callback: CallbackQuery):
 @dp.callback_query_handler(
     StudentFilter(), state=StudentAddHomework.GetSubjects, text_contains="subject"
 )
-async def query_fast_add(callback: CallbackQuery):
+async def query_get_sunject(callback: CallbackQuery):
     await callback.answer()
     subject = callback.data.split(":")[1]
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -114,7 +114,7 @@ async def query_fast_add(callback: CallbackQuery):
 @dp.callback_query_handler(
     StudentFilter(), state=StudentAddHomework.FastAdd, text_contains="subject"
 )
-async def query_fast_add(callback: CallbackQuery):
+async def query_get_subject(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:

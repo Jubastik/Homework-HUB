@@ -24,8 +24,9 @@ from tgbot.services.sub_classes import RestErorr, SheduleData
 async def hanldler_start(msg: Message):
     # !Обработка deeplinking
     # пример: t.me/YandexLyceum_rulka_bot?start=class_token94811
-    if "class_token" in msg.text:
-        classid = msg.text.split("class_token")[-1]
+    # print(msg.text)
+    if len(msg.text.split()) == 2:
+        classid = msg.text.split()[-1]
         userid = msg.from_user.id
         username = User.get_current()["username"]
         FSMContext = dp.current_state(user=userid)

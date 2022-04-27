@@ -227,20 +227,6 @@ async def get_homework(tguser_id, date):
     return return_error(res)
 
 
-# def get_all_homework(tguser_id):
-#     query = f"/tg/{tguser_id}"
-#     res = requests.get(URL_HOMEWORK + query)
-#     if res.status_code == 200:
-#         a = json.loads(res.text)
-#         hw = {}
-#         for el in a:
-#             hw['date'] = el['date']
-#             hw['lesson'] = el['lesson']
-#             hw['text'] = el['text']
-#         return hw
-#     return False
-
-
 async def get_schedule_on_date(tguser_id, date) -> list:
     query = f"/tg/{tguser_id}/{WEEKDAYS[date.weekday()]}"
     res = requests.get(URL_SCHEDULE + query)
@@ -283,6 +269,15 @@ async def get_student_info(tguser_id):
 async def change_class_token(tguser_id):
     query = f"/tg/{tguser_id}"
     res = requests.patch(URL_CLASS + query, json={'class_token': 'auto'})
+    if res.status_code == 200:
+        return True
+    await send_error(tguser_id, res)
+    return return_error(res)
+
+
+async def assign_admin(tguser_id):
+    query = f"/tg/{tguser_id}"
+    res = requests.patch(URL_USER + query, json={'is_admin': True})
     if res.status_code == 200:
         return True
     await send_error(tguser_id, res)

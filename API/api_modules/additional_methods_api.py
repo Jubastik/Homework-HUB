@@ -51,6 +51,6 @@ def current_lessons(platform, user_id):
     )
     if len(now_lesson) == 0:
         return make_response(
-            jsonify({"error": "Расписание на этот день не существует"}), 404
+            jsonify({"error": "Ближайшие уроки не найдены"}), 404
         )
     return jsonify({"lessons": [_.to_dict(only=("lesson.name",)) for _ in now_lesson]})

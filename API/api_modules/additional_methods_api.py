@@ -3,6 +3,7 @@ import datetime
 import flask
 from flask import jsonify, make_response
 
+from CONSTANTS import day_id_to_weekday
 from api_modules.core import id_processing, IDError
 from data import db_session
 from data.classes import Class
@@ -25,11 +26,15 @@ def current_lessons(platform, user_id):
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
 
-    now_time = datetime.time(13, 30)  # После отладки надо сделать нормально!!!!
-    past_time = datetime.time(10, 30)
-    day = "понедельник"
+    now_time = datetime.datetime.now().time()
+    past_time = datetime.datetime.combine(datetime.date.today(), now_time) - datetime.timedelta(minutes=60)
+    past_time = past_time.time()
+    day = day_id_to_weekday[datetime.datetime.today().weekday()]
 
-    print(datetime.datetime.today().weekday())
+    # now_time = datetime.time(13, 30)  # После отладки надо сделать нормально!!!!
+    # past_time = datetime.time(10, 30)
+    # day = "понедельник"
+
     now_lesson = (
         db_sess.query(Schedule)
             .join(WeekDay)

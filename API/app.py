@@ -32,7 +32,8 @@ def main():
     app.register_blueprint(time_table_api.blueprint)
     app.register_blueprint(additional_methods_api.blueprint)
     init_weekday()
-    app.run(host=os.getenv("API_HOST", ""), port=os.getenv('API_PORT', 8000), debug=os.getenv("API_DEBUG", False) == 'True')
+    app.run(host=os.getenv("API_HOST", ""), port=os.getenv('API_PORT', 8000),
+            debug=os.getenv("API_DEBUG", False) == 'True')
 
 
 @app.route("/")

@@ -1,3 +1,7 @@
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 from flask import Flask
 
 from data import db_session
@@ -12,6 +16,9 @@ from api_modules import (
     additional_methods_api,
 )
 
+env_path = Path('..') / '.env'
+load_dotenv(dotenv_path=env_path)
+
 app = Flask(__name__)
 
 
@@ -25,7 +32,7 @@ def main():
     app.register_blueprint(time_table_api.blueprint)
     app.register_blueprint(additional_methods_api.blueprint)
     init_weekday()
-    app.run(debug=True)
+    app.run(host=os.getenv("API_HOST", ""), port=os.getenv('API_PORT', 8000), debug=os.getenv("API_DEBUG", False) == 'True')
 
 
 @app.route("/")

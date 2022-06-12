@@ -1,9 +1,12 @@
+import os
+from pathlib import Path
+
 from aiogram import Bot, types, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from dotenv import load_dotenv
 
-from tgbot.config import load_config
+env_path = Path('..') / '.env'
+load_dotenv(dotenv_path=env_path)
 
-config = load_config("bot.ini")
-
-bot = Bot(token=config.tg_bot.token, parse_mode=types.ParseMode.HTML)
+bot = Bot(token=os.getenv("TG_TOKEN"), parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot, storage=MemoryStorage())

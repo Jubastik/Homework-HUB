@@ -2,13 +2,13 @@ import logging
 
 from aiogram.utils import executor
 from dotenv import load_dotenv
-from pathlib import Path
+
+# preload
+load_dotenv()
 
 import tgbot
 import tgbot.filters, tgbot.handlers
 from bot import dp
-
-load_dotenv()
 
 
 async def on_startup(dp):

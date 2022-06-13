@@ -1,3 +1,5 @@
+import os
+
 SUBJECTS = [
     "Русский🇷🇺",
     "Литература📚",
@@ -13,7 +15,7 @@ SUBJECTS = [
     "Физика⚡️",
     "Информатика📡",
 ]
-SERVER = "http://165.22.75.179:8080"
+SERVER = os.getenv("TG_API_SERVER")
 URL_USER = SERVER + '/api/user'
 URL_CLASS = SERVER + '/api/class'
 URL_SCHEDULE = SERVER + '/api/schedule'

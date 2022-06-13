@@ -8,8 +8,7 @@ import tgbot
 import tgbot.filters, tgbot.handlers
 from bot import dp
 
-env_path = Path("..") / ".env"
-load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
 
 async def on_startup(dp):

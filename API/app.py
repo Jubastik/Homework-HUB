@@ -16,8 +16,7 @@ from api_modules import (
     additional_methods_api,
 )
 
-env_path = Path('..') / '.env'
-load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
 app = Flask(__name__)
 

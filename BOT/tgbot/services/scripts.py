@@ -7,7 +7,7 @@ def time_is_correct(time: list):
         hours, minutes = map(int, time.split(":"))
         if hours < 0 or minutes < 0 or hours > 24 or minutes > 60:
             return False
-        if hours != hours or minutes != minutes:
+        if hours != hours or minutes != minutes:  # что за тупое условие? подумать
             return False
         return [str(hours), str(minutes)]
     except:
@@ -16,7 +16,7 @@ def time_is_correct(time: list):
 
 def convert_time(time: list):
     if len(time[1]) == 1:
-        time[1] = f"1{time[1]}"
+        time[1] = f"0{time[1]}"
     return time
 
 

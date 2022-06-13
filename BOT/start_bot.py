@@ -1,14 +1,15 @@
 import logging
 
 from aiogram.utils import executor
+from dotenv import load_dotenv
+from pathlib import Path
 
 import tgbot
 import tgbot.filters, tgbot.handlers
 from bot import dp
 
-# Tasks:
-# 1) Создание Redis
-# 2) Кеширование
+env_path = Path("..") / ".env"
+load_dotenv(dotenv_path=env_path)
 
 
 async def on_startup(dp):

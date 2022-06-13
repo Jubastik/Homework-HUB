@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 def main():
     """Регистрация модулей и запуск приложения"""
-    db_session.global_init("db/API.db")
+    db_session.global_init()
     app.register_blueprint(user_api.blueprint)
     app.register_blueprint(homework_api.blueprint)
     app.register_blueprint(class_api.blueprint)

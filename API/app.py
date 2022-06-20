@@ -36,7 +36,7 @@ def main():
 
 @app.route("/")
 def hello_world():
-    return "Hello World!"
+    return "Hello HomeBot!"
 
 
 def init_weekday():

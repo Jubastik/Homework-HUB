@@ -18,7 +18,7 @@ def global_init():
     db_engine = os.getenv("DB_ENGINE", "sqlite")
     if db_engine == "postgresql":
         db_connection = f"postgresql://{os.getenv('POSTGRESQL_USERNAME')}:{os.getenv('POSTGRESQL_PASSWORD')}@{os.getenv('POSTGRESQL_HOST')}:{os.getenv('POSTGRESQL_PORT')}/{os.getenv('POSTGRESQL_DB_NAME')}"
-    elif db_engine == "":
+    elif db_engine == "sqlite":
         db_dir = os.getenv("SQLITE_DIR")
         db_connection = f"sqlite:///{db_dir.strip()}?check_same_thread=False"
     else:

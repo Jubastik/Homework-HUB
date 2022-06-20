@@ -50,7 +50,7 @@ async def hanldler_start(msg: Message):
         FSMContext = dp.current_state(user=msg.from_user.id)
         await FSMContext.reset_state()
         await msg.answer(
-            "Привет! Я бот для быстрого сохранения домашки", reply_markup=markup_start
+            "Привет!!! Я бот для быстрого сохранения домашки", reply_markup=markup_start
         )
         await RegistrationStates.StartBtn.set()
 

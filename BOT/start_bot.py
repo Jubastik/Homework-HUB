@@ -32,8 +32,6 @@ async def on_shutdown(dp):
     await dp.storage.wait_closed()
 
 
-
-
 def start():
     logging.basicConfig(
         level=logging.INFO,

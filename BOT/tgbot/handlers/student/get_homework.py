@@ -22,11 +22,11 @@ from tgbot.services.sub_classes import RestErorr
 
 async def send_homework(callback: CallbackQuery, date):
     res = await get_homework(callback.from_user.id, date)
+    FSMContext = dp.current_state(user=callback.from_user.id)
     if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
-    FSMContext = dp.current_state(user=callback.from_user.id)
-    data = convert_homework(res[0])
+    data = await convert_homework(res[0])
     for lesson in data:
         if len(lesson["photos"]) != 0:
             media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]

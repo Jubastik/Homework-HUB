@@ -51,6 +51,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
                         "photo_tg_id.photo_id",
                         "schedule.lesson.name",
                         "schedule.slot.number_of_lesson",
+                        "author_id",
                     )
                 )
                 for homework in homeworks

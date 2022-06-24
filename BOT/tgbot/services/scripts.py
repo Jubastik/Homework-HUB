@@ -1,4 +1,6 @@
 import datetime
+
+from tgbot.services.restapi.restapi import get_user_by_id
 from CONSTANTS import WEEKDAYS
 
 
@@ -50,18 +52,19 @@ def generate_dates(saturday_lesson) -> list:
     return dates
 
 
-def convert_homework(data) -> dict:
+async def convert_homework(data) -> dict:
     res = []
     for lesson, lesson_data in data.items():
-        # Какой-то алгоритм выбора домашки, которого нету ._.
-        lesson_data = lesson_data[0]
-        # Формирование текста и фото
-        txt = lesson_data["text"] if lesson_data["text"] is not None else ""
-        info = {
-            "text": "\n".join([f"{lesson}:", txt]),
-            "photos": lesson_data["photos"],
-        }
-        res.append(info)
+        for data in lesson_data:
+            # Формирование текста и фото
+            txt = data["text"] if data["text"] is not None else ""
+            author_data = await get_user_by_id(data["author"])
+            author_name = author_data["data"]["name"]
+            info = {
+                "text": "\n".join([lesson, f"Автор:{author_name}\n", txt]),
+                "photos": data["photos"],
+            }
+            res.append(info)
     return res
 
     # {предмет: [{txt: txt, photo: [photos]}]}

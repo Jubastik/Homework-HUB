@@ -19,7 +19,7 @@ def get_user(platform, user_id):  # Возвращает базовую инфо
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     class_admins = [_.name for _ in student.my_class.student if _.is_admin]
-    data = student.to_dict(only=("name", "is_admin", "my_class.class_token"))
+    data = student.to_dict(only=("name", "is_admin", "my_class.class_token", "is_superuser"))
     data["class_admins"] = class_admins
     return jsonify({"data": data})
 

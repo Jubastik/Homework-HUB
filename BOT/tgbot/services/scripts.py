@@ -64,6 +64,8 @@ def convert_homework(data) -> dict:
         res.append(info)
     return res
 
+    # {предмет: [{txt: txt, photo: [photos]}]}
+
 
 def convert_user_info(data) -> str:
     res = "\n".join(

@@ -53,3 +53,10 @@ class StudentGetHomework(StatesGroup):
     # Ветка полечения домашки
     GetHomework = State()
     GetDate = State()
+
+
+class Developer(StatesGroup):
+    # Состояния разработчика
+    Panel = State()
+    MailingGetText = State()
+    MailingCheck = State()

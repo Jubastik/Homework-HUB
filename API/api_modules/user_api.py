@@ -10,6 +10,18 @@ from data.students import Student
 blueprint = flask.Blueprint("user", __name__, template_folder="templates")
 
 
+@blueprint.route("/api/user/all", methods=["GET"])
+def get_all_users():  # Возвращает полный список пользователей
+    db_sess = db_session.create_session()
+    students = db_sess.query(Student).all()
+    if len(students) == 0:
+        return make_response(
+            jsonify({"error": "В базе данных не найдено пользователей"}), 404
+        )
+    data = {"data": [student.tg_id for student in students]}
+    return jsonify(data)
+
+
 @blueprint.route("/api/user/<platform>/<int:user_id>", methods=["GET"])
 def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
     try:
@@ -19,7 +31,9 @@ def get_user(platform, user_id):  # Возвращает базовую инфо
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     class_admins = [_.name for _ in student.my_class.student if _.is_admin]
-    data = student.to_dict(only=("name", "is_admin", "my_class.class_token", "is_superuser"))
+    data = student.to_dict(
+        only=("name", "is_admin", "my_class.class_token", "is_superuser")
+    )
     data["class_admins"] = class_admins
     return jsonify({"data": data})
 
@@ -38,8 +52,8 @@ def create_user():  # Создает пользователя на основе 
     if "class_token" in data:
         class_id = (
             db_sess.query(Class.id)
-                .filter(Class.class_token == data["class_token"])
-                .first()
+            .filter(Class.class_token == data["class_token"])
+            .first()
         )
         if class_id is not None:
             class_id = class_id[0]
@@ -95,15 +109,15 @@ def del_user(platform, user_id):  # Удаление пользователя
     if student.is_admin is True and force_delete == "False":
         admins_in_class = (
             db_sess.query(Student)
-                .join(Class)
-                .filter(Class.id == student.class_id, Student.is_admin == True)
-                .count()
+            .join(Class)
+            .filter(Class.id == student.class_id, Student.is_admin == True)
+            .count()
         )
         students_in_class = (
             db_sess.query(Student)
-                .join(Class)
-                .filter(Class.id == student.class_id)
-                .count()
+            .join(Class)
+            .filter(Class.id == student.class_id)
+            .count()
         )
         if admins_in_class == 1 and students_in_class != 1:
             return make_response(

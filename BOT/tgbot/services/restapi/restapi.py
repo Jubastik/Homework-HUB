@@ -294,3 +294,11 @@ async def get_user_by_id(id):
     elif res.status_code == 404:
         return "Not found"
     return return_error(res)
+
+
+async def get_all_users():
+    query = "/all"
+    res = requests.get(URL_USER + query)
+    if res.status_code == 404:
+        return return_error(res)
+    return res.json()["data"]

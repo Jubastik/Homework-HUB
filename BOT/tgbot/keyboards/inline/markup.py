@@ -194,3 +194,22 @@ def get_markup_classmates(data):
         )
     keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
     return keyboard
+
+
+# | Developer | Developer | Developer | Developer | Developer | Developer | Developer | Developer |
+
+
+markup_developer_menu = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Рассылка", callback_data="mailing")]]
+)
+
+markup_developer_deny = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Отмена", callback_data="deny")]]
+)
+
+markup_developer_mailingcheck = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Начать рассылку", callback_data="start_mailing")],
+        [InlineKeyboardButton(text="Отмена", callback_data="deny")],
+    ]
+)

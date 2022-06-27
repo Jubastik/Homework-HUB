@@ -160,3 +160,4 @@ cython_debug/
 
 API/db/API.db
 BOT/bot.ini
+test.py

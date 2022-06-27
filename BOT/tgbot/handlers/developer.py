@@ -1,3 +1,4 @@
+from asyncio import sleep
 from aiogram.types import Message, CallbackQuery
 
 from bot import dp, bot
@@ -49,9 +50,17 @@ async def query_mailing_get_text(callback: CallbackQuery):
     )
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
+        counter = 0
         for user in users:
-            await bot.send_message(user, FSMdata["txt"])
-    await callback.message.answer("Рассылка завершена.")
+            try:
+                await bot.send_message(user, FSMdata["txt"])
+                await sleep(0.3)
+                counter += 1
+            except Exception:
+                pass
+    await callback.message.answer(
+        f"Рассылка завершена. Отправлено {counter} из {len(users)} сообщений."
+    )
     await FSMContext.reset_state()
     await Developer.Panel.set()
     await callback.message.answer("Developer panel", reply_markup=markup_developer_menu)

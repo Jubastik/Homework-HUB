@@ -46,7 +46,7 @@ def create_user():  # Создает пользователя на основе 
         return make_response(
             jsonify({"error": 'Отсутствуют поля "platform", "id", "name"'}), 422
         )
-    db_sess = db_session.create_session()  # добавить регу по токену
+    db_sess = db_session.create_session()
     data = request.json
     class_id = None
     if "class_token" in data:

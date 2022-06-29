@@ -302,3 +302,7 @@ async def get_all_users():
     if res.status_code == 404:
         return return_error(res)
     return res.json()["data"]
+
+
+async def register_chat():
+    pass

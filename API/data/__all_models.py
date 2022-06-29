@@ -1,5 +1,6 @@
 from . import students
 from . import classes
+from . import chats
 
 from . import schedules
 from . import time_tables

@@ -15,7 +15,7 @@ SUBJECTS = [
     "Физика⚡️",
     "Информатика📡",
 ]
-SERVER = os.getenv("TG_API_SERVER")
+SERVER = os.getenv("TG_API_SERVER") # при работе с url в следующий раз, сделать рефактор
 URL_USER = SERVER + '/api/user'
 URL_CLASS = SERVER + '/api/class'
 URL_SCHEDULE = SERVER + '/api/schedule'

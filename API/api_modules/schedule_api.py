@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import id_processing, IDError
+from api_modules.core import user_id_processing, IDError
 from data import db_session
 from data.classes import Class
 from data.lessons import Lesson
@@ -17,7 +17,7 @@ blueprint = flask.Blueprint("schedule", __name__, template_folder="templates")
 @blueprint.route("/api/schedule/<platform>/<int:user_id>", methods=["GET"])
 def get_schedule(platform, user_id):  # Возвращает все расписание
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -39,7 +39,7 @@ def get_schedule(platform, user_id):  # Возвращает все распис
 @blueprint.route("/api/schedule/<platform>/<int:user_id>/<day>", methods=["GET"])
 def get_schedule_day(platform, user_id, day):  # Возвращает расписание на день
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -83,7 +83,7 @@ def create_schedule():  # Создает расписание на основе 
             422,
         )
     try:
-        creator_id = id_processing(data["creator_platform"], data["creator_id"])
+        creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
 

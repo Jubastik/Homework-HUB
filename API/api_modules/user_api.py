@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import id_processing, IDError, TG
+from api_modules.core import user_id_processing, IDError, TG
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -25,7 +25,7 @@ def get_all_users():  # Возвращает полный список поль�
 @blueprint.route("/api/user/<platform>/<int:user_id>", methods=["GET"])
 def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -78,7 +78,7 @@ def edit_user(platform, user_id):  # Изменение пользователя
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -101,7 +101,7 @@ def edit_user(platform, user_id):  # Изменение пользователя
 def del_user(platform, user_id):  # Удаление пользователя
     force_delete = request.args.get("force", default=False)
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()

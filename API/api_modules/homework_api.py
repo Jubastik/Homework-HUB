@@ -4,7 +4,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import id_processing, IDError, get_next_lesson, day_to_weekday
+from api_modules.core import user_id_processing, IDError, get_next_lesson, day_to_weekday
 from data import db_session
 from data.classes import Class
 from data.homeworks import Homework
@@ -20,7 +20,7 @@ blueprint = flask.Blueprint("homework", __name__, template_folder="templates")
 @blueprint.route("/api/homework/<platform>/<int:user_id>/<date>", methods=["GET"])
 def get_homework_date(platform, user_id, date):  # Возвращает дз на дату
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     if len(date.split("-")) != 3:
@@ -84,7 +84,7 @@ def create_homework():  # Создает дз на основе входящег
             422,
         )
     try:
-        creator_id = id_processing(data["creator_platform"], data["creator_id"])
+        creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
 

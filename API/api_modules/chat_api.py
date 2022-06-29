@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, make_response, jsonify
 
-from api_modules.core import id_processing, IDError
+from api_modules.core import user_id_processing, IDError
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -13,7 +13,7 @@ blueprint = flask.Blueprint("chat", __name__, template_folder="templates")
 @blueprint.route("/api/chats/<platform>/<chat_id>", methods=["GET"])
 def get_chat(platform, chat_id):  # Возвращает группу
     try:
-        id = id_processing(platform, chat_id, chat=True)
+        id = user_id_processing(platform, chat_id, chat=True)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()

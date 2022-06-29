@@ -15,7 +15,7 @@ class IDError(Exception):
     pass
 
 
-def id_processing(platform, id):
+def user_id_processing(platform, id):
     db_sess = db_session.create_session()
     if platform == TG:
         id = db_sess.query(Student.id).filter(Student.tg_id == id).first()

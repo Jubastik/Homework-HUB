@@ -12,7 +12,7 @@ class Chat(SqlAlchemyBase, SerializerMixin):
     class_id = sqlalchemy.Column(
         sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id")
     )
-    my_class = orm.relationship("Class", back_populates="chats")
+    # my_class = orm.relationship("Class", back_populates="chats")
 
     def __repr__(self):
         return f"<Group> {self.id} {self.my_class}"

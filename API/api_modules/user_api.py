@@ -106,6 +106,13 @@ def del_user(platform, user_id):  # Удаление пользователя
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).get(id)
+
+    classmates_count = (
+                db_sess.query(Student)
+                .join(Class)
+                .filter(Class.id == student.class_id)
+                .count()
+            )
     if student.is_admin is True and force_delete == "False":
         admins_in_class = (
             db_sess.query(Student)
@@ -126,6 +133,9 @@ def del_user(platform, user_id):  # Удаление пользователя
                 ),
                 422,
             )
-    db_sess.delete(student)
+    if classmates_count == 1:
+        db_sess.delete(student.my_class)
+    else:
+        db_sess.delete(student)
     db_sess.commit()
     return make_response(jsonify({"success": "Пользователь успешно удален"}), 200)

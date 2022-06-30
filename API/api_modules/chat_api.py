@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, make_response, jsonify
 
-from api_modules.core import user_id_processing, IDError
+from api_modules.core import chat_id_processing, IDError
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -13,7 +13,7 @@ blueprint = flask.Blueprint("chat", __name__, template_folder="templates")
 @blueprint.route("/api/chats/<platform>/<chat_id>", methods=["GET"])
 def get_chat(platform, chat_id):  # Возвращает группу
     try:
-        id = user_id_processing(platform, chat_id, chat=True)
+        id = chat_id_processing(platform, chat_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -23,7 +23,7 @@ def get_chat(platform, chat_id):  # Возвращает группу
 
 
 @blueprint.route("/api/chats", methods=["POST"])
-def register_chat():  #  Регистрация группы
+def register_chat():  # Регистрация группы
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     print(request.json)
@@ -51,6 +51,7 @@ def register_chat():  #  Регистрация группы
             jsonify({"error": "Беседа уже зарегестрирована"}), 422
         )
     return make_response(jsonify({"success": "Беседа успешно зарегестрирована"}), 201)
+
 
 @blueprint.route("/api/chats/<platform>/<chat_id>", methods=["DELETE"])
 def del_chat(platform, chat_id):  # Удаление группы

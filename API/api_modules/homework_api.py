@@ -110,6 +110,8 @@ def create_homework():  # Создает дз на основе входящег
     if date < datetime.datetime.now().date():
         return make_response(jsonify({"error": "Дата уже прошла"}), 422)
     day_of_week = day_to_weekday(date)
+    if day_of_week == 'воскресенье':
+        return make_response(jsonify({"error": "Нельзя добавлять дз в воскресенье"}), 422)
     schedule_id = (
         db_sess.query(Schedule.id)
             .join(WeekDay)

@@ -26,7 +26,6 @@ def get_chat(platform, chat_id):  # Возвращает группу
 def register_chat():  # Регистрация группы
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
-    print(request.json)
     if "user_tg_id" not in request.json or "chat_tg_id" not in request.json:
         return make_response(
             jsonify({"error": 'Отсутствует поле "user_tg_id" или "chat_tg_id"'}), 422
@@ -35,6 +34,7 @@ def register_chat():  # Регистрация группы
     db_sess = db_session.create_session()
     class_id = (
             db_sess.query(Class.id)
+            .join(Student)
             .filter(Student.tg_id == data["user_tg_id"])
             .first()
             )
@@ -54,5 +54,14 @@ def register_chat():  # Регистрация группы
 
 
 @blueprint.route("/api/chats/<platform>/<chat_id>", methods=["DELETE"])
-def del_chat(platform, chat_id):  # Удаление группы
-    pass
+def delete_chat(platform, chat_id):  # Удаление группы
+    try:
+        id = chat_id_processing(platform, chat_id)
+    except IDError as e:
+        return make_response(jsonify({"error": str(e)}), 404)
+    db_sess = db_session.create_session()
+    chat = db_sess.query(Chat).filter(Chat.id == id).first()
+    db_sess.delete(chat)
+    db_sess.commit()
+    return make_response(jsonify({"success": "Беседа успешно удалена"}), 200)
+ 

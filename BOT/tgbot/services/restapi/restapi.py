@@ -9,6 +9,7 @@ from CONSTANTS import (
     URL_TIME_TABLE,
     URL_CURRENT_LESSONS,
     WEEKDAYS,
+    URL_CHAT
 )
 from tgbot.services.restapi.scripts import return_error, send_error, send_success
 
@@ -205,9 +206,9 @@ async def add_homework(tguser_id, data, auto=False):
     return return_error(response)
 
 
-async def get_homework(tguser_id, date):
+async def get_homework(userid, date, is_chat=False):
     """Возвращает домашку на дату"""
-    query = f"/tg/{tguser_id}/{date.strftime('%d-%m-%Y')}"
+    query = f"/tg/{userid}/{date.strftime('%d-%m-%Y')}?is_chat={str(is_chat)}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
         lessons = res.json()["data"]
@@ -225,7 +226,7 @@ async def get_homework(tguser_id, date):
             else:
                 hw[lesson] = [lesson_data]
         return [hw]
-    await send_error(tguser_id, res)
+    await send_error(userid, res)
     return return_error(res)
 
 
@@ -304,5 +305,35 @@ async def get_all_users():
     return res.json()["data"]
 
 
-async def register_chat():
-    pass
+async def register_chat(user_id, chat_id):
+    params = {
+        "user_tg_id": user_id,
+        "chat_tg_id": chat_id,
+    }
+    res = requests.post(URL_CHAT, json=params)
+    if res.status_code == 201:
+        return True
+    return return_error(res)
+
+async def get_chat(chat_id):
+    query = f"/tg/{chat_id}"
+    res = requests.get(URL_CHAT + query)
+    if res.status_code == 200:
+        return res.json()["data"]
+    return return_error(res)
+
+async def is_registreted_chat(chat_id):
+    query = f"/tg/{chat_id}"
+    res = requests.get(URL_CHAT + query)
+    if res.status_code == 200:
+        return True
+    elif res.status_code == 404:
+        return False
+    return return_error(res)
+
+
+async def delete_chat(chat_id):
+    res = requests.delete(URL_CHAT + f'/tg_tgchat/{chat_id}')
+    if res.status_code == 200:
+        return True
+    return return_error(res)

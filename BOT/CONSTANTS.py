@@ -17,6 +17,7 @@ SUBJECTS = [
 ]
 SERVER = os.getenv("TG_API_SERVER") # при работе с url в следующий раз, сделать рефактор
 URL_USER = SERVER + '/api/user'
+URL_CHAT = SERVER + '/api/chats'
 URL_CLASS = SERVER + '/api/class'
 URL_SCHEDULE = SERVER + '/api/schedule'
 URL_HOMEWORK = SERVER + '/api/homework'

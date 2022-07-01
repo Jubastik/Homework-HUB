@@ -213,3 +213,4 @@ markup_developer_mailingcheck = InlineKeyboardMarkup(
         [InlineKeyboardButton(text="Отмена", callback_data="deny")],
     ]
 )
+makrup_group_menu = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Получить домашку", callback_data="menu")]])

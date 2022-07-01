@@ -10,6 +10,7 @@ from data.chats import Chat
 
 blueprint = flask.Blueprint("chat", __name__, template_folder="templates")
 
+
 @blueprint.route("/api/chats/<platform>/<chat_id>", methods=["GET"])
 def get_chat(platform, chat_id):  # Возвращает группу
     try:
@@ -33,11 +34,11 @@ def register_chat():  # Регистрация группы
     data = request.json
     db_sess = db_session.create_session()
     class_id = (
-            db_sess.query(Class.id)
-            .join(Student)
-            .filter(Student.tg_id == data["user_tg_id"])
-            .first()
-            )
+        db_sess.query(Class.id)
+        .join(Student)
+        .filter(Student.tg_id == data["user_tg_id"])
+        .first()
+    )
     if class_id is not None:
         class_id = class_id[0]
     else:
@@ -47,9 +48,7 @@ def register_chat():  # Регистрация группы
     try:
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
-        return make_response(
-            jsonify({"error": "Беседа уже зарегестрирована"}), 422
-        )
+        return make_response(jsonify({"error": "Беседа уже зарегестрирована"}), 422)
     return make_response(jsonify({"success": "Беседа успешно зарегестрирована"}), 201)
 
 
@@ -64,4 +63,3 @@ def delete_chat(platform, chat_id):  # Удаление группы
     db_sess.delete(chat)
     db_sess.commit()
     return make_response(jsonify({"success": "Беседа успешно удалена"}), 200)
- 

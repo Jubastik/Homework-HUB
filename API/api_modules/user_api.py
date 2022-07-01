@@ -108,11 +108,8 @@ def del_user(platform, user_id):  # Удаление пользователя
     student = db_sess.query(Student).get(id)
 
     classmates_count = (
-                db_sess.query(Student)
-                .join(Class)
-                .filter(Class.id == student.class_id)
-                .count()
-            )
+        db_sess.query(Student).join(Class).filter(Class.id == student.class_id).count()
+    )
     if student.is_admin is True and force_delete == "False":
         admins_in_class = (
             db_sess.query(Student)

@@ -8,6 +8,7 @@ from tgbot.FSM.states import (
     StudentGetHomework,
 )
 from tgbot.filters.student_filter import StudentFilter
+from tgbot.filters.group_filter import GroupFilter, IsRegisteredGroupFilter
 from tgbot.services.scripts import generate_dates, convert_homework
 from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
@@ -47,6 +48,12 @@ async def send_homework(callback: CallbackQuery, date):
 
 
 @dp.callback_query_handler(
+    GroupFilter(),
+    IsRegisteredGroupFilter(),
+    state=StudentGetHomework.GetHomework,
+    text="fast_get",
+)
+@dp.callback_query_handler(
     StudentFilter(), state=StudentGetHomework.GetHomework, text="fast_get"
 )
 async def query_fast_get(callback: CallbackQuery):
@@ -55,6 +62,12 @@ async def query_fast_get(callback: CallbackQuery):
     await send_homework(callback, date)
 
 
+@dp.callback_query_handler(
+    GroupFilter(),
+    IsRegisteredGroupFilter(),
+    state=StudentGetHomework.GetHomework,
+    text="on_date_get",
+)
 @dp.callback_query_handler(
     StudentFilter(), state=StudentGetHomework.GetHomework, text="on_date_get"
 )
@@ -71,6 +84,12 @@ async def query_get_date(callback: CallbackQuery):
     )
 
 
+@dp.callback_query_handler(
+    GroupFilter(),
+    IsRegisteredGroupFilter(),
+    state=StudentGetHomework.GetDate,
+    text_contains="add_date",
+)
 @dp.callback_query_handler(
     StudentFilter(), state=StudentGetHomework.GetDate, text_contains="add_date"
 )

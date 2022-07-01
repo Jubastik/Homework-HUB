@@ -10,6 +10,7 @@ from tgbot.FSM.states import (
 )
 from tgbot.filters.student_filter import StudentFilter
 from tgbot.filters.admin_filter import AdminFilter
+from tgbot.filters.group_filter import GroupFilter, IsRegisteredGroupFilter
 from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     markup_profile,
@@ -17,7 +18,11 @@ from tgbot.keyboards.inline.markup import (
     markup_get_homework,
     markup_class_panel,
 )
-from tgbot.services.restapi.restapi import is_admin, get_student_info, get_names_classmates
+from tgbot.services.restapi.restapi import (
+    is_admin,
+    get_student_info,
+    get_names_classmates,
+)
 from tgbot.services.sub_classes import RestErorr
 from tgbot.services.scripts import convert_user_info, convert_users
 
@@ -45,9 +50,7 @@ async def query_class_menu(callback: CallbackQuery):
         FSMContext.reset_state()
         return
     txt = convert_users(res)
-    await callback.message.answer(
-        txt, reply_markup=markup_class_panel
-    )
+    await callback.message.answer(txt, reply_markup=markup_class_panel)
 
 
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="add_homework")
@@ -68,6 +71,9 @@ async def query_add_homework(callback: CallbackQuery):
     )
 
 
+@dp.callback_query_handler(
+    GroupFilter(), IsRegisteredGroupFilter(), text="get_homework"
+)
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="get_homework")
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()
@@ -85,9 +91,7 @@ async def handler_menu(msg: Message):
     res = await is_admin(msg.from_user.id)
     if isinstance(res, RestErorr):
         return
-    await msg.answer(
-        "Меню", reply_markup=get_markup_student_menu(res)
-    )
+    await msg.answer("Меню", reply_markup=get_markup_student_menu(res))
 
 
 @dp.callback_query_handler(StudentFilter(), state="*", text="menu")

@@ -18,6 +18,7 @@ class IDError(Exception):
 
 def user_id_processing(platform, id):
     db_sess = db_session.create_session()
+    print(id)
     if platform == TG:
         id = db_sess.query(Student.id).filter(Student.tg_id == id).first()
     elif platform == NO:
@@ -25,7 +26,7 @@ def user_id_processing(platform, id):
     else:
         raise IDError("Платформа не поддерживается")
     if id is None:
-        raise IDError("Ошибка в ID")
+        raise IDError("Несуществующий пользователь")
     return id[0]
 
 
@@ -38,7 +39,7 @@ def chat_id_processing(platform, id):
     else:
         raise IDError("Платформа не поддерживается")
     if id is None:
-        raise IDError("Ошибка в ID")
+        raise IDError("Несуществующий пользователь")
     return id[0]
 
 

@@ -10,7 +10,6 @@ from tgbot.FSM.states import (
 )
 from tgbot.filters.student_filter import StudentFilter
 from tgbot.filters.admin_filter import AdminFilter
-from tgbot.filters.group_filter import GroupFilter, IsRegisteredGroupFilter
 from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
     markup_profile,
@@ -71,9 +70,6 @@ async def query_add_homework(callback: CallbackQuery):
     )
 
 
-@dp.callback_query_handler(
-    GroupFilter(), IsRegisteredGroupFilter(), text="get_homework"
-)
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="get_homework")
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()

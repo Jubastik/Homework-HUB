@@ -9,7 +9,7 @@ from CONSTANTS import (
     URL_TIME_TABLE,
     URL_CURRENT_LESSONS,
     WEEKDAYS,
-    URL_CHAT
+    URL_CHAT,
 )
 from tgbot.services.restapi.scripts import return_error, send_error, send_success
 
@@ -208,6 +208,8 @@ async def add_homework(tguser_id, data, auto=False):
 
 async def get_homework(userid, date, is_chat=False):
     """Возвращает домашку на дату"""
+    if is_chat:
+        userid *= -1  # HTTP не одобряет отрицательные числа (вернее знак "-")
     query = f"/tg/{userid}/{date.strftime('%d-%m-%Y')}?is_chat={str(is_chat)}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
@@ -226,6 +228,7 @@ async def get_homework(userid, date, is_chat=False):
             else:
                 hw[lesson] = [lesson_data]
         return [hw]
+    print(res)
     await send_error(userid, res)
     return return_error(res)
 
@@ -315,12 +318,14 @@ async def register_chat(user_id, chat_id):
         return True
     return return_error(res)
 
+
 async def get_chat(chat_id):
     query = f"/tg/{chat_id}"
     res = requests.get(URL_CHAT + query)
     if res.status_code == 200:
         return res.json()["data"]
     return return_error(res)
+
 
 async def is_registreted_chat(chat_id):
     query = f"/tg/{chat_id}"
@@ -333,7 +338,7 @@ async def is_registreted_chat(chat_id):
 
 
 async def delete_chat(chat_id):
-    res = requests.delete(URL_CHAT + f'/tg_tgchat/{chat_id}')
+    res = requests.delete(URL_CHAT + f"/tg_tgchat/{chat_id}")
     if res.status_code == 200:
         return True
     return return_error(res)

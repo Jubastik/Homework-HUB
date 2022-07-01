@@ -4,7 +4,13 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import user_id_processing, IDError, get_next_lesson, day_to_weekday, chat_id_processing
+from api_modules.core import (
+    user_id_processing,
+    IDError,
+    get_next_lesson,
+    day_to_weekday,
+    chat_id_processing,
+)
 from data import db_session
 from data.classes import Class
 from data.homeworks import Homework
@@ -20,15 +26,17 @@ blueprint = flask.Blueprint("homework", __name__, template_folder="templates")
 
 @blueprint.route("/api/homework/<platform>/<int:user_id>/<date>", methods=["GET"])
 def get_homework_date(platform, user_id, date):  # Возвращает дз на дату
-    is_chat = request.args.get("is_chat", default=False)
-    if not is_chat:
+    is_chat = request.args.get("is_chat", default="False") != "False"
+    if is_chat:
+        # HTTP не одобряет отрицательные числа (вернее знак "-") НО! в telegram id чата это отрицательное число
+        user_id *= -1
         try:
-            id = user_id_processing(platform, user_id)
+            id = chat_id_processing(platform, user_id)
         except IDError as e:
             return make_response(jsonify({"error": str(e)}), 404)
     else:
         try:
-            id = chat_id_processing(platform, user_id)
+            id = user_id_processing(platform, user_id)
         except IDError as e:
             return make_response(jsonify({"error": str(e)}), 404)
     if len(date.split("-")) != 3:
@@ -41,21 +49,21 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     if not is_chat:
         homeworks = (
             db_sess.query(Homework)
-                .join(Schedule)
-                .join(Class)
-                .join(Student)
-                .filter(Student.id == id, Homework.date == date)
-                .all()
+            .join(Schedule)
+            .join(Class)
+            .join(Student)
+            .filter(Student.id == id, Homework.date == date)
+            .all()
         )
     else:
         homeworks = (
             db_sess.query(Homework)
-                .join(Schedule)
-                .join(Class)
-                .join(Student)
-                .join(Chat)
-                .filter(Chat.id == id, Homework.date == date)
-                .all()
+            .join(Schedule)
+            .join(Class)
+            .join(Student)
+            .join(Chat)
+            .filter(Chat.id == id, Homework.date == date)
+            .all()
         )
     if len(homeworks) == 0:
         return make_response(
@@ -85,7 +93,7 @@ def create_homework():  # Создает дз на основе входящег
     if not data:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     elif not all(
-            key in data for key in ["creator_id", "creator_platform", "lesson", "date"]
+        key in data for key in ["creator_id", "creator_platform", "lesson", "date"]
     ):
         return make_response(
             jsonify(
@@ -131,14 +139,14 @@ def create_homework():  # Создает дз на основе входящег
     day_of_week = day_to_weekday(date)
     schedule_id = (
         db_sess.query(Schedule.id)
-            .join(WeekDay)
-            .join(Lesson)
-            .filter(
+        .join(WeekDay)
+        .join(Lesson)
+        .filter(
             WeekDay.name == day_of_week,
             Schedule.class_id == my_class,
             Lesson.name == data["lesson"],
         )
-            .first()
+        .first()
     )
     if schedule_id is None:
         return make_response(

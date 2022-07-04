@@ -1,4 +1,3 @@
-from tkinter import Menu
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 

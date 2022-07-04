@@ -17,5 +17,5 @@ class Homework(SqlAlchemyBase, SerializerMixin):
     )
     schedule = orm.relationship("Schedule")
     text_homework = sqlalchemy.Column(sqlalchemy.String)
-    photo_tg_id = orm.relationship("TgPhoto")
+    photo_tg_id = orm.relationship("TgPhoto", cascade="all, delete-orphan")
     photo_dir = sqlalchemy.Column(sqlalchemy.String)

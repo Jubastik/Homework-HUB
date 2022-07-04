@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, make_response, jsonify
 
-from api_modules.core import id_processing, generate_token, IDError
+from api_modules.core import user_id_processing, generate_token, IDError
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -16,7 +16,7 @@ def get_class_students(platform, user_id):
     Возвращает список учеников класса
     """
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -28,7 +28,7 @@ def get_class_students(platform, user_id):
 @blueprint.route("/api/class/<platform>/<int:user_id>", methods=["GET"])
 def get_class(platform, user_id):
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -57,7 +57,7 @@ def create_class():  # Создает класс на основе входящ�
     data = request.json
 
     try:
-        creator_id = id_processing(data["creator_platform"], data["creator_id"])
+        creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
 
@@ -79,7 +79,7 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
     if not json_data:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()

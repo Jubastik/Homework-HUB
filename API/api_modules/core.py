@@ -2,6 +2,7 @@ import datetime
 from random import randint
 
 from data import db_session
+from data.chats import Chat
 from data.schedules import Schedule
 from data.students import Student
 from CONSTANTS import day_id_to_weekday
@@ -15,8 +16,9 @@ class IDError(Exception):
     pass
 
 
-def id_processing(platform, id):
+def user_id_processing(platform, id):
     db_sess = db_session.create_session()
+    print(id)
     if platform == TG:
         id = db_sess.query(Student.id).filter(Student.tg_id == id).first()
     elif platform == NO:
@@ -24,7 +26,20 @@ def id_processing(platform, id):
     else:
         raise IDError("Платформа не поддерживается")
     if id is None:
-        raise IDError("Ошибка в ID")
+        raise IDError("Несуществующий пользователь")
+    return id[0]
+
+
+def chat_id_processing(platform, id):
+    db_sess = db_session.create_session()
+    if platform == TG:
+        id = db_sess.query(Chat.id).filter(Chat.tg_id == id).first()
+    elif platform == NO:
+        id = db_sess.query(Chat.id).filter(Chat.id == id).first()
+    else:
+        raise IDError("Платформа не поддерживается")
+    if id is None:
+        raise IDError("Несуществующий пользователь")
     return id[0]
 
 
@@ -50,12 +65,12 @@ def get_next_lesson(class_id, lesson):
         db_sess = db_session.create_session()
         schedules = (
             db_sess.query(Schedule)
-                .join(WeekDay)
-                .filter(
+            .join(WeekDay)
+            .filter(
                 Schedule.class_id == class_id,
                 WeekDay.name == day_id_to_weekday[weekday],
             )
-                .all()
+            .all()
         )
         for schedule in schedules:
             if schedule.lesson.name == lesson:

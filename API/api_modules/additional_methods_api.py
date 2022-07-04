@@ -4,7 +4,7 @@ import flask
 from flask import jsonify, make_response
 
 from CONSTANTS import day_id_to_weekday
-from api_modules.core import id_processing, IDError
+from api_modules.core import user_id_processing, IDError
 from data import db_session
 from data.classes import Class
 from data.schedules import Schedule
@@ -21,7 +21,7 @@ def current_lessons(platform, user_id):
     Получение названий  ближайших уроков
     """
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()

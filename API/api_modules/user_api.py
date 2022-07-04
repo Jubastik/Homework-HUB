@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import id_processing, IDError, TG
+from api_modules.core import user_id_processing, IDError, TG
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -25,7 +25,7 @@ def get_all_users():  # Возвращает полный список поль�
 @blueprint.route("/api/user/<platform>/<int:user_id>", methods=["GET"])
 def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -46,7 +46,7 @@ def create_user():  # Создает пользователя на основе 
         return make_response(
             jsonify({"error": 'Отсутствуют поля "platform", "id", "name"'}), 422
         )
-    db_sess = db_session.create_session()  # добавить регу по токену
+    db_sess = db_session.create_session()
     data = request.json
     class_id = None
     if "class_token" in data:
@@ -78,7 +78,7 @@ def edit_user(platform, user_id):  # Изменение пользователя
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
@@ -101,11 +101,15 @@ def edit_user(platform, user_id):  # Изменение пользователя
 def del_user(platform, user_id):  # Удаление пользователя
     force_delete = request.args.get("force", default=False)
     try:
-        id = id_processing(platform, user_id)
+        id = user_id_processing(platform, user_id)
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).get(id)
+
+    classmates_count = (
+        db_sess.query(Student).join(Class).filter(Class.id == student.class_id).count()
+    )
     if student.is_admin is True and force_delete == "False":
         admins_in_class = (
             db_sess.query(Student)
@@ -126,6 +130,9 @@ def del_user(platform, user_id):  # Удаление пользователя
                 ),
                 422,
             )
-    db_sess.delete(student)
+    if classmates_count == 1:
+        db_sess.delete(student.my_class)
+    else:
+        db_sess.delete(student)
     db_sess.commit()
     return make_response(jsonify({"success": "Пользователь успешно удален"}), 200)

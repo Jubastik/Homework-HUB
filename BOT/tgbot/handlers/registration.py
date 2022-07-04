@@ -39,6 +39,7 @@ async def hanldler_start(msg: Message):
         )  # Тут надо сделать отправку менюшки студента
         res = await is_admin(msg.from_user.id)
         if isinstance(res, RestErorr):
+            await FSMContext.reset_state()
             return
         await FSMContext.reset_state()
         await StudentMenu.Menu.set()

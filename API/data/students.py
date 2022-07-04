@@ -16,6 +16,7 @@ class Student(SqlAlchemyBase, SerializerMixin):
     name = sqlalchemy.Column(sqlalchemy.String)
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     is_superuser = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    homeworks = orm.relationship("Homework", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Student> {self.id} {self.name} {self.my_class} {self.is_admin}"

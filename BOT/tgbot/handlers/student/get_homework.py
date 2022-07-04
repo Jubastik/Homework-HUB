@@ -1,5 +1,4 @@
 from aiogram.types import Message, CallbackQuery, ContentType, InputMediaPhoto
-from aiogram.dispatcher import FSMContext
 import datetime
 
 from bot import dp
@@ -60,6 +59,7 @@ async def query_fast_get(callback: CallbackQuery):
 )
 async def query_get_date(callback: CallbackQuery):
     await callback.answer()
+    FSMContext = dp.current_state(user=callback.from_user.id)
     res = await is_lessons_in_saturday(callback.from_user.id)
     if isinstance(res, RestErorr):
         await FSMContext.reset_state()

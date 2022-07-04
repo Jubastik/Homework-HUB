@@ -24,10 +24,7 @@ async def send_panel(callback: CallbackQuery):
         await FSMContext.reset_state()
         return
     txt = convert_users(res)
-    await callback.message.answer(
-        txt, reply_markup=markup_class_panel
-    )
-
+    await callback.message.answer(txt, reply_markup=markup_class_panel)
 
 
 @dp.callback_query_handler(
@@ -62,6 +59,7 @@ async def query_add_admin(callback: CallbackQuery):
         return
     await StudentClass.ClassPanel.set()
     await send_panel(callback)
+
 
 @dp.callback_query_handler(
     StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="kick"
@@ -106,8 +104,3 @@ async def query_remove_token(callback: CallbackQuery):
         await FSMContext.reset_state()
         return
     await send_panel(callback)
-
-
-# 1) [{tg_id: student_name}]
-# 2) {name: str, is_admin: Bool, class_token: int, admins: [str, str]}
-# 3) str

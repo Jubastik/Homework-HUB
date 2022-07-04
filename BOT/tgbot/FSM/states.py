@@ -1,3 +1,4 @@
+from tkinter import Menu
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 
@@ -60,3 +61,10 @@ class Developer(StatesGroup):
     Panel = State()
     MailingGetText = State()
     MailingCheck = State()
+
+
+class Group(StatesGroup):
+    # Состояния группы
+    Menu = State()
+    GetHomework = State()
+    GetDate = State()

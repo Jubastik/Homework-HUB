@@ -4,7 +4,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import id_processing, IDError
+from api_modules.core import user_id_processing, IDError
 from data import db_session
 from data.students import Student
 from data.time_tables import TimeTable
@@ -35,7 +35,7 @@ def create_time_table():  # Создает расписание на основ�
             422,
         )
     try:
-        creator_id = id_processing(data["creator_platform"], data["creator_id"])
+        creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
     except IDError as e:
         return make_response(jsonify({"error": str(e)}), 404)
 

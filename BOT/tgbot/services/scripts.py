@@ -20,10 +20,6 @@ def convert_time(time: list):
     return time
 
 
-def convert_position(pos):
-    return [((pos) // 8), (pos % 8)]
-
-
 def generate_dates(saturday_lesson) -> list:
     """Генерирует даты"""
     dates = []

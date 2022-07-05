@@ -3,52 +3,53 @@ class SheduleData:
         # fmt: off
         self.shedule = {
             0: {
-                "day_name": "Понедельник",
-                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
+                "day_name": "monday",
+                "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             1: {
-                "day_name": "Вторник",
-                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
+                "day_name": "tuesday",
+                "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             2: {
-                "day_name": "Среда",
-                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
+                "day_name": "wednesday",
+                "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             3: {
-                "day_name": "Четверг",
-                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
+                "day_name": "thursday",
+                "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             4: {
-                "day_name": "Пятница",
-                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
+                "day_name": "friday",
+                "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             5: {
-                "day_name": "Суббота",
-                "shedule": {0: "-", 1: "-", 2: "-", 3: "-", 4: "-", 5: "-", 6: "-", 7: "-"},
+                "day_name": "saturday",
+                "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
         }  # self.shedule = {day_id: {day_name: "day_name", {lesson: "name"}}}
         # fmt: on
 
     def add_lesson(self, name, pos):
+        pos = [pos // 8, pos % 8]
         self.shedule[pos[0]]["shedule"][pos[1]] = name
 
-    def delete_lesson(self, day_id, lesson_id):
-        self.shedule[day_id]["shedule"][lesson_id] = "-"
+    def delete_lesson(self, day_id, pos):
+        pos = [pos // 8, pos % 8]
+        self.shedule[day_id]["shedule"][pos] = ""
 
     def get_shedule(self):
         return self.shedule
 
-    def get_readable_shedule(self, current_id=None):
-        res = []
-        for key in self.shedule.keys():
-            day = self.shedule[key]
-            res.append(f'{day["day_name"]}:')
-            for lesson in day["shedule"].keys():
-                res.append(f'{lesson + 1}) {day["shedule"][lesson]}')
-        if current_id is not None:
-            res_id = current_id[0] * 9 + current_id[1] + 1
-            res[res_id] = res[res_id].ljust(20)
-            res[res_id] += "⬅️"
+    def get_formatted_shedule(self, pos=None):
+        res = {}
+        if pos is not None:
+            pos = [pos // 8, pos % 8]
+        for key, item in self.shedule.items():
+            if pos is not None and key == pos[0]:
+                item["shedule"][pos[1]] = item["shedule"][pos[1]].ljust(20) + "⬅️"
+            res[item["day_name"]] = "\n".join(
+                [f"<code>{k + 1})</code> {i}" for k, i in item["shedule"].items()]
+            )
         return res
 
     def load_shedule(self, shedule):
@@ -59,4 +60,4 @@ class SheduleData:
 class RestErorr:
     def __init__(self, response):
         self.status_code = response.status_code
-        self.error_message = response.json()['error']
+        self.error_message = response.json()["error"]

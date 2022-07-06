@@ -335,6 +335,12 @@ async def query_shedule_done(callback: CallbackQuery):
         if isinstance(res, RestErorr):
             return
         await StudentMenu.Menu.set()
+    msg = await callback.message.answer(
+        "Меню",
+        reply_markup=get_markup_student_menu(res),
+    )
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["main_msg_id"] = msg.message_id
         await callback.message.answer(
             process_text(TextKeys.menu, callback),
             reply_markup=get_markup_student_menu(res),

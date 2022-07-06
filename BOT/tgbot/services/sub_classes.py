@@ -3,30 +3,36 @@ class SheduleData:
         # fmt: off
         self.shedule = {
             0: {
-                "day_name": "monday",
+                "day_name": "Понедельник",
+                "day_tag": "monday",
                 "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             1: {
-                "day_name": "tuesday",
+                "day_name": "Вторник",
+                "day_tag": "tuesday",
                 "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             2: {
-                "day_name": "wednesday",
+                "day_name": "Среда",
+                "day_tag": "wednesday",
                 "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             3: {
-                "day_name": "thursday",
+                "day_name": "Четверг",
+                "day_tag": "thursday",
                 "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             4: {
-                "day_name": "friday",
+                "day_name": "Пятница",
+                "day_tag": "friday",
                 "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
             5: {
-                "day_name": "saturday",
+                "day_name": "Суббота",
+                "day_tag": "saturday",
                 "shedule": {0: "", 1: "", 2: "", 3: "", 4: "", 5: "", 6: "", 7: ""},
             },
-        }  # self.shedule = {day_id: {day_name: "day_name", {lesson: "name"}}}
+        }  # self.shedule = {day_id: {day_name: "day_name", day_tag: "day_tag", {lesson: "name"}}}
         # fmt: on
 
     def add_lesson(self, name, pos):
@@ -46,10 +52,18 @@ class SheduleData:
             pos = [pos // 8, pos % 8]
         for key, item in self.shedule.items():
             if pos is not None and key == pos[0]:
-                item["shedule"][pos[1]] = item["shedule"][pos[1]].ljust(20) + "⬅️"
-            res[item["day_name"]] = "\n".join(
-                [f"<code>{k + 1})</code> {i}" for k, i in item["shedule"].items()]
-            )
+                txt = f"<code>{pos[1] + 1})</code> {item['shedule'][pos[1]].ljust(20) + '⬅️'}"
+                data = []
+                for k, i in item["shedule"].items():
+                    if k == pos[1]:
+                        data.append(txt)
+                    else:
+                        data.append(f"<code>{k + 1})</code> {i}")
+                res[item["day_tag"]] = "\n".join(data)
+            else:
+                res[item["day_tag"]] = "\n".join(
+                    [f"<code>{k + 1})</code> {i}" for k, i in item["shedule"].items()]
+                )
         return res
 
     def load_shedule(self, shedule):

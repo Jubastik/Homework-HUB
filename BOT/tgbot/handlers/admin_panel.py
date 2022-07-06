@@ -1,6 +1,6 @@
 from aiogram.types import CallbackQuery
 
-from bot import dp
+from bot import dp, bot
 from tgbot.FSM.states import (
     StudentClass,
 )
@@ -19,12 +19,20 @@ from tgbot.services.scripts import convert_users
 
 async def send_panel(callback: CallbackQuery):
     res = await get_names_classmates(callback.from_user.id)
+    FSMContext = dp.current_state(user=callback.from_user.id)
     if isinstance(res, RestErorr):
-        FSMContext = dp.current_state(user=callback.from_user.id)
         await FSMContext.reset_state()
         return
     txt = convert_users(res)
-    await callback.message.answer(txt, reply_markup=markup_class_panel)
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            txt,
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=markup_class_panel,
+        )
 
 
 @dp.callback_query_handler(
@@ -34,13 +42,19 @@ async def query_get_classmate(callback: CallbackQuery):
     await callback.answer()
     await StudentClass.AddAdmin.set()
     res = await get_names_classmates(callback.from_user.id)
+    FSMContext = dp.current_state(user=callback.from_user.id)
     if isinstance(res, RestErorr):
-        FSMContext = dp.current_state(user=callback.from_user.id)
         await FSMContext.reset_state()
         return
-    await callback.message.answer(
-        "Выберете одноклассника:", reply_markup=get_markup_classmates(res)
-    )
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            "Выберите одноклассника",
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=get_markup_classmates(res),
+        )
 
 
 @dp.callback_query_handler(
@@ -68,13 +82,19 @@ async def query_kick(callback: CallbackQuery):
     await callback.answer()
     await StudentClass.KickClassmate.set()
     res = await get_names_classmates(callback.from_user.id)
+    FSMContext = dp.current_state(user=callback.from_user.id)
     if isinstance(res, RestErorr):
-        FSMContext = dp.current_state(user=callback.from_user.id)
         await FSMContext.reset_state()
         return
-    await callback.message.answer(
-        "Выберете одноклассника:", reply_markup=get_markup_classmates(res)
-    )
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            "Выберите одноклассника",
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=get_markup_classmates(res),
+        )
 
 
 @dp.callback_query_handler(
@@ -99,8 +119,21 @@ async def query_delete_user(callback: CallbackQuery):
 async def query_remove_token(callback: CallbackQuery):
     await callback.answer()
     res = await change_class_token(callback.from_user.id)
+    FSMContext = dp.current_state(user=callback.from_user.id)
     if isinstance(res, RestErorr):
-        FSMContext = dp.current_state(user=callback.from_user.id)
         await FSMContext.reset_state()
         return
-    await send_panel(callback)
+    async with FSMContext.proxy() as FSMdata:
+        res = await get_names_classmates(callback.from_user.id)
+        if isinstance(res, RestErorr):
+            await FSMContext.reset_state()
+            return
+        txt = convert_users(res) + "\nТокен был cменён"
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            txt,
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=markup_class_panel,
+        )

@@ -1,7 +1,7 @@
 from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 import datetime
 
-from bot import dp
+from bot import dp, bot
 from tgbot.filters.group_filter import (
     GroupFilter,
     IsRegisteredGroupFilter,
@@ -19,7 +19,7 @@ from tgbot.keyboards.inline.markup import (
     makrup_group_menu,
     get_markup_student_menu,
     get_markup_dates,
-    markup_get_homework
+    markup_get_homework,
 )
 from tgbot.FSM.states import Group
 
@@ -31,20 +31,26 @@ async def group_menu(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     await FSMContext.reset_state()
-    await callback.message.answer("Выберите действие:", reply_markup=makrup_group_menu)
+    await Group.Menu.set()
+    message = await callback.message.answer("Выберите действие:", reply_markup=makrup_group_menu)
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["main_msg_id"] = message.message_id
+
 
 
 @dp.message_handler(
     GroupFilter(),
     IsRegisteredGroupFilter(),
     state="*",
-    commands=["menu", "get_hw", "get_homework"],
+    commands=["menu", "get_hw", "get_homework", "start"],
 )
 async def menu(msg: Message):
     FSMContext = dp.current_state(user=msg.from_user.id)
     await FSMContext.reset_state()
     await Group.Menu.set()
-    await msg.answer("Выберите действие:", reply_markup=makrup_group_menu)
+    message = await msg.answer("Выберите действие:", reply_markup=makrup_group_menu)
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["main_msg_id"] = message.message_id
 
 
 @dp.message_handler(
@@ -65,13 +71,22 @@ async def registration(msg: Message):
         )
 
 
-@dp.callback_query_handler(GroupFilter(), IsRegisteredGroupFilter(), state=Group.Menu, text="get_homework")
+@dp.callback_query_handler(
+    GroupFilter(), IsRegisteredGroupFilter(), state=Group.Menu, text="get_homework"
+)
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()
     await Group.GetHomework.set()
-    await callback.message.answer(
-        "Меню выбора получения домашки", reply_markup=markup_get_homework
-    )
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.message.chat.id
+        await bot.edit_message_text(
+            "Меню выбора получения домашки",
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=markup_get_homework,
+        )
 
 
 async def send_homework(callback: CallbackQuery, date):
@@ -119,10 +134,15 @@ async def query_get_date(callback: CallbackQuery):
         await FSMContext.reset_state()
         return
     await Group.GetDate.set()
-    await callback.message.answer(
-        "Выберете день, на который хотите получить домашнее задание",
-        reply_markup=get_markup_dates(generate_dates(res)),
-    )
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.message.chat.id
+        await bot.edit_message_text(
+            "Выберете день, на который хотите получить домашнее задание",
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=get_markup_dates(generate_dates(res)),
+        )
 
 
 @dp.callback_query_handler(

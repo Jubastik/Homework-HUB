@@ -1,7 +1,8 @@
 from aiogram.types import Message, CallbackQuery, ContentType, InputMediaPhoto
 import datetime
+from tgbot.services.restapi.restapi import is_admin
 
-from bot import dp
+from bot import dp, bot
 from tgbot.FSM.states import (
     StudentMenu,
     StudentGetHomework,
@@ -39,10 +40,16 @@ async def send_homework(callback: CallbackQuery, date):
             await callback.message.answer(lesson["text"])
     await FSMContext.reset_state()
     await StudentMenu.Menu.set()
-    await callback.message.answer(
+    res = await is_admin(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        await FSMContext.reset_state()
+        return
+    msg = await callback.message.answer(
         "Меню",
-        reply_markup=get_markup_student_menu(True),
+        reply_markup=get_markup_student_menu(res),
     )
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["main_msg_id"] = msg.message_id
 
 
 @dp.callback_query_handler(
@@ -64,11 +71,16 @@ async def query_get_date(callback: CallbackQuery):
     if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
-    await StudentGetHomework.GetDate.set()
-    await callback.message.answer(
-        "Выберете день, на который хотите получить домашнее задание",
-        reply_markup=get_markup_dates(generate_dates(res)),
-    )
+    async with FSMContext.proxy() as FSMdata:
+        await StudentGetHomework.GetDate.set()
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            "Выберете день, на который хотите получить домашнее задание",
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=get_markup_dates(generate_dates(res)),
+        )
 
 
 @dp.callback_query_handler(

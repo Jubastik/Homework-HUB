@@ -57,7 +57,7 @@ async def convert_homework(data) -> dict:
             author_data = await get_user_by_id(data["author"])
             author_name = author_data["data"]["name"]
             info = {
-                "text": "\n".join([lesson, f"Автор:{author_name}\n", txt]),
+                "text": "\n".join([lesson, f"Автор: @{author_name}\n", txt]),
                 "photos": data["photos"],
             }
             res.append(info)

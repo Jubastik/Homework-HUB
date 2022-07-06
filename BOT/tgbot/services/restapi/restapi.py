@@ -128,7 +128,7 @@ async def register_class(tguser_id, data):
         day_n = schedule[el]["day_name"]
         for ell in schedule[el]["shedule"]:
             lesson_name = schedule[el]["shedule"][ell]
-            if lesson_name != "-":
+            if lesson_name != "":
                 response = requests.post(
                     URL_SCHEDULE,
                     json={
@@ -228,7 +228,8 @@ async def get_homework(userid, date, is_chat=False):
             else:
                 hw[lesson] = [lesson_data]
         return [hw]
-    print(res)
+    if is_chat:
+        userid *= -1
     await send_error(userid, res)
     return return_error(res)
 

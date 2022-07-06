@@ -1,6 +1,6 @@
 from aiogram.types import Message
 
-from bot import dp, bot
+from bot import dp
 from languages.text_proccesor import process_text
 from languages.text_keys import TextKeys
 

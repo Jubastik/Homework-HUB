@@ -12,3 +12,4 @@ class TextKeys:
     uncorrect_time = "uncorrect_time"
     correct_time = "correct_time"
     menu = "menu"
+    help_txt = "help_txt"

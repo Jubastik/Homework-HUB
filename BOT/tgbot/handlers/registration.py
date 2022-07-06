@@ -1,4 +1,3 @@
-from concurrent.futures import process
 from aiogram.types import Message, CallbackQuery, User
 
 
@@ -146,7 +145,9 @@ async def query_check_start_time_false(callback: CallbackQuery):
 )
 async def query_check_start_time_back(callback: CallbackQuery):
     await callback.answer()
-    await callback.message.answer(process_text(TextKeys.hello, callback), reply_markup=markup_start)
+    await callback.message.answer(
+        process_text(TextKeys.hello, callback), reply_markup=markup_start
+    )
     await RegistrationStates.StartBtn.set()
 
 
@@ -155,8 +156,8 @@ async def handler_add_time(msg: Message):
     time = msg.text
     FSMContext = dp.current_state(user=msg.from_user.id)
     if time_mod := time_is_correct(time):
-        time_mod = ":".join(convert_time(time_mod))
-        await msg.answer(process_text(TextKeys.correct_time, msg, time=time_mod))
+        time_txt = ":".join(convert_time(time_mod))
+        await msg.answer(process_text(TextKeys.correct_time, msg, time=time_txt))
         async with FSMContext.proxy() as FSMdata:
             FSMdata["start_time"] = time_mod
             subjects = "\n".join([*SUBJECTS, *FSMdata["extra_subjects"]])
@@ -186,7 +187,7 @@ async def query_check_subjects_back(callback: CallbackQuery):
             process_text(
                 TextKeys.start_time_check,
                 callback,
-                time=":".join(convert_time(time)),
+                time=":".join(time),
             ),
             reply_markup=markup_yes_or_no,
         )
@@ -240,7 +241,8 @@ async def query_check_subjects_undo(callback: CallbackQuery):
     async with FSMContext.proxy() as FSMdata:
         shedule = FSMdata["shedule"].get_formatted_shedule(pos=FSMdata["current_pos"])
         msg = await callback.message.answer(
-            process_text(TextKeys.shedule1, callback, **shedule)
+            process_text(TextKeys.shedule1, callback, **shedule),
+            reply_markup=markup_shedule2,
         )
         FSMdata["shedule_msg_id"] = msg.message_id
         await RegistrationStates.AddShedule.set()

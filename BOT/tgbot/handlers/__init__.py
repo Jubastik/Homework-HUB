@@ -3,3 +3,4 @@ from . import student
 from . import admin_panel
 from . import group
 from . import developer
+from . import general

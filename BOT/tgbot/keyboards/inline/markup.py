@@ -35,8 +35,12 @@ markup_yes_or_no = InlineKeyboardMarkup(
 
 markup_check_subjects1 = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text="Всё верно", callback_data="Check_Subjects_okey")],
-        [InlineKeyboardButton(text="Отмена действия", callback_data="Check_Subjects_undo")],
+        [InlineKeyboardButton(text="Продолжить", callback_data="Check_Subjects_okey")],
+        [
+            InlineKeyboardButton(
+                text="Отмена действия", callback_data="Check_Subjects_undo"
+            )
+        ],
         [InlineKeyboardButton(text="Назад", callback_data="back")],
     ]
 )

@@ -91,7 +91,7 @@ async def query_get_homework(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.message.chat.id
         await bot.edit_message_text(
-            process_text(TextKeys.get_homework_menu, callback),
+            process_text(TextKeys.homework_menu, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=markup_get_homework,
@@ -125,7 +125,7 @@ async def query_get_date(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.message.chat.id
         await bot.edit_message_text(
-            process_text(TextKeys.get_date_menu, callback),
+            process_text(TextKeys.date_menu, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=get_markup_dates(generate_dates(res)),

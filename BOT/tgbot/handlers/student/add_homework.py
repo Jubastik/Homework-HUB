@@ -22,6 +22,8 @@ from tgbot.services.restapi.restapi import (
     is_lessons_in_saturday,
 )
 from tgbot.services.sub_classes import RestErorr
+from languages.text_proccesor import process_text
+from languages.text_keys import TextKeys
 
 
 @dp.callback_query_handler(
@@ -41,7 +43,7 @@ async def query_fast_add(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            "На какой предмет добавить домашнее задание?",
+            process_text(TextKeys.choose_subject, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=get_subjects_markup(res),
@@ -64,7 +66,7 @@ async def query_add_on_date(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            "Выберете дату, на которую хотите добавить домашнее задание:",
+            process_text(TextKeys.choose_date, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=get_markup_dates(generate_dates(res)),
@@ -92,7 +94,7 @@ async def query_get_date(callback: CallbackQuery):
         main_message_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            f"Выберете предмет из расписания на {date}",
+            process_text(TextKeys.choose_subject_on_date, callback, date=date),
             chat_id=chat_id,
             message_id=main_message_id,
             reply_markup=get_subjects_markup(res),
@@ -115,7 +117,7 @@ async def query_get_sunject(callback: CallbackQuery):
         main_message_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            "Отправьте домашнее задание👇🏻 (можно прикрепить фото)",
+            process_text(TextKeys.send_homework, callback),
             chat_id=chat_id,
             message_id=main_message_id,
             reply_markup=markup_done,
@@ -137,7 +139,7 @@ async def query_get_subject(callback: CallbackQuery):
         main_message_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            "Отправьте домашнее задание👇🏻 (можно прикрепить фото)",
+            process_text(TextKeys.send_homework, callback),
             chat_id=chat_id,
             message_id=main_message_id,
             reply_markup=markup_done,
@@ -169,16 +171,11 @@ async def query_homework_check(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
         if len(FSMdata["text"]) == 0 and len(FSMdata["files_tgid"]) == 0:
-            await callback.message.answer("Не получено никакой информации")
+            await callback.message.answer(process_text(TextKeys.no_hw, callback))
         else:
             await StudentAddHomework.CheckHomework.set()
             await callback.message.answer(
-                "\n".join(
-                    [
-                        f"Записываю домашнее задание на {FSMdata['subject']}",
-                        "Верно?",
-                    ]
-                ),
+                process_text(TextKeys.check_hw, callback, subject=FSMdata["subject"]),
                 reply_markup=markup_check_homework,
             )
 
@@ -208,7 +205,7 @@ async def query_homework_check(callback: CallbackQuery):
     await FSMContext.reset_state()
     await StudentMenu.Menu.set()
     msg = await callback.message.answer(
-        "Меню",
+        process_text(TextKeys.menu, callback),
         reply_markup=get_markup_student_menu(True),
     )
     async with FSMContext.proxy() as FSMdata:

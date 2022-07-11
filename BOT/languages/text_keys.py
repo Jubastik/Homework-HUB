@@ -1,4 +1,3 @@
-import profile
 
 
 class TextKeys:
@@ -27,7 +26,15 @@ class TextKeys:
     choose_action = "choose_action"
     chat_registered = "chat_registered"
     chat_unregistered = "chat_unregistered"
-    get_homework_menu = "get_homework_menu"
-    get_date_menu = "get_date_menu"
+    homework_menu = "homework_menu"
+    date_menu = "date_menu"
+
+    choose_homework = "choose_homework"
+    choose_subject = "choose_subject"
+    choose_date = "choose_date"
+    choose_subject_on_date = "choose_subject_on_date"
+    send_homework = "send_homework"
+    no_hw = "no_hw"
+    check_hw = "check_hw"
     
     help_txt = "help_txt"

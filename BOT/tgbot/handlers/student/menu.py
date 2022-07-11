@@ -7,7 +7,6 @@ from tgbot.FSM.states import (
     StudentProfile,
     StudentMenu,
     StudentGetHomework,
-    StudentClass,
 )
 from tgbot.filters.student_filter import StudentFilter
 from tgbot.filters.admin_filter import AdminFilter
@@ -16,15 +15,12 @@ from tgbot.keyboards.inline.markup import (
     markup_profile,
     markup_add_homework,
     markup_get_homework,
-    markup_class_panel,
 )
 from tgbot.services.restapi.restapi import (
     is_admin,
     get_student_info,
-    get_names_classmates,
 )
 from tgbot.services.sub_classes import RestErorr
-from tgbot.services.scripts import convert_users
 from languages.text_proccesor import process_text
 from languages.text_keys import TextKeys
 
@@ -74,7 +70,7 @@ async def query_add_homework(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            "Выбери способ добавления",
+            process_text(TextKeys.choose_homework, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=markup_add_homework,
@@ -90,7 +86,7 @@ async def query_get_homework(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            "Меню выбора получения домашки",
+            process_text(TextKeys.homework_menu, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=markup_get_homework,
@@ -106,7 +102,9 @@ async def handler_menu(msg: Message):
     if isinstance(res, RestErorr):
         return
     async with FSMContext.proxy() as FSMdata:
-        msg = await msg.answer("Меню", reply_markup=get_markup_student_menu(res))
+        msg = await msg.answer(
+            process_text(TextKeys.menu, msg), reply_markup=get_markup_student_menu(res)
+        )
         FSMdata["main_msg_id"] = msg.message_id
 
 
@@ -121,7 +119,7 @@ async def query_menu(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            "Меню",
+            process_text(TextKeys.menu, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=get_markup_student_menu(res),
@@ -138,6 +136,7 @@ async def query_menu(callback: CallbackQuery):
         return
     async with FSMContext.proxy() as FSMdata:
         msg = await callback.message.answer(
-            "Меню", reply_markup=get_markup_student_menu(res)
+            process_text(TextKeys.menu, callback),
+            reply_markup=get_markup_student_menu(res),
         )
         FSMdata["main_msg_id"] = msg.message_id

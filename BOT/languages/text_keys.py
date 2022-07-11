@@ -24,5 +24,10 @@ class TextKeys:
     choose_classmate = "choose_classmate"
     token_changed = "token_changed"
 
+    choose_action = "choose_action"
+    chat_registered = "chat_registered"
+    chat_unregistered = "chat_unregistered"
+    get_homework_menu = "get_homework_menu"
+    get_date_menu = "get_date_menu"
     
     help_txt = "help_txt"

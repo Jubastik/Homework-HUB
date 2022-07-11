@@ -78,7 +78,13 @@ class LanguageRussian:
     admin_added = "Администратор добавлен"
     user_kicked = "Пользователь исключен из класса"
     choose_classmate = "Выбери одноклассника:"
-    token_changed = "Токен изменен. Новый - <code>{token}</code>"
+    token_changed = "Токен изменен - <code>{token}</code>"
+
+    choose_action = "Выбери действие:"
+    chat_registered = "<i>Чат зарегистрирован</i> <b>/menu</b> - для перехода в меню"
+    chat_unregistered = "Чтобы зарегистрировать чат, нужно зарегистрироватсья в <b>@hw_assistant_bot</b>"
+    get_homework_menu = "Способы получения домашнего задания:"
+    get_date_menu = "Выберете день, на который хотите получить домашнее задание"
 
     help_txt = """
 <b>Бот находиться в разработке</b>

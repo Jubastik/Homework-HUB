@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery, InputMediaPhoto
 
 from bot import dp, bot
-from tgbot.FSM.states import StudentClass, StudentMenu
+from tgbot.FSM.states import StudentClass, StudentMenu, Group
 from tgbot.keyboards.inline.markup import markup_class_panel, get_markup_student_menu
 from tgbot.services.restapi.restapi import (
     get_homework,
@@ -58,3 +58,25 @@ async def send_homework(callback: CallbackQuery, date):
     )
     async with FSMContext.proxy() as FSMdata:
         FSMdata["main_msg_id"] = msg.message_id
+
+
+async def send_homework_group(callback: CallbackQuery, date):
+    res = await get_homework(callback.message.chat.id, date, is_chat=True)
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    if isinstance(res, RestErorr):
+        await FSMContext.reset_state()
+        return
+    data = await convert_homework(res[0])
+    for lesson in data:
+        if len(lesson["photos"]) != 0:
+            media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]
+            for photo in lesson["photos"][1:]:
+                media.append(InputMediaPhoto(photo))
+            await callback.message.answer_media_group(
+                media,
+                disable_notification=True,
+            )
+        else:
+            await callback.message.answer(lesson["text"])
+    await FSMContext.reset_state()
+    await Group.Menu.set()

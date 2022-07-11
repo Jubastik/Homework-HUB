@@ -18,5 +18,11 @@ class TextKeys:
 
     menu = "menu"
     profile = "profile"
+    class_panel = "class_panel"
+    admin_added = "admin_added"
+    user_kicked = "user_kicked"
+    choose_classmate = "choose_classmate"
+    token_changed = "token_changed"
+
     
     help_txt = "help_txt"

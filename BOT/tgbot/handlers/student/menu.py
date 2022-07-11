@@ -1,6 +1,7 @@
 from aiogram.types import Message, CallbackQuery
 
 from bot import dp, bot
+from tgbot.handlers.shortcuts import send_panel
 from tgbot.FSM.states import (
     StudentAddHomework,
     StudentProfile,
@@ -23,9 +24,10 @@ from tgbot.services.restapi.restapi import (
     get_names_classmates,
 )
 from tgbot.services.sub_classes import RestErorr
-from tgbot.services.scripts import convert_user_info, convert_users
+from tgbot.services.scripts import convert_users
 from languages.text_proccesor import process_text
 from languages.text_keys import TextKeys
+
 
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="profile")
 async def query_profile(callback: CallbackQuery):
@@ -36,12 +38,15 @@ async def query_profile(callback: CallbackQuery):
         return
     async with FSMContext.proxy() as FSMdata:
         res["is_admin"] = "✅" if res["is_admin"] else "❌"
-        res["admins"] = ' '.join(['@' + i for i in res['admins']])
+        res["admins"] = " ".join(["@" + i for i in res["admins"]])
         await StudentProfile.Profile.set()
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            process_text(TextKeys.profile, callback, **res), chat_id=chat_id, message_id=main_msg_id, reply_markup=markup_profile
+            process_text(TextKeys.profile, callback, **res),
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=markup_profile,
         )
 
 
@@ -50,22 +55,7 @@ async def query_profile(callback: CallbackQuery):
 )
 async def query_class_menu(callback: CallbackQuery):
     await callback.answer()
-    await StudentClass.ClassPanel.set()
-    res = await get_names_classmates(callback.from_user.id)
-    FSMContext = dp.current_state(user=callback.from_user.id)
-    if isinstance(res, RestErorr):
-        FSMContext.reset_state()
-        return
-    txt = convert_users(res)
-    async with FSMContext.proxy() as FSMdata:
-        main_msg_id = FSMdata["main_msg_id"]
-        chat_id = callback.from_user.id
-        await bot.edit_message_text(
-            txt,
-            chat_id=chat_id,
-            message_id=main_msg_id,
-            reply_markup=markup_class_panel,
-        )
+    await send_panel(callback)
 
 
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="add_homework")
@@ -136,3 +126,18 @@ async def query_menu(callback: CallbackQuery):
             message_id=main_msg_id,
             reply_markup=get_markup_student_menu(res),
         )
+
+
+@dp.callback_query_handler(StudentFilter(), state="*", text="error_menu")
+async def query_menu(callback: CallbackQuery):
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    await FSMContext.reset_state()
+    await StudentMenu.Menu.set()
+    res = await is_admin(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        return
+    async with FSMContext.proxy() as FSMdata:
+        msg = await callback.message.answer(
+            "Меню", reply_markup=get_markup_student_menu(res)
+        )
+        FSMdata["main_msg_id"] = msg.message_id

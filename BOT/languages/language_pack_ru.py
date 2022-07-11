@@ -71,8 +71,14 @@ class LanguageRussian:
 Админы класса - <b>{admins}</b>
 """
 
-    btn_join_class = "Присоедениться"
-    btn_new_class = "Создать класс"
+    class_panel = """
+<b>Панель администратора⭐️</b>
+<i>{status}</i>
+"""
+    admin_added = "Администратор добавлен"
+    user_kicked = "Пользователь исключен из класса"
+    choose_classmate = "Выбери одноклассника:"
+    token_changed = "Токен изменен. Новый - <code>{token}</code>"
 
     help_txt = """
 <b>Бот находиться в разработке</b>

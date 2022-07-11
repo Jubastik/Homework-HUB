@@ -66,20 +66,6 @@ async def convert_homework(data) -> dict:
     # {предмет: [{txt: txt, photo: [photos]}]}
 
 
-def convert_user_info(data) -> str:
-    res = "\n".join(
-        [
-            "Профиль:",
-            f"Имя: @{data['name']}",
-            "Админ: ✅" if data["is_admin"] else "Админ: ❌",
-            f"Токен класса: {data['class_token']}",
-            f"Ссылка приглашение: t.me/YandexLyceum_rulka_bot?start={data['class_token']}",
-            f"Админы класса: {' '.join(['@' + i for i in data['admins']])}",
-        ]
-    )
-    return res
-
-
 def convert_users(data):
     txt = "\n".join(
         [

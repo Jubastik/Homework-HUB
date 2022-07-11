@@ -172,6 +172,13 @@ markup_menu = InlineKeyboardMarkup(
 )
 
 
+markup_error_menu = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Вернуться в меню", callback_data="error_menu")]
+    ]
+)
+
+
 markup_class_panel = InlineKeyboardMarkup(
     inline_keyboard=[
         [

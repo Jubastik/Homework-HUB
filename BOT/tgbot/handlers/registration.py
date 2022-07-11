@@ -14,7 +14,7 @@ from tgbot.keyboards.inline.markup import (
     markup_shedule2,
     get_markup_student_menu,
 )
-from tgbot.services.restapi.restapi import register_user, register_class, is_admin
+from tgbot.services.restapi.restapi import register_user, register_class, is_admin, get_student_info
 from tgbot.services.scripts import convert_time, time_is_correct
 from tgbot.services.sub_classes import RestErorr, SheduleData
 from languages.text_keys import TextKeys
@@ -329,22 +329,24 @@ async def query_shedule_done(callback: CallbackQuery):
         if isinstance(res, RestErorr):
             await FSMContext.reset_state()
             return
+        res = await get_student_info(callback.from_user.id)
+        if isinstance(res, RestErorr):
+            await FSMContext.reset_state()
+            return
+        link = f"t.me/YandexLyceum_rulka_bot?start={res['class_token']}"   
+        token = res["class_token"]
         await FSMContext.reset_state()
-        await callback.message.answer("Регистрация успешна")
+        await callback.message.answer(process_text(TextKeys.register_done, callback, link=link, token=token))
         res = await is_admin(callback.from_user.id)
         if isinstance(res, RestErorr):
             return
         await StudentMenu.Menu.set()
     msg = await callback.message.answer(
-        "Меню",
+        process_text(TextKeys.menu, callback),
         reply_markup=get_markup_student_menu(res),
     )
     async with FSMContext.proxy() as FSMdata:
         FSMdata["main_msg_id"] = msg.message_id
-        await callback.message.answer(
-            process_text(TextKeys.menu, callback),
-            reply_markup=get_markup_student_menu(res),
-        )
 
 
 @dp.callback_query_handler(

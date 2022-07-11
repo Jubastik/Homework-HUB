@@ -1,3 +1,6 @@
+import profile
+
+
 class TextKeys:
     by_link_success = "by_link_success"
     hello = "hello"
@@ -11,5 +14,9 @@ class TextKeys:
     add_time = "add_time"
     uncorrect_time = "uncorrect_time"
     correct_time = "correct_time"
+    register_done = "register_done"
+
     menu = "menu"
+    profile = "profile"
+    
     help_txt = "help_txt"

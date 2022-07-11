@@ -24,7 +24,8 @@ from tgbot.services.restapi.restapi import (
 )
 from tgbot.services.sub_classes import RestErorr
 from tgbot.services.scripts import convert_user_info, convert_users
-
+from languages.text_proccesor import process_text
+from languages.text_keys import TextKeys
 
 @dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="profile")
 async def query_profile(callback: CallbackQuery):
@@ -34,12 +35,13 @@ async def query_profile(callback: CallbackQuery):
     if isinstance(res, RestErorr):
         return
     async with FSMContext.proxy() as FSMdata:
-        txt = convert_user_info(res)
+        res["is_admin"] = "✅" if res["is_admin"] else "❌"
+        res["admins"] = ' '.join(['@' + i for i in res['admins']])
         await StudentProfile.Profile.set()
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            txt, chat_id=chat_id, message_id=main_msg_id, reply_markup=markup_profile
+            process_text(TextKeys.profile, callback, **res), chat_id=chat_id, message_id=main_msg_id, reply_markup=markup_profile
         )
 
 

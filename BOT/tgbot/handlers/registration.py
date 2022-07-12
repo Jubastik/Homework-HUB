@@ -1,5 +1,5 @@
 from aiogram.types import Message, CallbackQuery, User
-
+import os
 
 # | start | start | start | start | start | start | start | start |
 from CONSTANTS import SUBJECTS
@@ -332,11 +332,11 @@ async def query_shedule_done(callback: CallbackQuery):
         res = await get_student_info(callback.from_user.id)
         if isinstance(res, RestErorr):
             await FSMContext.reset_state()
-            return
-        link = f"t.me/YandexLyceum_rulka_bot?start={res['class_token']}"   
+            return  
         token = res["class_token"]
+        link = os.getenv("TG_BOT_LINK")
         await FSMContext.reset_state()
-        await callback.message.answer(process_text(TextKeys.register_done, callback, link=link, token=token))
+        await callback.message.answer(process_text(TextKeys.register_done, callback, token=token, link=link))
         res = await is_admin(callback.from_user.id)
         if isinstance(res, RestErorr):
             return

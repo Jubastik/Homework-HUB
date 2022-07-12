@@ -37,7 +37,7 @@ async def query_get_date(callback: CallbackQuery):
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
         await bot.edit_message_text(
-            process_text(TextKeys.choose_date, callback),
+            process_text(TextKeys.date_menu, callback),
             chat_id=chat_id,
             message_id=main_msg_id,
             reply_markup=get_markup_dates(generate_dates(res)),

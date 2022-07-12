@@ -17,6 +17,7 @@ class TextKeys:
 
     menu = "menu"
     profile = "profile"
+    delete_account = "delete_account"
     class_panel = "class_panel"
     admin_added = "admin_added"
     user_kicked = "user_kicked"
@@ -28,6 +29,7 @@ class TextKeys:
     chat_unregistered = "chat_unregistered"
     homework_menu = "homework_menu"
     date_menu = "date_menu"
+    homework_txt = "homework_txt"
 
     choose_homework = "choose_homework"
     choose_subject = "choose_subject"

@@ -34,7 +34,7 @@ async def send_homework(callback: CallbackQuery, date):
     if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
-    data = await convert_homework(res[0])
+    data = await convert_homework(res[0], callback)
     for lesson in data:
         if len(lesson["photos"]) != 0:
             media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]

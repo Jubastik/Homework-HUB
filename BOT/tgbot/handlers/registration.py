@@ -337,6 +337,7 @@ async def query_shedule_done(callback: CallbackQuery):
         link = os.getenv("TG_BOT_LINK")
         await FSMContext.reset_state()
         await callback.message.answer(process_text(TextKeys.register_done, callback, token=token, link=link))
+        await callback.message.answer(process_text(TextKeys.register_done2, callback, channel=os.getenv("TG_OFFICAL_CHANNEL_LINK")))
         res = await is_admin(callback.from_user.id)
         if isinstance(res, RestErorr):
             return

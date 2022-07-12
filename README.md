@@ -1,4 +1,14 @@
 # HomeBot
+.env files
+1) BOT/.env
+TG_TOKEN = Токен бота
+TG_API_SERVER = {server}:{port} к API части приложения
+VERSION = "local" для тестов. "server" для полноценной функциональности
+TG_ADMIN_CHAT = id чата в который будут приходить уведомления
+TG_OFFICAL_CHANNEL_ID = id официального канала
+TG_OFFICAL_CHANNEL_LINK = ссылка на официальный канал
+TG_BOT_LINK = ссылка на бота (t.me/my_bt_bot?start=)
+
 Ссылка на бота: http://t.me/hw_assistant_bot
 
 ТЗ: Реализовать Telegramm бота + собственное API для удобного мониторинга домашнего задания.

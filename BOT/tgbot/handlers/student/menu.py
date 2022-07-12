@@ -112,6 +112,7 @@ async def handler_menu(msg: Message):
 
 @dp.callback_query_handler(StudentFilter(), state="*", text="menu")
 async def query_menu(callback: CallbackQuery):
+    await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     await StudentMenu.Menu.set()
     res = await is_admin(callback.from_user.id)
@@ -130,6 +131,7 @@ async def query_menu(callback: CallbackQuery):
 
 @dp.callback_query_handler(StudentFilter(), state="*", text="error_menu")
 async def query_menu(callback: CallbackQuery):
+    await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     await FSMContext.reset_state()
     await StudentMenu.Menu.set()

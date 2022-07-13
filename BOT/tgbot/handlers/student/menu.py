@@ -1,8 +1,8 @@
 from aiogram.types import Message, CallbackQuery
-import os
 
 from bot import dp, bot
 from tgbot.handlers.shortcuts import send_panel
+from CONSTANTS import TG_BOT_LINK
 from tgbot.FSM.states import (
     StudentAddHomework,
     StudentProfile,
@@ -36,7 +36,7 @@ async def query_profile(callback: CallbackQuery):
     async with FSMContext.proxy() as FSMdata:
         res["is_admin"] = "✅" if res["is_admin"] else "❌"
         res["admins"] = " ".join(["@" + i for i in res["admins"]])
-        res["link"] = os.getenv("TG_BOT_LINK")
+        res["link"] = TG_BOT_LINK
         await StudentProfile.Profile.set()
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id

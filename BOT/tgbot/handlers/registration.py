@@ -2,7 +2,7 @@ from aiogram.types import Message, CallbackQuery, User
 import os
 
 # | start | start | start | start | start | start | start | start |
-from CONSTANTS import SUBJECTS
+from CONSTANTS import SUBJECTS, TG_BOT_LINK, TG_OFFICAL_CHANNEL
 from bot import dp, bot
 from tgbot.FSM.states import RegistrationStates, StudentMenu
 from tgbot.filters import RegistrationFilter
@@ -334,10 +334,10 @@ async def query_shedule_done(callback: CallbackQuery):
             await FSMContext.reset_state()
             return  
         token = res["class_token"]
-        link = os.getenv("TG_BOT_LINK")
+        link = TG_BOT_LINK
         await FSMContext.reset_state()
         await callback.message.answer(process_text(TextKeys.register_done, callback, token=token, link=link))
-        await callback.message.answer(process_text(TextKeys.register_done2, callback, channel=os.getenv("TG_OFFICAL_CHANNEL_LINK")))
+        await callback.message.answer(process_text(TextKeys.register_done2, callback, channel=TG_OFFICAL_CHANNEL))
         res = await is_admin(callback.from_user.id)
         if isinstance(res, RestErorr):
             return

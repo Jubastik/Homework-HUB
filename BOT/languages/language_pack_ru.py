@@ -1,8 +1,3 @@
-import os
-
-from requests import delete
-
-
 class LanguageRussian:
     by_link_success = "<i>Регистрация по ссылке успешна</i>"
     hello = """

@@ -18,7 +18,6 @@ class IDError(Exception):
 
 def user_id_processing(platform, id):
     db_sess = db_session.create_session()
-    print(id)
     if platform == TG:
         id = db_sess.query(Student.id).filter(Student.tg_id == id).first()
     elif platform == NO:

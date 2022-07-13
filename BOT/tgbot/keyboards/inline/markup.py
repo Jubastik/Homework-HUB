@@ -16,7 +16,7 @@ markup_start = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="Присоединиться к классу по id", callback_data="join_class_by_id"
+                text="Присоедениться", callback_data="join_class_by_id"
             ),
             InlineKeyboardButton(text="Создать класс", callback_data="make_class"),
         ],
@@ -35,13 +35,13 @@ markup_yes_or_no = InlineKeyboardMarkup(
 
 markup_check_subjects1 = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text="Всё верно", callback_data="Check_Subjects_okey")],
+        [InlineKeyboardButton(text="Продолжить", callback_data="Check_Subjects_okey")],
+        [
+            InlineKeyboardButton(
+                text="Отмена действия", callback_data="Check_Subjects_undo"
+            )
+        ],
         [InlineKeyboardButton(text="Назад", callback_data="back")],
-    ]
-)
-markup_check_subjects2 = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Отмена", callback_data="Check_Subjects_undo")],
     ]
 )
 markup_shedule2 = InlineKeyboardMarkup(
@@ -61,8 +61,8 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
             )
         )
     keyboard.add(
-        InlineKeyboardButton(text="Вверх", callback_data=ArrowsData.new(num=-1)),
-        InlineKeyboardButton(text="Вниз", callback_data=ArrowsData.new(num=1)),
+        InlineKeyboardButton(text="Вверх⬆️", callback_data=ArrowsData.new(num=-1)),
+        InlineKeyboardButton(text="Вниз⬇️", callback_data=ArrowsData.new(num=1)),
     )
     keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back"))
     return keyboard
@@ -168,6 +168,13 @@ markup_get_homework = InlineKeyboardMarkup(
 markup_menu = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Вернуться в меню", callback_data="menu")]
+    ]
+)
+
+
+markup_error_menu = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Вернуться в меню", callback_data="error_menu")]
     ]
 )
 

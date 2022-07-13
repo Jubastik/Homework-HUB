@@ -1,24 +1,31 @@
 from aiogram.types import CallbackQuery
-from aiogram.dispatcher import FSMContext
 
-from bot import dp
+from bot import dp, bot
 from tgbot.handlers.student.menu import query_profile
 from tgbot.FSM.states import StudentProfile
 from tgbot.filters.student_filter import StudentFilter
 from tgbot.services.sub_classes import RestErorr
 from tgbot.keyboards.inline.markup import markup_are_u_sure
 from tgbot.services.restapi.restapi import delete_user
-
+from languages.text_keys import TextKeys
+from languages.text_proccesor import process_text
 
 @dp.callback_query_handler(
     StudentFilter(), state=StudentProfile.Profile, text="delete_account"
 )
 async def query_delete_watning(callback: CallbackQuery):
     await callback.answer()
+    FSMContext = dp.current_state(user=callback.from_user.id)
     await StudentProfile.DeleteAccount.set()
-    await callback.message.answer(
-        "Вы уверены что хотите удалить аккаунт?", reply_markup=markup_are_u_sure
-    )
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            process_text(TextKeys.delete_account, callback),
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=markup_are_u_sure,
+        )
 
 
 # | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount |

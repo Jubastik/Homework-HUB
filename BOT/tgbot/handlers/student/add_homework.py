@@ -1,13 +1,12 @@
 from aiogram.types import Message, CallbackQuery, ContentType
 import datetime
 
-from bot import dp
+from bot import dp, bot
 from tgbot.FSM.states import (
     StudentAddHomework,
     StudentMenu,
 )
 from tgbot.filters.student_filter import StudentFilter
-from tgbot.filters.admin_filter import AdminFilter
 from tgbot.services.scripts import generate_dates
 from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
@@ -23,6 +22,8 @@ from tgbot.services.restapi.restapi import (
     is_lessons_in_saturday,
 )
 from tgbot.services.sub_classes import RestErorr
+from languages.text_proccesor import process_text
+from languages.text_keys import TextKeys
 
 
 @dp.callback_query_handler(
@@ -38,11 +39,15 @@ async def query_fast_add(callback: CallbackQuery):
         return
     async with FSMContext.proxy() as FSMdata:
         FSMdata["is_fast"] = True
-    await StudentAddHomework.FastAdd.set()
-    await callback.message.answer(
-        "На какой предмет добавить домашнее задание?",
-        reply_markup=get_subjects_markup(res),
-    )
+        await StudentAddHomework.FastAdd.set()
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            process_text(TextKeys.choose_subject, callback),
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=get_subjects_markup(res),
+        )
 
 
 @dp.callback_query_handler(
@@ -57,11 +62,15 @@ async def query_add_on_date(callback: CallbackQuery):
         return
     async with FSMContext.proxy() as FSMdata:
         FSMdata["is_fast"] = False
-    await StudentAddHomework.GetDate.set()
-    await callback.message.answer(
-        "Выберете дату, на которую хотите добавить домашнее задание:",
-        reply_markup=get_markup_dates(generate_dates(res)),
-    )
+        await StudentAddHomework.GetDate.set()
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            process_text(TextKeys.choose_date, callback),
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=get_markup_dates(generate_dates(res)),
+        )
 
 
 # | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date |
@@ -81,13 +90,15 @@ async def query_get_date(callback: CallbackQuery):
         return
     async with FSMContext.proxy() as FSMdata:
         FSMdata["date"] = date
-    await StudentAddHomework.GetSubjects.set()
-    await callback.message.answer(
-        f"Выберете предмет из расписания на {date}",
-        reply_markup=get_subjects_markup(
-            await get_schedule_on_date(callback.from_user.id, date)
-        ),
-    )
+        await StudentAddHomework.GetSubjects.set()
+        main_message_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            process_text(TextKeys.choose_subject_on_date, callback, date=date),
+            chat_id=chat_id,
+            message_id=main_message_id,
+            reply_markup=get_subjects_markup(res),
+        )
 
 
 # | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject | GetSubject |
@@ -102,10 +113,15 @@ async def query_get_sunject(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
         FSMdata["subject"] = subject
-    await StudentAddHomework.WaitHomework.set()
-    await callback.message.answer(
-        "Отправьте домашнее задание👇🏻 (можно прикрепить фото)", reply_markup=markup_done
-    )
+        await StudentAddHomework.WaitHomework.set()
+        main_message_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            process_text(TextKeys.send_homework, callback),
+            chat_id=chat_id,
+            message_id=main_message_id,
+            reply_markup=markup_done,
+        )
 
 
 # | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add |
@@ -119,10 +135,15 @@ async def query_get_subject(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
         FSMdata["subject"] = callback.data.split(":")[1]
-    await StudentAddHomework.WaitHomework.set()
-    await callback.message.answer(
-        "Отправьте домашнее задание👇🏻 (можно прикрепить фото)", reply_markup=markup_done
-    )
+        await StudentAddHomework.WaitHomework.set()
+        main_message_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            process_text(TextKeys.send_homework, callback),
+            chat_id=chat_id,
+            message_id=main_message_id,
+            reply_markup=markup_done,
+        )
 
 
 # | WaitHomework | WaitHomework | WaitHomework | WaitHomework | WaitHomework | WaitHomework | WaitHomework | WaitHomework |
@@ -150,16 +171,11 @@ async def query_homework_check(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
         if len(FSMdata["text"]) == 0 and len(FSMdata["files_tgid"]) == 0:
-            await callback.message.answer("Не получено никакой информации")
+            await callback.message.answer(process_text(TextKeys.no_hw, callback))
         else:
             await StudentAddHomework.CheckHomework.set()
             await callback.message.answer(
-                "\n".join(
-                    [
-                        f"Записываю домашнее задание на {FSMdata['subject']}",
-                        "Верно?",
-                    ]
-                ),
+                process_text(TextKeys.check_hw, callback, subject=FSMdata["subject"]),
                 reply_markup=markup_check_homework,
             )
 
@@ -188,7 +204,9 @@ async def query_homework_check(callback: CallbackQuery):
             await add_homework(userid, params, auto=FSMdata["is_fast"])
     await FSMContext.reset_state()
     await StudentMenu.Menu.set()
-    await callback.message.answer(
-        "Меню",
+    msg = await callback.message.answer(
+        process_text(TextKeys.menu, callback),
         reply_markup=get_markup_student_menu(True),
     )
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["main_msg_id"] = msg.message_id

@@ -2,6 +2,8 @@ import datetime
 
 from tgbot.services.restapi.restapi import get_user_by_id
 from CONSTANTS import WEEKDAYS
+from languages.text_keys import TextKeys
+from languages.text_proccesor import process_text
 
 
 def time_is_correct(time: list):
@@ -18,10 +20,6 @@ def convert_time(time: list):
     if len(time[1]) == 1:
         time[1] = f"0{time[1]}"
     return time
-
-
-def convert_position(pos):
-    return [((pos) // 8), (pos % 8)]
 
 
 def generate_dates(saturday_lesson) -> list:
@@ -52,7 +50,7 @@ def generate_dates(saturday_lesson) -> list:
     return dates
 
 
-async def convert_homework(data) -> dict:
+async def convert_homework(data, callback) -> dict:
     res = []
     for lesson, lesson_data in data.items():
         for data in lesson_data:
@@ -61,27 +59,13 @@ async def convert_homework(data) -> dict:
             author_data = await get_user_by_id(data["author"])
             author_name = author_data["data"]["name"]
             info = {
-                "text": "\n".join([lesson, f"Автор:{author_name}\n", txt]),
+                "text": process_text(TextKeys.homework_txt, callback, subject=lesson, author=author_name, txt=txt),
                 "photos": data["photos"],
             }
             res.append(info)
     return res
 
     # {предмет: [{txt: txt, photo: [photos]}]}
-
-
-def convert_user_info(data) -> str:
-    res = "\n".join(
-        [
-            "Профиль:",
-            f"Имя: @{data['name']}",
-            "Админ: ✅" if data["is_admin"] else "Админ: ❌",
-            f"Токен класса: {data['class_token']}",
-            f"Ссылка приглашение: t.me/YandexLyceum_rulka_bot?start={data['class_token']}",
-            f"Админы класса: {' '.join(['@' + i for i in data['admins']])}",
-        ]
-    )
-    return res
 
 
 def convert_users(data):

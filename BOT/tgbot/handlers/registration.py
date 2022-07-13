@@ -1,8 +1,8 @@
 from aiogram.types import Message, CallbackQuery, User
-
+import os
 
 # | start | start | start | start | start | start | start | start |
-from CONSTANTS import SUBJECTS
+from CONSTANTS import SUBJECTS, TG_BOT_LINK, TG_OFFICAL_CHANNEL
 from bot import dp, bot
 from tgbot.FSM.states import RegistrationStates, StudentMenu
 from tgbot.filters import RegistrationFilter
@@ -10,14 +10,15 @@ from tgbot.keyboards.inline.markup import (
     markup_yes_or_no,
     markup_check_subjects1,
     markup_start,
-    markup_check_subjects2,
     get_markup_shedule,
     markup_shedule2,
     get_markup_student_menu,
 )
-from tgbot.services.restapi.restapi import register_user, register_class, is_admin
-from tgbot.services.scripts import convert_time, time_is_correct, convert_position
+from tgbot.services.restapi.restapi import register_user, register_class, is_admin, get_student_info
+from tgbot.services.scripts import convert_time, time_is_correct
 from tgbot.services.sub_classes import RestErorr, SheduleData
+from languages.text_keys import TextKeys
+from languages.text_proccesor import process_text
 
 
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
@@ -25,34 +26,29 @@ async def hanldler_start(msg: Message):
     # !Обработка deeplinking
     # пример: t.me/YandexLyceum_rulka_bot?start=class_token94811
     # print(msg.text)
+    userid = msg.from_user.id
+    FSMContext = dp.current_state(user=userid)
     if len(msg.text.split()) == 2:
         classid = msg.text.split()[-1]
-        userid = msg.from_user.id
         username = User.get_current()["username"]
-        FSMContext = dp.current_state(user=userid)
         res = await register_user(userid, classid, username)
         if isinstance(res, RestErorr):
             await FSMContext.reset_state()
             return
-        await msg.answer(
-            "Регистрация по ссылке успешна"
-        )  # Тут надо сделать отправку менюшки студента
+        # Тут надо сделать отправку менюшки студента
+        await msg.answer(process_text(TextKeys.by_link_success, msg))
         res = await is_admin(msg.from_user.id)
-        if isinstance(res, RestErorr):
-            await FSMContext.reset_state()
-            return
         await FSMContext.reset_state()
+        if isinstance(res, RestErorr):
+            return
         await StudentMenu.Menu.set()
         await msg.answer(
             "Меню",
             reply_markup=get_markup_student_menu(res),
         )
     else:
-        FSMContext = dp.current_state(user=msg.from_user.id)
         await FSMContext.reset_state()
-        await msg.answer(
-            "Привет! Я бот для быстрого сохранения домашки", reply_markup=markup_start
-        )
+        await msg.answer(process_text(TextKeys.hello, msg), reply_markup=markup_start)
         await RegistrationStates.StartBtn.set()
 
 
@@ -69,9 +65,16 @@ async def query_new_class(callback: CallbackQuery):
         FSMdata["current_pos"] = 0
     await RegistrationStates.CheckStartTime.set()
     await callback.message.answer(
-        f"Ваши уроки начинаются в {' : '.join(convert_time(time))}?",
+        process_text(
+            TextKeys.start_time_check,
+            callback,
+            time=":".join(convert_time(time)),
+        ),
         reply_markup=markup_yes_or_no,
     )
+
+
+# | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId |
 
 
 @dp.callback_query_handler(
@@ -81,11 +84,8 @@ async def query_join_class(callback: CallbackQuery):
     await callback.answer()
     await RegistrationStates.GetGroupId.set()
     await callback.message.answer(
-        "Введите id класса. Его можно получить у участника класса."
+        process_text(TextKeys.get_class_token, callback),
     )
-
-
-# | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId | GetGroupId |
 
 
 @dp.message_handler(RegistrationFilter(), state=RegistrationStates.GetGroupId)
@@ -104,7 +104,7 @@ async def handler_get_id(msg: Message):
     if isinstance(res, RestErorr):
         return
     await msg.answer(
-        "Меню",
+        process_text(TextKeys.menu, msg),
         reply_markup=get_markup_student_menu(res),
     )
 
@@ -120,22 +120,9 @@ async def query_check_start_time_true(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     await RegistrationStates.CheckSubjects.set()
     async with FSMContext.proxy() as FSMdata:
+        subjects = "\n".join([*SUBJECTS, *FSMdata["extra_subjects"]])
         subjects_msg = await callback.message.answer(
-            "\n".join(
-                [
-                    "Предметы:",
-                    *SUBJECTS,
-                    *FSMdata["extra_subjects"],
-                ]
-            )
-        )
-        await callback.message.answer(
-            "\n".join(
-                [
-                    "Есть ли тут все ваши школьные предметы?",
-                    "Если нет - отправьте название предмета, который хотите добавить в список",
-                ]
-            ),
+            process_text(TextKeys.subjects_check, callback, subjects=subjects),
             reply_markup=markup_check_subjects1,
         )
         subjects_msg_id = subjects_msg.message_id
@@ -149,7 +136,7 @@ async def query_check_start_time_false(callback: CallbackQuery):
     await callback.answer()
     await RegistrationStates.AddTime.set()
     await callback.message.answer(
-        'Введите время начала уроков в формате: "часы:минуты"\nНапример 8:30'
+        process_text(TextKeys.add_time, callback),
     )
 
 
@@ -158,7 +145,9 @@ async def query_check_start_time_false(callback: CallbackQuery):
 )
 async def query_check_start_time_back(callback: CallbackQuery):
     await callback.answer()
-    await callback.message.answer("Способы регистрации:", reply_markup=markup_start)
+    await callback.message.answer(
+        process_text(TextKeys.hello, callback), reply_markup=markup_start
+    )
     await RegistrationStates.StartBtn.set()
 
 
@@ -167,33 +156,19 @@ async def handler_add_time(msg: Message):
     time = msg.text
     FSMContext = dp.current_state(user=msg.from_user.id)
     if time_mod := time_is_correct(time):
-        await msg.answer(
-            f'Записано время начала уроков: "{" : ".join(convert_time(time_mod))}"'
-        )  # Для тестов
+        time_txt = ":".join(convert_time(time_mod))
+        await msg.answer(process_text(TextKeys.correct_time, msg, time=time_txt))
         async with FSMContext.proxy() as FSMdata:
             FSMdata["start_time"] = time_mod
+            subjects = "\n".join([*SUBJECTS, *FSMdata["extra_subjects"]])
             subjects_msg = await msg.answer(
-                "\n".join(
-                    [
-                        "Предметы:",
-                        *SUBJECTS,
-                        *FSMdata["extra_subjects"],
-                    ]
-                )
-            )
-            await msg.answer(
-                "\n".join(
-                    [
-                        "Есть ли тут все ваши школьные предметы?",
-                        "Если нет - отправьте название предмета, который хотите добавить в список",
-                    ]
-                ),
+                process_text(TextKeys.subjects_check, msg, subjects=subjects),
                 reply_markup=markup_check_subjects1,
             )
             FSMdata["subjects_msg_id"] = subjects_msg.message_id
             await RegistrationStates.CheckSubjects.set()
     else:
-        await msg.answer("Время введено некорректно, попробуйте ещё раз")
+        await msg.answer(process_text(TextKeys.uncorrect_time, msg))
 
 
 # | CheckSubjects | CheckSubjects | CheckSubjects | CheckSubjects | CheckSubjects | CheckSubjects | CheckSubjects | CheckSubjects |
@@ -207,8 +182,13 @@ async def query_check_subjects_back(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
         await RegistrationStates.CheckStartTime.set()
+        time = time = FSMdata["start_time"]
         await callback.message.answer(
-            f"Ваши уроки начинаются в {' : '.join(convert_time(FSMdata['start_time']))}?",
+            process_text(
+                TextKeys.start_time_check,
+                callback,
+                time=":".join(time),
+            ),
             reply_markup=markup_yes_or_no,
         )
 
@@ -222,20 +202,15 @@ async def query_check_subjects_undo(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
-        if len(FSMdata["extra_subjects"]) > len(SUBJECTS):
+        if len(FSMdata["extra_subjects"]) >= 1:
             FSMdata["extra_subjects"] = FSMdata["extra_subjects"][:-1]
             msgid = FSMdata["subjects_msg_id"]
+            subjects = "\n".join([*SUBJECTS, *FSMdata["extra_subjects"]])
             await bot.edit_message_text(
-                "\n".join(
-                    [
-                        "Предметы:",
-                        *SUBJECTS,
-                        *FSMdata["extra_subjects"],
-                    ]
-                ),
-                chat_id=callback.message.chat.id,
+                process_text(TextKeys.subjects_check, callback, subjects=subjects),
+                chat_id=callback.from_user.id,
                 message_id=msgid,
-                reply_markup=markup_check_subjects2,
+                reply_markup=markup_check_subjects1,
             )
 
 
@@ -246,17 +221,12 @@ async def handler_add_subject(msg: Message):
     async with FSMContext.proxy() as FSMdata:
         FSMdata["extra_subjects"].append(subject)
         msgid = FSMdata["subjects_msg_id"]
+        subjects = "\n".join([*SUBJECTS, *FSMdata["extra_subjects"]])
         await bot.edit_message_text(
-            "\n".join(
-                [
-                    "Предметы:",
-                    *SUBJECTS,
-                    *FSMdata["extra_subjects"],
-                ]
-            ),
-            chat_id=msg.chat.id,
+            process_text(TextKeys.subjects_check, msg, subjects=subjects),
+            chat_id=msg.from_user.id,
             message_id=msgid,
-            reply_markup=markup_check_subjects2,
+            reply_markup=markup_check_subjects1,
         )
 
 
@@ -269,25 +239,15 @@ async def query_check_subjects_undo(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
     async with FSMContext.proxy() as FSMdata:
+        shedule = FSMdata["shedule"].get_formatted_shedule(pos=FSMdata["current_pos"])
         msg = await callback.message.answer(
-            "\n".join(
-                [
-                    "Расписание:",
-                    *FSMdata["shedule"].get_readable_shedule(
-                        current_id=convert_position(FSMdata["current_pos"])
-                    ),
-                ]
-            )
+            process_text(TextKeys.shedule1, callback, **shedule),
+            reply_markup=markup_shedule2,
         )
         FSMdata["shedule_msg_id"] = msg.message_id
         await RegistrationStates.AddShedule.set()
         await callback.message.answer(
-            "\n".join(
-                [
-                    "Давай заполним расписание",
-                    "P.s. Ожидайте, пока на кнопках будут часики и только потом нажимайте следующую кнопку",
-                ]
-            ),
+            process_text(TextKeys.shedule2, callback),
             reply_markup=get_markup_shedule([*SUBJECTS, *FSMdata["extra_subjects"]]),
         )
 
@@ -307,14 +267,13 @@ async def query_move_cursor(callback: CallbackQuery):
     async with FSMContext.proxy() as FSMdata:
         if 0 <= (FSMdata["current_pos"] + move_num) <= 47:
             FSMdata["current_pos"] += move_num
-            pos = convert_position(FSMdata["current_pos"])
+            pos = FSMdata["current_pos"]
             msgid = FSMdata["shedule_msg_id"]
             await bot.edit_message_text(
-                "\n".join(
-                    [
-                        "Расписание:",
-                        *FSMdata["shedule"].get_readable_shedule(current_id=pos),
-                    ]
+                process_text(
+                    TextKeys.shedule1,
+                    callback,
+                    **FSMdata["shedule"].get_formatted_shedule(pos=pos),
                 ),
                 chat_id=callback.message.chat.id,
                 message_id=msgid,
@@ -333,17 +292,16 @@ async def query_add_shedule(callback: CallbackQuery):
     async with FSMContext.proxy() as FSMdata:
         subject = callback.data.split(":")[1]
         msgid = FSMdata["shedule_msg_id"]
-        pos = convert_position(FSMdata["current_pos"])
+        pos = FSMdata["current_pos"]
         FSMdata["shedule"].add_lesson(subject, pos)
         if FSMdata["current_pos"] + 1 <= 47:
             FSMdata["current_pos"] += 1
-            pos = convert_position(FSMdata["current_pos"])
+            pos = FSMdata["current_pos"]
         await bot.edit_message_text(
-            "\n".join(
-                [
-                    "Расписание:",
-                    *FSMdata["shedule"].get_readable_shedule(current_id=pos),
-                ]
+            process_text(
+                TextKeys.shedule1,
+                callback,
+                **FSMdata["shedule"].get_formatted_shedule(pos=pos),
             ),
             chat_id=callback.message.chat.id,
             message_id=msgid,
@@ -371,16 +329,25 @@ async def query_shedule_done(callback: CallbackQuery):
         if isinstance(res, RestErorr):
             await FSMContext.reset_state()
             return
+        res = await get_student_info(callback.from_user.id)
+        if isinstance(res, RestErorr):
+            await FSMContext.reset_state()
+            return  
+        token = res["class_token"]
+        link = TG_BOT_LINK
         await FSMContext.reset_state()
-        await callback.message.answer("Регистрация успешна")
+        await callback.message.answer(process_text(TextKeys.register_done, callback, token=token, link=link))
+        await callback.message.answer(process_text(TextKeys.register_done2, callback, channel=TG_OFFICAL_CHANNEL))
         res = await is_admin(callback.from_user.id)
         if isinstance(res, RestErorr):
             return
         await StudentMenu.Menu.set()
-        await callback.message.answer(
-            "Меню",
-            reply_markup=get_markup_student_menu(res),
-        )
+    msg = await callback.message.answer(
+        process_text(TextKeys.menu, callback),
+        reply_markup=get_markup_student_menu(res),
+    )
+    async with FSMContext.proxy() as FSMdata:
+        FSMdata["main_msg_id"] = msg.message_id
 
 
 @dp.callback_query_handler(

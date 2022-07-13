@@ -1,0 +1,43 @@
+
+
+class TextKeys:
+    by_link_success = "by_link_success"
+    hello = "hello"
+    btn_join_class = "btn_join_class"
+    btn_new_class = "btn_new_class"
+    start_time_check = "start_time_check"
+    get_class_token = "get_class_token"
+    subjects_check = "subjects_check"
+    shedule1 = "shedule1"
+    shedule2 = "shedule2"
+    add_time = "add_time"
+    uncorrect_time = "uncorrect_time"
+    correct_time = "correct_time"
+    register_done = "register_done"
+    register_done2 = "register_done2"
+
+    menu = "menu"
+    profile = "profile"
+    delete_account = "delete_account"
+    class_panel = "class_panel"
+    admin_added = "admin_added"
+    user_kicked = "user_kicked"
+    choose_classmate = "choose_classmate"
+    token_changed = "token_changed"
+
+    choose_action = "choose_action"
+    chat_registered = "chat_registered"
+    chat_unregistered = "chat_unregistered"
+    homework_menu = "homework_menu"
+    date_menu = "date_menu"
+    homework_txt = "homework_txt"
+
+    choose_homework = "choose_homework"
+    choose_subject = "choose_subject"
+    choose_date = "choose_date"
+    choose_subject_on_date = "choose_subject_on_date"
+    send_homework = "send_homework"
+    no_hw = "no_hw"
+    check_hw = "check_hw"
+    
+    help_txt = "help_txt"

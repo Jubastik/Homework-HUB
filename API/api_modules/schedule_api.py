@@ -16,10 +16,7 @@ blueprint = flask.Blueprint("schedule", __name__, template_folder="templates")
 
 @blueprint.route("/api/schedule/<platform>/<int:user_id>", methods=["GET"])
 def get_schedule(platform, user_id):  # Возвращает все расписание
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     schedules = (
         db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
@@ -38,10 +35,7 @@ def get_schedule(platform, user_id):  # Возвращает все распис
 
 @blueprint.route("/api/schedule/<platform>/<int:user_id>/<day>", methods=["GET"])
 def get_schedule_day(platform, user_id, day):  # Возвращает расписание на день
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     schedules = (
         db_sess.query(Schedule)

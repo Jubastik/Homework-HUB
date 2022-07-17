@@ -20,10 +20,7 @@ def current_lessons(platform, user_id):
     """
     Получение названий  ближайших уроков
     """
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
 
     now_time = datetime.datetime.now().time()

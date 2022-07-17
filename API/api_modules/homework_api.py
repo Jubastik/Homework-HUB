@@ -30,15 +30,9 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     if is_chat:
         # HTTP не одобряет отрицательные числа (вернее знак "-") НО! в telegram id чата это отрицательное число
         user_id *= -1
-        try:
-            id = chat_id_processing(platform, user_id)
-        except IDError as e:
-            return make_response(jsonify({"error": str(e)}), 404)
+        id = chat_id_processing(platform, user_id)
     else:
-        try:
-            id = user_id_processing(platform, user_id)
-        except IDError as e:
-            return make_response(jsonify({"error": str(e)}), 404)
+        id = user_id_processing(platform, user_id)
     if len(date.split("-")) != 3:
         return make_response(
             jsonify({"error": "Формат даты должен быть день-месяц-год"}), 422
@@ -110,11 +104,7 @@ def create_homework():  # Создает дз на основе входящег
             ),
             422,
         )
-    try:
-        creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
-
+    creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
     db_sess = db_session.create_session()
     my_class = db_sess.query(Student.class_id).filter(Student.id == creator_id).first()
     if my_class is None:

@@ -1,8 +1,9 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, jsonify
 
+from api_modules.core import IDError
 from data import db_session
 from CONSTANTS import day_id_to_weekday
 from data.week_days import WeekDay
@@ -41,6 +42,10 @@ def hello_world():
     return "Hello HomeBot!!"
 
 
+@app.errorhandler(IDError)
+def handle_id_error_request(e):
+    return jsonify(error=str(e)), 404
+
 def init_weekday():
     """Инициализация дней недели в бд"""
     db_sess = db_session.create_session()
@@ -52,7 +57,6 @@ def init_weekday():
         except Exception as e:
             pass
     return "OK"
-
 
 if __name__ == "__main__":
     main()

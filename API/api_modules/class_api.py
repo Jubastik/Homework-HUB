@@ -15,10 +15,7 @@ def get_class_students(platform, user_id):
     """
     Возвращает список учеников класса
     """
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     students = student.my_class.student
@@ -27,10 +24,7 @@ def get_class_students(platform, user_id):
 
 @blueprint.route("/api/class/<platform>/<int:user_id>", methods=["GET"])
 def get_class(platform, user_id):
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     my_class = student.my_class
@@ -56,10 +50,7 @@ def create_class():  # Создает класс на основе входящ�
         )
     data = request.json
 
-    try:
-        creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    creator_id = user_id_processing(data["creator_platform"], data["creator_id"])
 
     db_sess = db_session.create_session()
     my_class = Class(name=data["name"], class_token=generate_token())
@@ -78,10 +69,7 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
     json_data = request.json
     if not json_data:
         return make_response(jsonify({"error": "Пустой json"}), 400)
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     if not student.is_admin:

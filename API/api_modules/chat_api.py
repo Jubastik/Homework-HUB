@@ -13,10 +13,7 @@ blueprint = flask.Blueprint("chat", __name__, template_folder="templates")
 
 @blueprint.route("/api/chats/<platform>/<chat_id>", methods=["GET"])
 def get_chat(platform, chat_id):  # Возвращает группу
-    try:
-        id = chat_id_processing(platform, chat_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = chat_id_processing(platform, chat_id)
     db_sess = db_session.create_session()
     chat = db_sess.query(Chat).filter(Chat.id == id).first()
     data = chat.to_dict(only=("tg_id", "class_id"))
@@ -54,10 +51,7 @@ def register_chat():  # Регистрация группы
 
 @blueprint.route("/api/chats/<platform>/<chat_id>", methods=["DELETE"])
 def delete_chat(platform, chat_id):  # Удаление группы
-    try:
-        id = chat_id_processing(platform, chat_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = chat_id_processing(platform, chat_id)
     db_sess = db_session.create_session()
     chat = db_sess.query(Chat).filter(Chat.id == id).first()
     db_sess.delete(chat)

@@ -24,10 +24,7 @@ def get_all_users():  # Возвращает полный список поль�
 
 @blueprint.route("/api/user/<platform>/<int:user_id>", methods=["GET"])
 def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     class_admins = [_.name for _ in student.my_class.student if _.is_admin]
@@ -77,10 +74,7 @@ def create_user():  # Создает пользователя на основе 
 def edit_user(platform, user_id):  # Изменение пользователя на основе входящего Json
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     data = request.json
@@ -100,10 +94,7 @@ def edit_user(platform, user_id):  # Изменение пользователя
 @blueprint.route("/api/user/<platform>/<int:user_id>", methods=["DELETE"])
 def del_user(platform, user_id):  # Удаление пользователя
     force_delete = request.args.get("force", default=False)
-    try:
-        id = user_id_processing(platform, user_id)
-    except IDError as e:
-        return make_response(jsonify({"error": str(e)}), 404)
+    id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
     student = db_sess.query(Student).get(id)
 

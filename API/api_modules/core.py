@@ -21,7 +21,6 @@ class IDError(Exception):
 
 def access_verification(func):
     def wrapper(*args, **kwargs):
-        print(request.args.get('root_token', type=str))
         if request.args.get('root_token', type=str) is not None:
             if request.args.get('root_token', type=str) == os.getenv('ROOT_TOKEN', "root"):
                 return func(*args, **kwargs)

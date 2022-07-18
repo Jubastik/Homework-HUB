@@ -1,7 +1,8 @@
 import datetime
+import os
 from random import randint
 
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 
 from data import db_session
 from data.chats import Chat
@@ -16,6 +17,20 @@ NO = "no"
 
 class IDError(Exception):
     pass
+
+
+def access_verification(func):
+    def wrapper(*args, **kwargs):
+        print(request.args.get('root_token', type=str))
+        if request.args.get('root_token', type=str) is not None:
+            if request.args.get('root_token', type=str) == os.getenv('ROOT_TOKEN', "root"):
+                return func(*args, **kwargs)
+            else:
+                return make_response(jsonify({'error': 'Неверный токен'}), 401)
+        else:
+            return make_response(jsonify({'error': 'Отсутствует токен'}), 401)
+
+    return wrapper
 
 
 def user_id_processing(platform, id):

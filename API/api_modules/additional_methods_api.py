@@ -4,7 +4,7 @@ import flask
 from flask import jsonify, make_response
 
 from CONSTANTS import day_id_to_weekday
-from api_modules.core import user_id_processing, IDError
+from api_modules.core import user_id_processing, IDError, access_verification
 from data import db_session
 from data.classes import Class
 from data.schedules import Schedule
@@ -15,7 +15,8 @@ from data.week_days import WeekDay
 blueprint = flask.Blueprint("additional", __name__, template_folder="templates")
 
 
-@blueprint.route("/api/current_lessons/<platform>/<int:user_id>", methods=["GET"])
+@blueprint.route("/api/current_lessons/<platform>/<int:user_id>", methods=["GET"], endpoint="current_lessons")
+@access_verification
 def current_lessons(platform, user_id):
     """
     Получение названий  ближайших уроков

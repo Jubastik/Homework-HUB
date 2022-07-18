@@ -9,7 +9,7 @@ from api_modules.core import (
     IDError,
     get_next_lesson,
     day_to_weekday,
-    chat_id_processing,
+    chat_id_processing, access_verification,
 )
 from data import db_session
 from data.classes import Class
@@ -24,7 +24,8 @@ from data.chats import Chat
 blueprint = flask.Blueprint("homework", __name__, template_folder="templates")
 
 
-@blueprint.route("/api/homework/<platform>/<int:user_id>/<date>", methods=["GET"])
+@blueprint.route("/api/homework/<platform>/<int:user_id>/<date>", methods=["GET"], endpoint='homework')
+@access_verification
 def get_homework_date(platform, user_id, date):  # Возвращает дз на дату
     is_chat = request.args.get("is_chat", default="False") != "False"
     if is_chat:
@@ -81,7 +82,8 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
     )
 
 
-@blueprint.route("/api/homework", methods=["POST"])
+@blueprint.route("/api/homework", methods=["POST"], endpoint='add_homework')
+@access_verification
 def create_homework():  # Создает дз на основе входящего Json
     data = request.json
     if not data:

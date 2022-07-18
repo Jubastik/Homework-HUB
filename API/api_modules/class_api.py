@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, make_response, jsonify
 
-from api_modules.core import user_id_processing, generate_token, IDError
+from api_modules.core import user_id_processing, generate_token, access_verification
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -10,7 +10,8 @@ from data.students import Student
 blueprint = flask.Blueprint("class", __name__, template_folder="templates")
 
 
-@blueprint.route("/api/class/students/<platform>/<int:user_id>", methods=["GET"])
+@blueprint.route("/api/class/students/<platform>/<int:user_id>", methods=["GET"], endpoint="students_in_class")
+@access_verification
 def get_class_students(platform, user_id):
     """
     Возвращает список учеников класса
@@ -22,7 +23,8 @@ def get_class_students(platform, user_id):
     return jsonify({"data": [s.to_dict(only=("name", "tg_id")) for s in students]})
 
 
-@blueprint.route("/api/class/<platform>/<int:user_id>", methods=["GET"])
+@blueprint.route("/api/class/<platform>/<int:user_id>", methods=["GET"], endpoint="class")
+@access_verification
 def get_class(platform, user_id):
     id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
@@ -35,7 +37,8 @@ def get_class(platform, user_id):
     )
 
 
-@blueprint.route("/api/class", methods=["POST"])
+@blueprint.route("/api/class", methods=["POST"], endpoint="create_class")
+@access_verification
 def create_class():  # Создает класс на основе входящего Json
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
@@ -64,7 +67,8 @@ def create_class():  # Создает класс на основе входящ�
     return make_response(jsonify({"success": f"Класс создан. id:{my_class.id}"}), 201)
 
 
-@blueprint.route("/api/class/<platform>/<int:user_id>", methods=["PATCH"])
+@blueprint.route("/api/class/<platform>/<int:user_id>", methods=["PATCH"], endpoint="update_class")
+@access_verification
 def edit_class(platform, user_id):  # Изменение класс на основе входящего Json (изменение токена, vk_id)
     json_data = request.json
     if not json_data:

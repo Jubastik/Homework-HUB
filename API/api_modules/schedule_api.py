@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import user_id_processing, IDError
+from api_modules.core import user_id_processing, IDError, access_verification
 from data import db_session
 from data.classes import Class
 from data.lessons import Lesson
@@ -14,7 +14,8 @@ from data.week_days import WeekDay
 blueprint = flask.Blueprint("schedule", __name__, template_folder="templates")
 
 
-@blueprint.route("/api/schedule/<platform>/<int:user_id>", methods=["GET"])
+@blueprint.route("/api/schedule/<platform>/<int:user_id>", methods=["GET"], endpoint="schedule")
+@access_verification
 def get_schedule(platform, user_id):  # Возвращает все расписание
     id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
@@ -33,7 +34,8 @@ def get_schedule(platform, user_id):  # Возвращает все распис
     )
 
 
-@blueprint.route("/api/schedule/<platform>/<int:user_id>/<day>", methods=["GET"])
+@blueprint.route("/api/schedule/<platform>/<int:user_id>/<day>", methods=["GET"], endpoint="schedule_day")
+@access_verification
 def get_schedule_day(platform, user_id, day):  # Возвращает расписание на день
     id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
@@ -59,7 +61,8 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
     )
 
 
-@blueprint.route("/api/schedule", methods=["POST"])
+@blueprint.route("/api/schedule", methods=["POST"], endpoint="schedule_add")
+@access_verification
 def create_schedule():  # Создает расписание на основе входящего Json
     data = request.json
     if not data:

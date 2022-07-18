@@ -9,7 +9,7 @@ from CONSTANTS import (
     URL_TIME_TABLE,
     URL_CURRENT_LESSONS,
     WEEKDAYS,
-    URL_CHAT,
+    URL_CHAT, URL_PARAM,
 )
 from tgbot.services.restapi.scripts import return_error, send_error, send_success
 
@@ -17,7 +17,7 @@ from tgbot.services.restapi.scripts import return_error, send_error, send_succes
 async def is_student(tguser_id):
     # есть ли в базе
     query = f"/tg/{tguser_id}"
-    res = requests.get(URL_USER + query)
+    res = requests.get(URL_USER + query + URL_PARAM)
     if res.status_code == 200:
         return True
     if res.status_code == 404:
@@ -32,7 +32,7 @@ async def is_unregistered(tguser_id):
 async def is_admin(tguser_id):
     # админ или нет
     query = f"/tg/{tguser_id}"
-    res = requests.get(URL_USER + query)
+    res = requests.get(URL_USER + query + URL_PARAM)
     if res.status_code == 200:
         data = res.json()
         if data["data"]["is_admin"]:
@@ -43,7 +43,7 @@ async def is_admin(tguser_id):
 
 async def is_developer(tguser_id):
     query = f"/tg/{tguser_id}"
-    res = requests.get(URL_USER + query)
+    res = requests.get(URL_USER + query + URL_PARAM)
     if res.status_code == 404:
         return False
     elif res.status_code == 200:
@@ -58,7 +58,7 @@ async def register_user(tguser_id, classid, user_name):
     """Добавление юзера в бд к классу по ссылке, возвращает True если успешно"""
     # сначала регистрация полльзователя
     response = requests.post(
-        URL_USER,
+        URL_USER + URL_PARAM,
         json={
             "id": tguser_id,
             "platform": "tg",
@@ -77,14 +77,14 @@ async def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно"""
     # сначала регистрация полльзователя
     response = requests.post(
-        URL_USER, json={"id": tguser_id, "platform": "tg", "name": data["user_name"]}
+        URL_USER + URL_PARAM, json={"id": tguser_id, "platform": "tg", "name": data["user_name"]}
     )
     if response.status_code != 201:
         return return_error(response)
 
     # уже потом регистрация класса
     response = requests.post(
-        URL_CLASS,
+        URL_CLASS + URL_PARAM,
         json={
             "creator_platform": "tg",
             "creator_id": tguser_id,
@@ -108,7 +108,7 @@ async def register_class(tguser_id, data):
         b = (d + datetime.timedelta(minutes=duration_lessons[i])).time()
         end_time = b.strftime("%H:%M")
         response = requests.post(
-            URL_TIME_TABLE,
+            URL_TIME_TABLE + URL_PARAM,
             json={
                 "creator_platform": "tg",
                 "creator_id": tguser_id,
@@ -130,7 +130,7 @@ async def register_class(tguser_id, data):
             lesson_name = schedule[el]["shedule"][ell]
             if lesson_name != "":
                 response = requests.post(
-                    URL_SCHEDULE,
+                    URL_SCHEDULE + URL_PARAM,
                     json={
                         "creator_platform": "tg",
                         "creator_id": tguser_id,
@@ -148,7 +148,7 @@ async def register_class(tguser_id, data):
 
 async def delete_user(tguser_id, force=False):
     query = f"/tg/{tguser_id}"
-    res = requests.delete(URL_USER + query + "?force=" + str(force))
+    res = requests.delete(URL_USER + query + URL_PARAM +"&force=" + str(force))
     if res.status_code == 200:
         return True
     await send_error(tguser_id, res)
@@ -157,7 +157,7 @@ async def delete_user(tguser_id, force=False):
 
 async def get_subjects_by_time(tguser_id):
     """По времени получает 2 ближайших предмета и возвращает список их названий"""
-    query = f"/tg/{tguser_id}"
+    query = f"/tg/{tguser_id} + URL_PARAM"
     res = requests.get(URL_CURRENT_LESSONS + query)
     if res.status_code == 200:
         data = res.json()["lessons"]
@@ -171,7 +171,7 @@ async def get_subjects_by_time(tguser_id):
 async def is_lessons_in_saturday(tguser_id):
     """Делает запрос в БД и проверяет, есть ли уроки в субботу"""
     query = f"/tg/{tguser_id}/суббота"
-    res = requests.get(URL_SCHEDULE + query)
+    res = requests.get(URL_SCHEDULE + query + URL_PARAM)
     if res.status_code == 200:
         return True
     if (
@@ -198,7 +198,7 @@ async def add_homework(tguser_id, data, auto=False):
     if data["files_tgid"]:
         payload["photos_tg_id"] = data["files_tgid"]
 
-    response = requests.post(URL_HOMEWORK, json=payload)
+    response = requests.post(URL_HOMEWORK + URL_PARAM, json=payload)
     if response.status_code == 201:
         await send_success(tguser_id, response)
         return True
@@ -210,7 +210,7 @@ async def get_homework(userid, date, is_chat=False):
     """Возвращает домашку на дату"""
     if is_chat:
         userid *= -1  # HTTP не одобряет отрицательные числа (вернее знак "-")
-    query = f"/tg/{userid}/{date.strftime('%d-%m-%Y')}?is_chat={str(is_chat)}"
+    query = f"/tg/{userid}/{date.strftime('%d-%m-%Y')}{URL_PARAM}&is_chat={str(is_chat)}"
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
         lessons = res.json()["data"]
@@ -236,7 +236,7 @@ async def get_homework(userid, date, is_chat=False):
 
 async def get_schedule_on_date(tguser_id, date) -> list:
     query = f"/tg/{tguser_id}/{WEEKDAYS[date.weekday()]}"
-    res = requests.get(URL_SCHEDULE + query)
+    res = requests.get(URL_SCHEDULE + query + URL_PARAM)
     ret = []
     if res.status_code == 200:
         for lesson in res.json()["data"]:
@@ -246,7 +246,7 @@ async def get_schedule_on_date(tguser_id, date) -> list:
 
 async def get_names_classmates(tguser_id):
     query = f"/students/tg/{tguser_id}"
-    res = requests.get(URL_CLASS + query)
+    res = requests.get(URL_CLASS + query + URL_PARAM)
     if res.status_code == 200:
         students = res.json()["data"]
         students_names = {}
@@ -259,7 +259,7 @@ async def get_names_classmates(tguser_id):
 
 async def get_student_info(tguser_id):
     query = f"/tg/{tguser_id}"
-    res = requests.get(URL_USER + query)
+    res = requests.get(URL_USER + query + URL_PARAM)
     if res.status_code == 200:
         student = res.json()["data"]
         students_info = {
@@ -275,7 +275,7 @@ async def get_student_info(tguser_id):
 
 async def change_class_token(tguser_id):
     query = f"/tg/{tguser_id}"
-    res = requests.patch(URL_CLASS + query, json={"class_token": "auto"})
+    res = requests.patch(URL_CLASS + query + URL_PARAM, json={"class_token": "auto"})
     if res.status_code == 200:
         return True
     await send_error(tguser_id, res)
@@ -284,7 +284,7 @@ async def change_class_token(tguser_id):
 
 async def assign_admin(tguser_id):
     query = f"/tg/{tguser_id}"
-    res = requests.patch(URL_USER + query, json={"is_admin": True})
+    res = requests.patch(URL_USER + query + URL_PARAM, json={"is_admin": True})
     if res.status_code == 200:
         return True
     await send_error(tguser_id, res)
@@ -293,7 +293,7 @@ async def assign_admin(tguser_id):
 
 async def get_user_by_id(id):
     query = f"/no/{id}"
-    res = requests.get(URL_USER + query)
+    res = requests.get(URL_USER + query + URL_PARAM)
     if res.status_code == 200:
         return res.json()
     elif res.status_code == 404:
@@ -303,7 +303,7 @@ async def get_user_by_id(id):
 
 async def get_all_users():
     query = "/all"
-    res = requests.get(URL_USER + query)
+    res = requests.get(URL_USER + query + URL_PARAM)
     if res.status_code == 404:
         return return_error(res)
     return res.json()["data"]
@@ -314,7 +314,7 @@ async def register_chat(user_id, chat_id):
         "user_tg_id": user_id,
         "chat_tg_id": chat_id,
     }
-    res = requests.post(URL_CHAT, json=params)
+    res = requests.post(URL_CHAT + URL_PARAM, json=params)
     if res.status_code == 201:
         return True
     return return_error(res)
@@ -322,7 +322,7 @@ async def register_chat(user_id, chat_id):
 
 async def get_chat(chat_id):
     query = f"/tg/{chat_id}"
-    res = requests.get(URL_CHAT + query)
+    res = requests.get(URL_CHAT + query + URL_PARAM)
     if res.status_code == 200:
         return res.json()["data"]
     return return_error(res)
@@ -330,7 +330,7 @@ async def get_chat(chat_id):
 
 async def is_registreted_chat(chat_id):
     query = f"/tg/{chat_id}"
-    res = requests.get(URL_CHAT + query)
+    res = requests.get(URL_CHAT + query + URL_PARAM)
     if res.status_code == 200:
         return True
     elif res.status_code == 404:
@@ -339,7 +339,7 @@ async def is_registreted_chat(chat_id):
 
 
 async def delete_chat(chat_id):
-    res = requests.delete(URL_CHAT + f"/tg_tgchat/{chat_id}")
+    res = requests.delete(URL_CHAT + f"/tg_tgchat/{chat_id}" + URL_PARAM)
     if res.status_code == 200:
         return True
     return return_error(res)

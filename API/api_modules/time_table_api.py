@@ -4,7 +4,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import user_id_processing, IDError
+from api_modules.core import user_id_processing, IDError, access_verification
 from data import db_session
 from data.students import Student
 from data.time_tables import TimeTable
@@ -12,7 +12,8 @@ from data.time_tables import TimeTable
 blueprint = flask.Blueprint("time_table", __name__, template_folder="templates")
 
 
-@blueprint.route("/api/time_table", methods=["POST"])
+@blueprint.route("/api/time_table", methods=["POST"], endpoint="create_time_table")
+@access_verification
 def create_time_table():  # Создает расписание на основе входящего Json
     data = request.json
     if not data:

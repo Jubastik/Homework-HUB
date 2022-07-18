@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, make_response, jsonify
 
-from api_modules.core import chat_id_processing, IDError
+from api_modules.core import chat_id_processing, access_verification
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -11,7 +11,8 @@ from data.chats import Chat
 blueprint = flask.Blueprint("chat", __name__, template_folder="templates")
 
 
-@blueprint.route("/api/chats/<platform>/<chat_id>", methods=["GET"])
+@blueprint.route("/api/chats/<platform>/<chat_id>", methods=["GET"], endpoint="chat")
+@access_verification
 def get_chat(platform, chat_id):  # Возвращает группу
     id = chat_id_processing(platform, chat_id)
     db_sess = db_session.create_session()
@@ -20,7 +21,8 @@ def get_chat(platform, chat_id):  # Возвращает группу
     return jsonify({"data": data})
 
 
-@blueprint.route("/api/chats", methods=["POST"])
+@blueprint.route("/api/chats", methods=["POST"], endpoint="create_chat")
+@access_verification
 def register_chat():  # Регистрация группы
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
@@ -49,7 +51,8 @@ def register_chat():  # Регистрация группы
     return make_response(jsonify({"success": "Беседа успешно зарегестрирована"}), 201)
 
 
-@blueprint.route("/api/chats/<platform>/<chat_id>", methods=["DELETE"])
+@blueprint.route("/api/chats/<platform>/<chat_id>", methods=["DELETE"], endpoint="delete_chat")
+@access_verification
 def delete_chat(platform, chat_id):  # Удаление группы
     id = chat_id_processing(platform, chat_id)
     db_sess = db_session.create_session()

@@ -17,7 +17,8 @@ SUBJECTS = [
 ]
 TG_BOT_LINK = "t.me/hw_assistant_bot?start="
 TG_OFFICAL_CHANNEL = "@hw_assistant"
-SERVER = os.getenv("TG_API_SERVER") # при работе с url в следующий раз, сделать рефактор
+URL_PARAM = f"?root_token={os.getenv('API_TOKEN', 'root')}"
+SERVER = os.getenv("API_SERVER") # при работе с url в следующий раз, сделать рефактор
 URL_USER = SERVER + '/api/user'
 URL_CHAT = SERVER + '/api/chats'
 URL_CLASS = SERVER + '/api/class'

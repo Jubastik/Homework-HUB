@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, jsonify, make_response
 
-from api_modules.core import user_id_processing, IDError, TG
+from api_modules.core import user_id_processing, IDError, TG, access_verification
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -10,7 +10,8 @@ from data.students import Student
 blueprint = flask.Blueprint("user", __name__, template_folder="templates")
 
 
-@blueprint.route("/api/user/all", methods=["GET"])
+@blueprint.route("/api/user/all", methods=["GET"], endpoint="all_users")
+@access_verification
 def get_all_users():  # Возвращает полный список пользователей
     db_sess = db_session.create_session()
     students = db_sess.query(Student).all()
@@ -22,7 +23,8 @@ def get_all_users():  # Возвращает полный список поль�
     return jsonify(data)
 
 
-@blueprint.route("/api/user/<platform>/<int:user_id>", methods=["GET"])
+@blueprint.route("/api/user/<platform>/<int:user_id>", methods=["GET"], endpoint="user")
+@access_verification
 def get_user(platform, user_id):  # Возвращает базовую информацию о пользователе
     id = user_id_processing(platform, user_id)
     db_sess = db_session.create_session()
@@ -35,7 +37,8 @@ def get_user(platform, user_id):  # Возвращает базовую инфо
     return jsonify({"data": data})
 
 
-@blueprint.route("/api/user", methods=["POST"])
+@blueprint.route("/api/user", methods=["POST"], endpoint="create_user")
+@access_verification
 def create_user():  # Создает пользователя на основе входящего Json
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
@@ -70,7 +73,8 @@ def create_user():  # Создает пользователя на основе 
     return make_response(jsonify({"success": "Пользователь успешно создан"}), 201)
 
 
-@blueprint.route("/api/user/<platform>/<int:user_id>", methods=["PATCH"])
+@blueprint.route("/api/user/<platform>/<int:user_id>", methods=["PATCH"], endpoint="update_user")
+@access_verification
 def edit_user(platform, user_id):  # Изменение пользователя на основе входящего Json
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
@@ -91,7 +95,8 @@ def edit_user(platform, user_id):  # Изменение пользователя
     return make_response(jsonify({"success": "Пользователь успешно изменен"}), 200)
 
 
-@blueprint.route("/api/user/<platform>/<int:user_id>", methods=["DELETE"])
+@blueprint.route("/api/user/<platform>/<int:user_id>", methods=["DELETE"], endpoint="delete_user")
+@access_verification
 def del_user(platform, user_id):  # Удаление пользователя
     force_delete = request.args.get("force", default=False)
     id = user_id_processing(platform, user_id)

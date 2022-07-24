@@ -26,12 +26,8 @@ from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 
 
-@dp.callback_query_handler(
-    GroupFilter(), IsRegisteredGroupFilter(), state="*", text="menu"
-)
-@dp.callback_query_handler(
-    GroupFilter(), IsRegisteredGroupFilter(), state="*", text="error_menu"
-)
+@dp.callback_query_handler(GroupFilter(), state="*", text="menu")
+@dp.callback_query_handler(GroupFilter(), state="*", text="error_menu")
 async def group_menu(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -44,7 +40,6 @@ async def group_menu(callback: CallbackQuery):
     )
     async with FSMContext.proxy() as FSMdata:
         FSMdata["main_msg_id"] = message.message_id
-
 
 
 @dp.message_handler(
@@ -80,9 +75,7 @@ async def registration(msg: Message):
         await msg.answer(process_text(TextKeys.chat_unregistered, msg))
 
 
-@dp.callback_query_handler(
-    GroupFilter(), IsRegisteredGroupFilter(), state=Group.Menu, text="get_homework"
-)
+@dp.callback_query_handler(GroupFilter(), state=Group.Menu, text="get_homework")
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()
     await Group.GetHomework.set()
@@ -98,9 +91,7 @@ async def query_get_homework(callback: CallbackQuery):
         )
 
 
-@dp.callback_query_handler(
-    GroupFilter(), IsRegisteredGroupFilter(), state=Group.GetHomework, text="fast_get"
-)
+@dp.callback_query_handler(GroupFilter(), state=Group.GetHomework, text="fast_get")
 async def query_fast_get(callback: CallbackQuery):
     await callback.answer()
     date = datetime.datetime.now().date() + datetime.timedelta(days=1)
@@ -109,7 +100,6 @@ async def query_fast_get(callback: CallbackQuery):
 
 @dp.callback_query_handler(
     GroupFilter(),
-    IsRegisteredGroupFilter(),
     state=Group.GetHomework,
     text="on_date_get",
 )
@@ -134,7 +124,6 @@ async def query_get_date(callback: CallbackQuery):
 
 @dp.callback_query_handler(
     GroupFilter(),
-    IsRegisteredGroupFilter(),
     state=Group.GetDate,
     text_contains="add_date",
 )

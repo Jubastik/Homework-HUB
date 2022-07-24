@@ -13,18 +13,14 @@ from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentGetHomework.GetHomework, text="fast_get"
-)
+@dp.callback_query_handler(state=StudentGetHomework.GetHomework, text="fast_get")
 async def query_fast_get(callback: CallbackQuery):
     await callback.answer()
     date = datetime.datetime.now().date() + datetime.timedelta(days=1)
     await send_homework(callback, date)
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentGetHomework.GetHomework, text="on_date_get"
-)
+@dp.callback_query_handler(state=StudentGetHomework.GetHomework, text="on_date_get")
 async def query_get_date(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -44,9 +40,7 @@ async def query_get_date(callback: CallbackQuery):
         )
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentGetHomework.GetDate, text_contains="add_date"
-)
+@dp.callback_query_handler(state=StudentGetHomework.GetDate, text_contains="add_date")
 async def query_return_homework(callback: CallbackQuery):
     await callback.answer()
     str_date = list(map(int, callback.data.split(":")[1].split("-")))

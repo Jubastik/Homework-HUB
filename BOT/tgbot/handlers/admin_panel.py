@@ -18,9 +18,7 @@ from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 
 
-@dp.callback_query_handler(
-    StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="add_admin"
-)
+@dp.callback_query_handler(state=StudentClass.ClassPanel, text="add_admin")
 async def query_get_classmate(callback: CallbackQuery):
     await callback.answer()
     await StudentClass.AddAdmin.set()
@@ -41,8 +39,6 @@ async def query_get_classmate(callback: CallbackQuery):
 
 
 @dp.callback_query_handler(
-    StudentFilter(),
-    AdminFilter(),
     state=StudentClass.AddAdmin,
     text_contains="student_name",
 )
@@ -57,9 +53,7 @@ async def query_add_admin(callback: CallbackQuery):
     await send_panel(callback, status=process_text(TextKeys.admin_added, callback))
 
 
-@dp.callback_query_handler(
-    StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="kick"
-)
+@dp.callback_query_handler(state=StudentClass.ClassPanel, text="kick")
 async def query_kick(callback: CallbackQuery):
     await callback.answer()
     await StudentClass.KickClassmate.set()
@@ -80,8 +74,6 @@ async def query_kick(callback: CallbackQuery):
 
 
 @dp.callback_query_handler(
-    StudentFilter(),
-    AdminFilter(),
     state=StudentClass.KickClassmate,
     text_contains="student_name",
 )
@@ -96,9 +88,7 @@ async def query_delete_user(callback: CallbackQuery):
     await send_panel(callback, status=process_text(TextKeys.user_kicked, callback))
 
 
-@dp.callback_query_handler(
-    StudentFilter(), AdminFilter(), state=StudentClass.ClassPanel, text="remove_token"
-)
+@dp.callback_query_handler(state=StudentClass.ClassPanel, text="remove_token")
 async def query_remove_token(callback: CallbackQuery):
     await callback.answer()
     res = await change_class_token(callback.from_user.id)

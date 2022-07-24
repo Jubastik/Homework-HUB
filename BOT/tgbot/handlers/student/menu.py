@@ -26,7 +26,7 @@ from languages.text_proccesor import process_text
 from languages.text_keys import TextKeys
 
 
-@dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="profile")
+@dp.callback_query_handler(state=StudentMenu.Menu, text="profile")
 async def query_profile(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -48,15 +48,13 @@ async def query_profile(callback: CallbackQuery):
         )
 
 
-@dp.callback_query_handler(
-    StudentFilter(), AdminFilter(), state=StudentMenu.Menu, text="class_menu"
-)
+@dp.callback_query_handler(AdminFilter(), state=StudentMenu.Menu, text="class_menu")
 async def query_class_menu(callback: CallbackQuery):
     await callback.answer()
     await send_panel(callback)
 
 
-@dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="add_homework")
+@dp.callback_query_handler(state=StudentMenu.Menu, text="add_homework")
 async def query_add_homework(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -79,7 +77,7 @@ async def query_add_homework(callback: CallbackQuery):
         )
 
 
-@dp.callback_query_handler(StudentFilter(), state=StudentMenu.Menu, text="get_homework")
+@dp.callback_query_handler(state=StudentMenu.Menu, text="get_homework")
 async def query_get_homework(callback: CallbackQuery):
     await callback.answer()
     await StudentGetHomework.GetHomework.set()

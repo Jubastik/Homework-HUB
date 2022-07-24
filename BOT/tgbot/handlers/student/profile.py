@@ -10,9 +10,8 @@ from tgbot.services.restapi.restapi import delete_user
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentProfile.Profile, text="delete_account"
-)
+
+@dp.callback_query_handler(state=StudentProfile.Profile, text="delete_account")
 async def query_delete_watning(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -31,9 +30,7 @@ async def query_delete_watning(callback: CallbackQuery):
 # | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount | DeleteAccount |
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentProfile.DeleteAccount, text="true"
-)
+@dp.callback_query_handler(state=StudentProfile.DeleteAccount, text="true")
 async def query_delete_true(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -46,8 +43,6 @@ async def query_delete_true(callback: CallbackQuery):
     # Соединение с регистрацией...
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentProfile.DeleteAccount, text="false"
-)
+@dp.callback_query_handler(state=StudentProfile.DeleteAccount, text="false")
 async def query_delete_false(callback: CallbackQuery):
     await query_profile(callback)

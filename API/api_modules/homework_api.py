@@ -60,6 +60,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
             .filter(Chat.id == id, Homework.date == date)
             .all()
         )
+    db_sess.close()
     if len(homeworks) == 0:
         return make_response(
             jsonify({"error": "Нет домашнего задания на эту дату"}), 404
@@ -110,26 +111,31 @@ def create_homework():  # Создает дз на основе входящег
     db_sess = db_session.create_session()
     my_class = db_sess.query(Student.class_id).filter(Student.id == creator_id).first()
     if my_class is None:
+        db_sess.close()
         return make_response(jsonify({"error": "У пользователя нет класса"}), 422)
     else:
         my_class = my_class[0]
     if data["date"] == "auto":
         date = get_next_lesson(my_class, data["lesson"])
         if date is None:
+            db_sess.close()
             return make_response(
                 jsonify({"error": f'Авто дата не нашла урок. {data["lesson"]}'}), 422
             )
     else:
         if len(data["date"].split("-")) != 3:
+            db_sess.close()
             return make_response(
                 jsonify({"error": "Формат даты должен быть день-месяц-год"}), 422
             )
         day, month, year = data["date"].split("-")
         date = datetime.date(int(year), int(month), int(day))
     if date < datetime.datetime.now().date():
+        db_sess.close()
         return make_response(jsonify({"error": "Дата уже прошла"}), 422)
     day_of_week = day_to_weekday(date)
     if day_of_week == 'воскресенье':
+        db_sess.close()
         return make_response(jsonify({"error": "Нельзя добавлять дз в воскресенье"}), 422)
     schedule_id = (
         db_sess.query(Schedule.id)
@@ -143,6 +149,7 @@ def create_homework():  # Создает дз на основе входящег
         .first()
     )
     if schedule_id is None:
+        db_sess.close()
         return make_response(
             jsonify(
                 {
@@ -169,10 +176,12 @@ def create_homework():  # Создает дз на основе входящег
             tg_p = TgPhoto(homework_id=homework.id, photo_id=photo_tg_id)
             db_sess.add(tg_p)
     if "photo" in data:
+        db_sess.close()
         return make_response(
             jsonify({"error": 'Отправка фото пока что недоступна"'}), 422
         )
     db_sess.commit()
+    db_sess.close()
     return make_response(
         jsonify({"success": f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 201
     )

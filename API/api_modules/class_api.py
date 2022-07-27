@@ -20,6 +20,7 @@ def get_class_students(platform, user_id):
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     students = student.my_class.student
+    db_sess.close()
     return jsonify({"data": [s.to_dict(only=("name", "tg_id")) for s in students]})
 
 
@@ -30,6 +31,7 @@ def get_class(platform, user_id):
     db_sess = db_session.create_session()
     student = db_sess.query(Student).filter(Student.id == id).first()
     my_class = student.my_class
+    db_sess.close()
     if my_class is None:
         return make_response(jsonify({"error": "Вы не состоите в классе"}), 404)
     return jsonify(
@@ -64,6 +66,7 @@ def create_class():  # Создает класс на основе входящ�
     student.is_admin = True
     student.class_id = my_class.id
     db_sess.commit()
+    db_sess.close()
     return make_response(jsonify({"success": f"Класс создан. id:{my_class.id}"}), 201)
 
 
@@ -90,9 +93,11 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
         elif key == "name":
             my_class.name = data
         else:
+            db_sess.close()
             return make_response(jsonify({"error": f"Неизвестный параметр {key}"}), 422)
     try:
         db_sess.commit()
+        db_sess.close()
     except sqlalchemy.exc.IntegrityError:  # Если класс с таким токеном уже существует
         return make_response(jsonify({"error": "Попробуйте снова"}), 500)
     return make_response(jsonify({"success": f"Класс изменен"}), 200)

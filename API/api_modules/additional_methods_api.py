@@ -47,6 +47,7 @@ def current_lessons(platform, user_id):
         )
             .all()
     )
+    db_sess.close()
     if len(now_lesson) == 0:
         return make_response(
             jsonify({"error": "Ближайшие уроки не найдены"}), 404

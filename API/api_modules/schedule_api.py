@@ -22,6 +22,7 @@ def get_schedule(platform, user_id):  # Возвращает все распис
     schedules = (
         db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
     )
+    db_sess.close()
     return jsonify(
         {
             "data": [
@@ -47,6 +48,7 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
             .filter(Student.id == id, WeekDay.name == day.lower())
             .all()
     )
+    db_sess.close()
     if len(schedules) == 0:
         return make_response(
             jsonify({"error": "Расписание на этот день не существует"}), 404
@@ -87,6 +89,7 @@ def create_schedule():  # Создает расписание на основе 
     db_sess = db_session.create_session()
     class_id = db_sess.query(Student.class_id).filter(Student.id == creator_id).first()
     if class_id is None:
+        db_sess.close()
         return make_response(
             jsonify({"error": f"Пользователь не состоит в классе"}), 422
         )
@@ -108,6 +111,7 @@ def create_schedule():  # Создает расписание на основе 
     )
 
     if slot_id is None:
+        db_sess.close()
         return make_response(
             jsonify(
                 {
@@ -119,6 +123,7 @@ def create_schedule():  # Создает расписание на основе 
     else:
         slot_id = slot_id[0]
     if day_id is None:
+        db_sess.close()
         return make_response(jsonify({"error": f'Неизвестный день {data["day"]}'}), 422)
     else:
         day_id = day_id[0]
@@ -139,6 +144,8 @@ def create_schedule():  # Создает расписание на основе 
     db_sess.add(schedule)
     try:
         db_sess.commit()
+        db_sess.close()
     except sqlalchemy.exc.IntegrityError:
+        db_sess.close()
         return make_response(jsonify({"error": "Расписание уже существует"}), 422)
     return make_response(jsonify({"success": f"Расписание успешно создано."}), 201)

@@ -43,12 +43,14 @@ def create_time_table():  # Создает расписание на основ�
     db_sess = db_session.create_session()
     class_id = db_sess.query(Student.class_id).filter(Student.id == creator_id).first()
     if class_id is None:
+        db_sess.close()
         return make_response(
             jsonify({"error": f"Пользователь не состоит в классе"}), 422
         )
     else:
         class_id = class_id[0]
     if len(data["begin_time"].split(":")) != 2 or len(data["end_time"].split(":")) != 2:
+        db_sess.close()
         return make_response(
             jsonify({"error": "Формат времени должен быть час:минуты"}), 422
         )
@@ -65,6 +67,8 @@ def create_time_table():  # Создает расписание на основ�
     db_sess.add(time_table)
     try:
         db_sess.commit()
+        db_sess.close()
     except sqlalchemy.exc.IntegrityError:
+        db_sess.close()
         return make_response(jsonify({"error": "Слот уже существует"}), 422)
     return make_response(jsonify({"success": "Слот успешно создан"}), 201)

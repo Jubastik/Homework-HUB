@@ -18,6 +18,7 @@ def get_chat(platform, chat_id):  # Возвращает группу
     db_sess = db_session.create_session()
     chat = db_sess.query(Chat).filter(Chat.id == id).first()
     data = chat.to_dict(only=("tg_id", "class_id"))
+    db_sess.close()
     return jsonify({"data": data})
 
 
@@ -47,7 +48,9 @@ def register_chat():  # Регистрация группы
     try:
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
+        db_sess.close()
         return make_response(jsonify({"error": "Беседа уже зарегестрирована"}), 422)
+    db_sess.close()
     return make_response(jsonify({"success": "Беседа успешно зарегестрирована"}), 201)
 
 
@@ -59,4 +62,5 @@ def delete_chat(platform, chat_id):  # Удаление группы
     chat = db_sess.query(Chat).filter(Chat.id == id).first()
     db_sess.delete(chat)
     db_sess.commit()
+    db_sess.close()
     return make_response(jsonify({"success": "Беседа успешно удалена"}), 200)

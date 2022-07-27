@@ -28,7 +28,6 @@ def access_verification(func):
                 return make_response(jsonify({'error': 'Неверный токен'}), 401)
         else:
             return make_response(jsonify({'error': 'Отсутствует токен'}), 401)
-
     return wrapper
 
 
@@ -39,7 +38,9 @@ def user_id_processing(platform, id):
     elif platform == NO:
         id = db_sess.query(Student.id).filter(Student.id == id).first()
     else:
+        db_sess.close()
         raise IDError("Платформа не поддерживается")
+    db_sess.close()
     if id is None:
         raise IDError("Несуществующий пользователь")
     return id[0]
@@ -52,7 +53,9 @@ def chat_id_processing(platform, id):
     elif platform == NO:
         id = db_sess.query(Chat.id).filter(Chat.id == id).first()
     else:
+        db_sess.close()
         raise IDError("Платформа не поддерживается")
+    db_sess.close()
     if id is None:
         raise IDError("Несуществующий пользователь")
     return id[0]

@@ -15,6 +15,7 @@ blueprint = flask.Blueprint("user", __name__, template_folder="templates")
 def get_all_users():  # Возвращает полный список пользователей
     db_sess = db_session.create_session()
     students = db_sess.query(Student).all()
+    db_sess.close()
     if len(students) == 0:
         return make_response(
             jsonify({"error": "В базе данных не найдено пользователей"}), 404
@@ -34,6 +35,7 @@ def get_user(platform, user_id):  # Возвращает базовую инфо
         only=("name", "is_admin", "my_class.class_token", "is_superuser")
     )
     data["class_admins"] = class_admins
+    db_sess.close()
     return jsonify({"data": data})
 
 
@@ -58,15 +60,19 @@ def create_user():  # Создает пользователя на основе 
         if class_id is not None:
             class_id = class_id[0]
         else:
+            db_sess.close()
             return make_response(jsonify({"error": "Нет такого класса"}), 404)
     if data["platform"] == TG:
         student = Student(tg_id=data["id"], name=data["name"], class_id=class_id)
     else:
+        db_sess.close()
         return make_response(jsonify({"error": "поддерживается только tg"}), 422)
     db_sess.add(student)
     try:
         db_sess.commit()
+        db_sess.close()
     except sqlalchemy.exc.IntegrityError:
+        db_sess.close()
         return make_response(
             jsonify({"error": "Такой пользователь уже существует"}), 422
         )
@@ -90,8 +96,10 @@ def edit_user(platform, user_id):  # Изменение пользователя
         elif key == "is_admin":
             student.is_admin = data
         else:
+            db_sess.close()
             return make_response(jsonify({"error": f"Неизвестный параметр {key}"}), 422)
     db_sess.commit()
+    db_sess.close()
     return make_response(jsonify({"success": "Пользователь успешно изменен"}), 200)
 
 
@@ -120,6 +128,7 @@ def del_user(platform, user_id):  # Удаление пользователя
             .count()
         )
         if admins_in_class == 1 and students_in_class != 1:
+            db_sess.close()
             return make_response(
                 jsonify(
                     {"error": "Нельзя удалить последнего админа в классе с учениками"}
@@ -131,4 +140,5 @@ def del_user(platform, user_id):  # Удаление пользователя
     else:
         db_sess.delete(student)
     db_sess.commit()
+    db_sess.close()
     return make_response(jsonify({"success": "Пользователь успешно удален"}), 200)

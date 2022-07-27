@@ -1,4 +1,5 @@
 import os
+from gevent.pywsgi import WSGIServer
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify
@@ -33,8 +34,10 @@ def main():
     app.register_blueprint(additional_methods_api.blueprint)
     app.register_blueprint(chat_api.blueprint)
     init_weekday()
-    app.run(host=os.getenv("API_HOST", ""), port=os.getenv('API_PORT', 8000),
-            debug=os.getenv("API_DEBUG", False) == 'True')
+    http_server = WSGIServer((os.getenv("API_HOST", ""), int(os.getenv('API_PORT', 8000))), app)
+    http_server.serve_forever()
+    # app.run(host=os.getenv("API_HOST", ""), port=os.getenv('API_PORT', 8000),
+    #         debug=os.getenv("API_DEBUG", False) == 'True')
 
 
 @app.route("/")
@@ -45,6 +48,7 @@ def hello_world():
 @app.errorhandler(IDError)
 def handle_id_error_request(e):
     return jsonify(error=str(e)), 404
+
 
 def init_weekday():
     """Инициализация дней недели в бд"""
@@ -57,6 +61,7 @@ def init_weekday():
         except Exception as e:
             pass
     return "OK"
+
 
 if __name__ == "__main__":
     main()

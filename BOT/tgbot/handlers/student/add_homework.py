@@ -26,9 +26,7 @@ from languages.text_proccesor import process_text
 from languages.text_keys import TextKeys
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentAddHomework.AddHomework, text="fast_add"
-)
+@dp.callback_query_handler(state=StudentAddHomework.AddHomework, text="fast_add")
 async def query_fast_add(callback: CallbackQuery):
     await callback.answer()
     # Получение 2-х предметов по текущему времени из БД
@@ -50,9 +48,7 @@ async def query_fast_add(callback: CallbackQuery):
         )
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentAddHomework.AddHomework, text="on_date_add"
-)
+@dp.callback_query_handler(state=StudentAddHomework.AddHomework, text="on_date_add")
 async def query_add_on_date(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -76,9 +72,7 @@ async def query_add_on_date(callback: CallbackQuery):
 # | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date | Add on date |
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentAddHomework.GetDate, text_contains="add_date"
-)
+@dp.callback_query_handler(state=StudentAddHomework.GetDate, text_contains="add_date")
 async def query_get_date(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -105,7 +99,7 @@ async def query_get_date(callback: CallbackQuery):
 
 
 @dp.callback_query_handler(
-    StudentFilter(), state=StudentAddHomework.GetSubjects, text_contains="subject"
+    state=StudentAddHomework.GetSubjects, text_contains="subject"
 )
 async def query_get_sunject(callback: CallbackQuery):
     await callback.answer()
@@ -127,9 +121,7 @@ async def query_get_sunject(callback: CallbackQuery):
 # | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add | Fast Add |
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentAddHomework.FastAdd, text_contains="subject"
-)
+@dp.callback_query_handler(state=StudentAddHomework.FastAdd, text_contains="subject")
 async def query_get_subject(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -163,9 +155,7 @@ async def hanldler_wait_homework(msg: Message):
             FSMdata["files_tgid"].append(msg.photo[-1].file_id)
 
 
-@dp.callback_query_handler(
-    StudentFilter(), state=StudentAddHomework.WaitHomework, text="done"
-)
+@dp.callback_query_handler(state=StudentAddHomework.WaitHomework, text="done")
 async def query_homework_check(callback: CallbackQuery):
     await callback.answer()
     FSMContext = dp.current_state(user=callback.from_user.id)
@@ -184,7 +174,6 @@ async def query_homework_check(callback: CallbackQuery):
 
 
 @dp.callback_query_handler(
-    StudentFilter(),
     state=StudentAddHomework.CheckHomework,
     text_contains="check_homework",
 )

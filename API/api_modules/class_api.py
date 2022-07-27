@@ -65,9 +65,10 @@ def create_class():  # Создает класс на основе входящ�
     student = db_sess.query(Student).filter(Student.id == creator_id).first()
     student.is_admin = True
     student.class_id = my_class.id
+    my_id = my_class.id
     db_sess.commit()
     db_sess.close()
-    return make_response(jsonify({"success": f"Класс создан. id:{my_class.id}"}), 201)
+    return make_response(jsonify({"success": f"Класс создан. id:{my_id}"}), 201)
 
 
 @blueprint.route("/api/class/<platform>/<int:user_id>", methods=["PATCH"], endpoint="update_class")

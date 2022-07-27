@@ -1,3 +1,4 @@
+import logging
 import os
 from gevent.pywsgi import WSGIServer
 
@@ -21,7 +22,10 @@ from api_modules import (
 load_dotenv()
 
 app = Flask(__name__)
-
+logger = logging.getLogger('werkzeug')
+handler = logging.FileHandler('access.log')
+logger.addHandler(handler)
+app.logger.addHandler(handler)
 
 def main():
     """Регистрация модулей и запуск приложения"""
@@ -34,10 +38,10 @@ def main():
     app.register_blueprint(additional_methods_api.blueprint)
     app.register_blueprint(chat_api.blueprint)
     init_weekday()
-    http_server = WSGIServer((os.getenv("API_HOST", ""), int(os.getenv('API_PORT', 8000))), app)
-    http_server.serve_forever()
-    # app.run(host=os.getenv("API_HOST", ""), port=os.getenv('API_PORT', 8000),
-    #         debug=os.getenv("API_DEBUG", False) == 'True')
+    # http_server = WSGIServer((os.getenv("API_HOST", ""), int(os.getenv('API_PORT', 8000))), app)
+    # http_server.serve_forever()
+    app.run(host=os.getenv("API_HOST", ""), port=os.getenv('API_PORT', 8000),
+            debug=os.getenv("API_DEBUG", False) == 'True')
 
 
 @app.route("/")

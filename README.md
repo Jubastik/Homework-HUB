@@ -36,13 +36,13 @@ POSTGRESQL_DB_NAME = ""
 
 SQLITE_DIR = 'db/API.db'
 ```
-| Параметр   |         Справка         |  Ожидаемое значение  |
-| ---------- | :---------------------: | :------------------: |
-| API_DEBUG  |      Режим дебага       |     True / False     |
-| API_HOST   |          Хост           |         int          |
-| API_PORT   |          Порт           |         int          |
-| ROOT_TOKEN | Секретный ключ сервера* |         str          |
-| DB_ENGINE  |         Вид БД          | sqlite / postgresql* |
+| Параметр   |         Справка         | Ожидаемое значение  |
+| ---------- | :---------------------: | :-----------------: |
+| API_DEBUG  |      Режим дебага       |    True / False     |
+| API_HOST   |          Хост           |         int         |
+| API_PORT   |          Порт           |         int         |
+| ROOT_TOKEN | Секретный ключ сервера* |         str         |
+| DB_ENGINE  |         Вид БД          | sqlite / postgresql |
 
 *Должно **совпадать** с конфигурацией в BOT
 
@@ -63,3 +63,4 @@ TG_OFFICAL_CHANNEL_ID=""
 | VERSION               |         Версия          |   local / server   |
 | TG_ADMIN_CHAT         |   Чат администраторов   |        str         |
 | TG_OFFICAL_CHANNEL_ID |   Телеграм канал бота   |        str         |
+*Должно **совпадать** с конфигурацией в API

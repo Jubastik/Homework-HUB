@@ -157,7 +157,7 @@ async def delete_user(tguser_id, force=False):
 
 async def get_subjects_by_time(tguser_id):
     """По времени получает 2 ближайших предмета и возвращает список их названий"""
-    query = f"/tg/{tguser_id} + URL_PARAM"
+    query = f"/tg/{tguser_id}" + URL_PARAM
     res = requests.get(URL_CURRENT_LESSONS + query)
     if res.status_code == 200:
         data = res.json()["lessons"]

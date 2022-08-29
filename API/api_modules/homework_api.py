@@ -60,14 +60,7 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
             .filter(Chat.id == id, Homework.date == date)
             .all()
         )
-    db_sess.close()
-    if len(homeworks) == 0:
-        return make_response(
-            jsonify({"error": "Нет домашнего задания на эту дату"}), 404
-        )
-    return jsonify(
-        {
-            "data": [
+    return_data = [
                 homework.to_dict(
                     only=(
                         "text_homework",
@@ -79,8 +72,12 @@ def get_homework_date(platform, user_id, date):  # Возвращает дз н�
                 )
                 for homework in homeworks
             ]
-        }
-    )
+    db_sess.close()
+    if len(homeworks) == 0:
+        return make_response(
+            jsonify({"error": "Нет домашнего задания на эту дату"}), 404
+        )
+    return jsonify({"data": return_data})
 
 
 @blueprint.route("/api/homework", methods=["POST"], endpoint='add_homework')

@@ -47,9 +47,10 @@ def current_lessons(platform, user_id):
         )
             .all()
     )
+    return_data = [_.to_dict(only=("lesson.name",)) for _ in now_lesson]
     db_sess.close()
     if len(now_lesson) == 0:
         return make_response(
             jsonify({"error": "Ближайшие уроки не найдены"}), 404
         )
-    return jsonify({"lessons": [_.to_dict(only=("lesson.name",)) for _ in now_lesson]})
+    return jsonify({"lessons": return_data})

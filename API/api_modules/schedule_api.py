@@ -22,17 +22,14 @@ def get_schedule(platform, user_id):  # Возвращает все распис
     schedules = (
         db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
     )
+    return_data = [
+        schedule.to_dict(
+            only=("day.name", "lesson.name", "slot.number_of_lesson")
+        )
+        for schedule in schedules
+    ]
     db_sess.close()
-    return jsonify(
-        {
-            "data": [
-                schedule.to_dict(
-                    only=("day.name", "lesson.name", "slot.number_of_lesson")
-                )
-                for schedule in schedules
-            ]
-        }
-    )
+    return jsonify({"data": return_data})
 
 
 @blueprint.route("/api/schedule/<platform>/<int:user_id>/<day>", methods=["GET"], endpoint="schedule_day")
@@ -42,25 +39,22 @@ def get_schedule_day(platform, user_id, day):  # Возвращает распи
     db_sess = db_session.create_session()
     schedules = (
         db_sess.query(Schedule)
-            .join(WeekDay)
-            .join(Class)
-            .join(Student)
-            .filter(Student.id == id, WeekDay.name == day.lower())
-            .all()
+        .join(WeekDay)
+        .join(Class)
+        .join(Student)
+        .filter(Student.id == id, WeekDay.name == day.lower())
+        .all()
     )
+    return_data = [
+        schedule.to_dict(only=("lesson.name", "slot.number_of_lesson"))
+        for schedule in schedules
+    ]
     db_sess.close()
     if len(schedules) == 0:
         return make_response(
             jsonify({"error": "Расписание на этот день не существует"}), 404
         )
-    return jsonify(
-        {
-            "data": [
-                schedule.to_dict(only=("lesson.name", "slot.number_of_lesson"))
-                for schedule in schedules
-            ]
-        }
-    )
+    return jsonify({"data": return_data})
 
 
 @blueprint.route("/api/schedule", methods=["POST"], endpoint="schedule_add")
@@ -97,17 +91,17 @@ def create_schedule():  # Создает расписание на основе 
         class_id = class_id[0]
     day_id = (
         db_sess.query(WeekDay.id)
-            .filter(WeekDay.name == str(data["day"]).lower())
-            .first()
+        .filter(WeekDay.name == str(data["day"]).lower())
+        .first()
     )
     lessons_id = db_sess.query(Lesson.id).filter(Lesson.name == data["lesson"]).first()
     slot_id = (
         db_sess.query(TimeTable.id)
-            .filter(
+        .filter(
             TimeTable.class_id == class_id,
             TimeTable.number_of_lesson == data["lesson_number"],
         )
-            .first()
+        .first()
     )
 
     if slot_id is None:

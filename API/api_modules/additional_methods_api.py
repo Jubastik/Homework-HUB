@@ -26,7 +26,7 @@ def current_lessons(platform, user_id):
 
     now_time = datetime.datetime.now() + datetime.timedelta(minutes=60)
     now_time = now_time.time()
-    past_time = datetime.datetime.combine(datetime.date.today(), now_time) - datetime.timedelta(minutes=120)
+    past_time = datetime.datetime.combine(datetime.date.today(), now_time) - datetime.timedelta(minutes=180)
     past_time = past_time.time()
     day = day_id_to_weekday[datetime.datetime.today().weekday()]
 
@@ -43,8 +43,8 @@ def current_lessons(platform, user_id):
             .filter(
             Student.id == id,
             WeekDay.name == day,
-            TimeTable.begin_time <= past_time,
-            TimeTable.end_time > now_time,
+            TimeTable.begin_time >= past_time,
+            TimeTable.end_time < now_time,
         )
             .all()
     )

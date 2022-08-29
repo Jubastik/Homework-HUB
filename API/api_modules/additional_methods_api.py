@@ -25,7 +25,7 @@ def current_lessons(platform, user_id):
     db_sess = db_session.create_session()
 
     now_time = datetime.datetime.now().time()
-    past_time = datetime.datetime.combine(datetime.date.today(), now_time) - datetime.timedelta(minutes=60)
+    past_time = datetime.datetime.combine(datetime.date.today(), now_time) - datetime.timedelta(minutes=120)
     past_time = past_time.time()
     day = day_id_to_weekday[datetime.datetime.today().weekday()]
 

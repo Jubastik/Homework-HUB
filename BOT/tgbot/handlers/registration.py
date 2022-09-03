@@ -48,6 +48,7 @@ async def hanldler_start(msg: Message):
         )
     else:
         await FSMContext.reset_state()
+        await msg.answer(process_text(TextKeys.warning, msg))
         await msg.answer(process_text(TextKeys.hello, msg), reply_markup=markup_start)
         await RegistrationStates.StartBtn.set()
 

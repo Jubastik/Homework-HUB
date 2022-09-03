@@ -3,6 +3,7 @@
 class TextKeys:
     by_link_success = "by_link_success"
     hello = "hello"
+    warning = "warning"
     btn_join_class = "btn_join_class"
     btn_new_class = "btn_new_class"
     start_time_check = "start_time_check"

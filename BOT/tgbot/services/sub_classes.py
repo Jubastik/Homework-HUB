@@ -61,14 +61,26 @@ class SheduleData:
                         data.append(f"<code>{k + 1})</code> {i}")
                 res[item["day_tag"]] = "\n".join(data)
             else:
+                if all([k == "" for k in item["shedule"].values()]) and pos is None:
+                    continue
                 res[item["day_tag"]] = "\n".join(
                     [f"<code>{k + 1})</code> {i}" for k, i in item["shedule"].items()]
                 )
         return res
 
     def load_shedule(self, shedule):
-        # Мб пригодится, когда будем делать блок студента
-        pass
+        translate = {
+            "понедельник": 0,
+            "вторник": 1,
+            "среда": 2,
+            "четверг": 3,
+            "пятница": 4,
+            "суббота": 5,
+        }
+        for lesson in shedule["data"]:
+            self.shedule[translate[lesson["day"]["name"]]]["shedule"][
+                int(lesson["slot"]["number_of_lesson"]) - 1
+            ] = lesson["lesson"]["name"]
 
 
 class RestErorr:

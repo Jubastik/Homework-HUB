@@ -1,3 +1,24 @@
+class DayText:
+    translate = {
+        "monday": "Понедельник",
+        "tuesday": "Вторник",
+        "wednesday": "Среда",
+        "thursday": "Четверг",
+        "friday": "Пятница",
+        "saturday": "Суббота",
+    }
+
+    def __init__(self) -> None:
+        pass
+
+    def format(self, **kwargs) -> str:
+        res = ""
+        for day, lessons in kwargs.items():
+            res += f"<b>{self.translate[day]}:</b>\n"
+            res += lessons + "\n"
+        return res
+
+
 class LanguageRussian:
     by_link_success = "<i>Регистрация по ссылке успешна</i>"
     warning = """
@@ -48,6 +69,7 @@ class LanguageRussian:
 
 <i>P.S. Перед тем, как добавить предмет, проверь что на кпопках нету часиков</i>
 """
+    shedule3 = DayText()
     add_time = """
 Введи время начала уроков в формате - <b>часы:минуты</b>
 <i>Например "8:30"</i>

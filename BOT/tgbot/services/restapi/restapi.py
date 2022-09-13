@@ -9,9 +9,11 @@ from CONSTANTS import (
     URL_TIME_TABLE,
     URL_CURRENT_LESSONS,
     WEEKDAYS,
-    URL_CHAT, URL_PARAM,
+    URL_CHAT,
+    URL_PARAM,
 )
 from tgbot.services.restapi.scripts import return_error, send_error, send_success
+from tgbot.services.sub_classes import SheduleData
 
 
 async def is_student(tguser_id):
@@ -77,7 +79,8 @@ async def register_class(tguser_id, data):
     """Добавление юзера в бд и создание класса, возвращает True если успешно"""
     # сначала регистрация полльзователя
     response = requests.post(
-        URL_USER + URL_PARAM, json={"id": tguser_id, "platform": "tg", "name": data["user_name"]}
+        URL_USER + URL_PARAM,
+        json={"id": tguser_id, "platform": "tg", "name": data["user_name"]},
     )
     if response.status_code != 201:
         return return_error(response)
@@ -148,7 +151,7 @@ async def register_class(tguser_id, data):
 
 async def delete_user(tguser_id, force=False):
     query = f"/tg/{tguser_id}"
-    res = requests.delete(URL_USER + query + URL_PARAM +"&force=" + str(force))
+    res = requests.delete(URL_USER + query + URL_PARAM + "&force=" + str(force))
     if res.status_code == 200:
         return True
     await send_error(tguser_id, res)
@@ -209,7 +212,9 @@ async def get_homework(userid, date, is_chat=False):
     """Возвращает домашку на дату"""
     if is_chat:
         userid *= -1  # HTTP не одобряет отрицательные числа (вернее знак "-")
-    query = f"/tg/{userid}/{date.strftime('%d-%m-%Y')}{URL_PARAM}&is_chat={str(is_chat)}"
+    query = (
+        f"/tg/{userid}/{date.strftime('%d-%m-%Y')}{URL_PARAM}&is_chat={str(is_chat)}"
+    )
     res = requests.get(URL_HOMEWORK + query)
     if res.status_code == 200:
         lessons = res.json()["data"]
@@ -341,4 +346,13 @@ async def delete_chat(chat_id):
     res = requests.delete(URL_CHAT + f"/tg_tgchat/{chat_id}" + URL_PARAM)
     if res.status_code == 200:
         return True
+    return return_error(res)
+
+
+async def get_shedule(tguser_id):
+    data = requests.get(URL_SCHEDULE + f"/tg/{tguser_id}" + URL_PARAM)
+    if data.status_code == 200:
+        res = SheduleData()
+        res.load_shedule(data.json())
+        return res
     return return_error(res)

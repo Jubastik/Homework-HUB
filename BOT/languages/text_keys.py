@@ -11,6 +11,7 @@ class TextKeys:
     subjects_check = "subjects_check"
     shedule1 = "shedule1"
     shedule2 = "shedule2"
+    shedule3 = "shedule3"
     add_time = "add_time"
     uncorrect_time = "uncorrect_time"
     correct_time = "correct_time"

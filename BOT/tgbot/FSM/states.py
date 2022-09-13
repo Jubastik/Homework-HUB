@@ -34,6 +34,7 @@ class StudentAddHomework(StatesGroup):
 class StudentProfile(StatesGroup):
     # Ветка Profile
     Profile = State()
+    Shedule = State()
     DeleteAccount = State()
 
 

@@ -11,8 +11,8 @@ from tgbot.filters.group_filter import (
 from tgbot.services.restapi.restapi import (
     is_student,
     register_chat,
-    get_homework,
     is_lessons_in_saturday,
+    get_student_info,
 )
 from tgbot.services.scripts import generate_dates
 from tgbot.services.sub_classes import RestErorr
@@ -24,6 +24,7 @@ from tgbot.keyboards.inline.markup import (
 from tgbot.FSM.states import Group
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
+from CONSTANTS import TG_BOT_LINK
 
 
 @dp.callback_query_handler(GroupFilter(), state="*", text="menu")
@@ -53,7 +54,9 @@ async def menu(msg: Message):
     await FSMContext.reset_state()
     await Group.Menu.set()
     message = await msg.answer(
-        process_text(TextKeys.choose_action, msg), reply_markup=makrup_group_menu
+        process_text(TextKeys.choose_action, msg),
+        reply_markup=makrup_group_menu,
+        disable_notification=True,
     )
     async with FSMContext.proxy() as FSMdata:
         FSMdata["main_msg_id"] = message.message_id
@@ -69,10 +72,23 @@ async def registration(msg: Message):
     if await is_student(msg.from_user.id):
         res = await register_chat(msg.from_user.id, msg.chat["id"])
         if isinstance(res, RestErorr):
+            FSMContext = dp.current_state(user=msg.from_user.id)
+            await FSMContext.reset_state()
             return
-        await msg.answer(process_text(TextKeys.chat_registered, msg))
+        res = await get_student_info(msg.from_user.id)
+        if isinstance(res, RestErorr):
+            FSMContext = dp.current_state(user=msg.from_user.id)
+            await FSMContext.reset_state()
+            return
+        link = TG_BOT_LINK + str(res["class_token"])
+        await msg.answer(
+            process_text(TextKeys.chat_registered, msg, link=link),
+            disable_notification=True,
+        )
     else:
-        await msg.answer(process_text(TextKeys.chat_unregistered, msg))
+        await msg.answer(
+            process_text(TextKeys.chat_unregistered, msg), disable_notification=True
+        )
 
 
 @dp.callback_query_handler(GroupFilter(), state=Group.Menu, text="get_homework")

@@ -42,10 +42,13 @@ async def hanldler_start(msg: Message):
         if isinstance(res, RestErorr):
             return
         await StudentMenu.Menu.set()
-        await msg.answer(
-            "Меню",
+        await StudentMenu.Menu.set()
+        msg = await msg.answer(
+            process_text(TextKeys.menu, msg),
             reply_markup=get_markup_student_menu(res),
         )
+        async with FSMContext.proxy() as FSMdata:
+            FSMdata["main_msg_id"] = msg.message_id
     else:
         await FSMContext.reset_state()
         await msg.answer(process_text(TextKeys.warning, msg))

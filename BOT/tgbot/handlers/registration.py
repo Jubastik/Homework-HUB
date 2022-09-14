@@ -19,7 +19,7 @@ from tgbot.services.restapi.restapi import (
     is_admin,
     get_student_info,
 )
-from tgbot.services.scripts import convert_time, time_is_correct
+from tgbot.services.scripts import convert_time, time_is_correct, make_username
 from tgbot.services.sub_classes import RestErorr, SheduleData
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
@@ -34,13 +34,7 @@ async def hanldler_start(msg: Message):
     FSMContext = dp.current_state(user=userid)
     if len(msg.text.split()) == 2:
         classid = msg.text.split()[-1]
-        username = User.get_current()["username"]
-        if username is None:
-            username = (
-                f"{User.get_current()['first_name']} {User.get_current()['last_name']}"
-            )
-        else:
-            username = f"@{username}"
+        username = make_username(User.get_current())
         res = await register_user(userid, classid, username)
         if isinstance(res, RestErorr):
             await FSMContext.reset_state()
@@ -106,13 +100,7 @@ async def query_join_class(callback: CallbackQuery):
 async def handler_get_id(msg: Message):
     classid = msg.text
     userid = msg.from_user.id
-    username = User.get_current()["username"]
-    if username is None:
-        username = (
-            f"{User.get_current()['first_name']} {User.get_current()['last_name']}"
-        )
-    else:
-        username = f"@{username}"
+    username = make_username(User.get_current())
     FSMContext = dp.current_state(user=userid)
     res = await register_user(userid, classid, username)
     if isinstance(res, RestErorr):
@@ -339,13 +327,7 @@ async def query_shedule_done(callback: CallbackQuery):
     userid = callback.from_user.id
     FSMContext = dp.current_state(user=userid)
     async with FSMContext.proxy() as FSMdata:
-        username = User.get_current()["username"]
-        if username is None:
-            username = (
-                f"{User.get_current()['first_name']} {User.get_current()['last_name']}"
-            )
-        else:
-            username = f"@{username}"
+        username = make_username(User.get_current())
         data = {
             "shedule": FSMdata["shedule"],
             "subjects": FSMdata["extra_subjects"],

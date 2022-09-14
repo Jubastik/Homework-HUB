@@ -59,7 +59,13 @@ async def convert_homework(data, callback) -> dict:
             author_data = await get_user_by_id(data["author"])
             author_name = author_data["data"]["name"]
             info = {
-                "text": process_text(TextKeys.homework_txt, callback, subject=lesson, author=author_name, txt=txt),
+                "text": process_text(
+                    TextKeys.homework_txt,
+                    callback,
+                    subject=lesson,
+                    author=author_name,
+                    txt=txt,
+                ),
                 "photos": data["photos"],
             }
             res.append(info)
@@ -77,3 +83,18 @@ def convert_users(data):
         ]
     )
     return txt
+
+
+def make_username(user):
+    # return f"@{user['first_name']}_{user['last_name']}_{user['id']}"
+    if user["username"]:
+        return f"@{user['username']}"
+    else:
+        fname = user["first_name"]
+        lname = user["last_name"]
+        if lname and fname:
+            return f"{fname} {lname}"
+        elif fname:
+            return f"{fname}"
+        elif lname:
+            return f"{lname}"

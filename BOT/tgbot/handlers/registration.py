@@ -1,5 +1,4 @@
 from aiogram.types import Message, CallbackQuery, User
-import os
 
 # | start | start | start | start | start | start | start | start |
 from CONSTANTS import SUBJECTS, TG_BOT_LINK, TG_OFFICAL_CHANNEL
@@ -14,7 +13,12 @@ from tgbot.keyboards.inline.markup import (
     markup_shedule2,
     get_markup_student_menu,
 )
-from tgbot.services.restapi.restapi import register_user, register_class, is_admin, get_student_info
+from tgbot.services.restapi.restapi import (
+    register_user,
+    register_class,
+    is_admin,
+    get_student_info,
+)
 from tgbot.services.scripts import convert_time, time_is_correct
 from tgbot.services.sub_classes import RestErorr, SheduleData
 from languages.text_keys import TextKeys
@@ -31,6 +35,12 @@ async def hanldler_start(msg: Message):
     if len(msg.text.split()) == 2:
         classid = msg.text.split()[-1]
         username = User.get_current()["username"]
+        if username is None:
+            username = (
+                f"{User.get_current()['first_name']} {User.get_current()['last_name']}"
+            )
+        else:
+            username = f"@{username}"
         res = await register_user(userid, classid, username)
         if isinstance(res, RestErorr):
             await FSMContext.reset_state()
@@ -97,6 +107,12 @@ async def handler_get_id(msg: Message):
     classid = msg.text
     userid = msg.from_user.id
     username = User.get_current()["username"]
+    if username is None:
+        username = (
+            f"{User.get_current()['first_name']} {User.get_current()['last_name']}"
+        )
+    else:
+        username = f"@{username}"
     FSMContext = dp.current_state(user=userid)
     res = await register_user(userid, classid, username)
     if isinstance(res, RestErorr):
@@ -323,11 +339,18 @@ async def query_shedule_done(callback: CallbackQuery):
     userid = callback.from_user.id
     FSMContext = dp.current_state(user=userid)
     async with FSMContext.proxy() as FSMdata:
+        username = User.get_current()["username"]
+        if username is None:
+            username = (
+                f"{User.get_current()['first_name']} {User.get_current()['last_name']}"
+            )
+        else:
+            username = f"@{username}"
         data = {
             "shedule": FSMdata["shedule"],
             "subjects": FSMdata["extra_subjects"],
             "start_time": FSMdata["start_time"],
-            "user_name": User.get_current()["username"],
+            "user_name": username,
         }
         res = await register_class(userid, data)
         if isinstance(res, RestErorr):
@@ -336,12 +359,16 @@ async def query_shedule_done(callback: CallbackQuery):
         res = await get_student_info(callback.from_user.id)
         if isinstance(res, RestErorr):
             await FSMContext.reset_state()
-            return  
+            return
         token = res["class_token"]
         link = TG_BOT_LINK
         await FSMContext.reset_state()
-        await callback.message.answer(process_text(TextKeys.register_done, callback, token=token, link=link))
-        await callback.message.answer(process_text(TextKeys.register_done2, callback, channel=TG_OFFICAL_CHANNEL))
+        await callback.message.answer(
+            process_text(TextKeys.register_done, callback, token=token, link=link)
+        )
+        await callback.message.answer(
+            process_text(TextKeys.register_done2, callback, channel=TG_OFFICAL_CHANNEL)
+        )
         res = await is_admin(callback.from_user.id)
         if isinstance(res, RestErorr):
             return

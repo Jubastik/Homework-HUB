@@ -87,7 +87,7 @@ class LanguageRussian:
     register_done2 = "Подпишись на мой телеграм канал <b>{channel}</b>🥺🥺🥺"
     profile = """
 <i><b>Профиль:</b></i>
-Имя - @<b>{name}</b>
+Имя - <b>{name}</b>
 Админ - {is_admin}
 Ссылка приглашение - <code>{link}{class_token}</code>
 Токен - <code>{class_token}</code>
@@ -114,7 +114,7 @@ class LanguageRussian:
     homework_menu = "<b><i>Меню получения домашки</i></b>"
     date_menu = "На какой день ты хочешь получить домашку?🧐"
     homework_txt = """
-<b>{subject} от @{author}</b>
+<b>{subject} от {author}</b>
 
 {txt}
 """

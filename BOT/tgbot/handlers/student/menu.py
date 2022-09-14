@@ -35,7 +35,7 @@ async def query_profile(callback: CallbackQuery):
         return
     async with FSMContext.proxy() as FSMdata:
         res["is_admin"] = "✅" if res["is_admin"] else "❌"
-        res["admins"] = " ".join(["@" + i for i in res["admins"]])
+        res["admins"] = " ".join(res["admins"])
         res["link"] = TG_BOT_LINK
         await StudentProfile.Profile.set()
         main_msg_id = FSMdata["main_msg_id"]

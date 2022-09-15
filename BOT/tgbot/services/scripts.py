@@ -29,8 +29,8 @@ def generate_dates(saturday_lesson) -> list:
         return saturday_lesson
     # Вот так вот если is_lessons_in_saturday() возвращает True для 19.04
     today = datetime.date.today()
-    c = 1
-    while c <= 7:
+    c = 0
+    while c <= 6:
         # дата числом
         day = today + datetime.timedelta(days=c)
         # день недели

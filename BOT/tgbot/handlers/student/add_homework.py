@@ -20,6 +20,7 @@ from tgbot.services.restapi.restapi import (
     add_homework,
     get_schedule_on_date,
     is_lessons_in_saturday,
+    is_admin
 )
 from tgbot.services.sub_classes import RestErorr
 from languages.text_proccesor import process_text
@@ -193,9 +194,13 @@ async def query_homework_check(callback: CallbackQuery):
             await add_homework(userid, params, auto=FSMdata["is_fast"])
     await FSMContext.reset_state()
     await StudentMenu.Menu.set()
+    res = await is_admin(callback.from_user.id)
+    if isinstance(res, RestErorr):
+        await FSMContext.reset_state()
+        return
     msg = await callback.message.answer(
         process_text(TextKeys.menu, callback),
-        reply_markup=get_markup_student_menu(True),
+        reply_markup=get_markup_student_menu(res),
     )
     async with FSMContext.proxy() as FSMdata:
         FSMdata["main_msg_id"] = msg.message_id

@@ -164,7 +164,6 @@ async def get_subjects_by_time(tguser_id):
     res = requests.get(URL_CURRENT_LESSONS + query)
     if res.status_code == 200:
         data = res.json()["lessons"]
-        print([_["lesson"]["name"] for _ in data])
         return [_["lesson"]["name"] for _ in data]
     await send_error(tguser_id, res)
     return return_error(res)

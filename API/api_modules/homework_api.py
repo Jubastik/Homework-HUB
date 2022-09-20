@@ -180,5 +180,5 @@ def create_homework():  # Создает дз на основе входящег
     db_sess.commit()
     db_sess.close()
     return make_response(
-        jsonify({"success": f'ДЗ создано. Дата:{date}, Урок:{data["lesson"]}'}), 201
+        jsonify({"success": f'ДЗ создано. Дата: {date.strftime("%d.%m.%Y")}, Урок: {data["lesson"]}'}), 201
     )

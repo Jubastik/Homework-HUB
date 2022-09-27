@@ -10,7 +10,10 @@ from data.ban_list import Ban_list
 
 blueprint = flask.Blueprint("ban_list", __name__, template_folder="templates")
 
-@blueprint.route("/api/ban_list/<platform>/<userid>", methods=["GET"], endpoint="ban_list")
+
+@blueprint.route(
+    "/api/ban_list/<platform>/<userid>", methods=["GET"], endpoint="ban_list"
+)
 @access_verification
 def get_banned_user(platform, userid):
     id = user_id_processing(platform, userid)
@@ -27,9 +30,7 @@ def add_ban():
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     if "user_tg_id" not in request.json:
-        return make_response(
-            jsonify({"error": 'Отсутствует поле "user_tg_id""'}), 422
-        )
+        return make_response(jsonify({"error": 'Отсутствует поле "user_tg_id""'}), 422)
     data = request.json
     db_sess = db_session.create_session()
     class_id = (
@@ -46,4 +47,33 @@ def add_ban():
     db_sess.add(ban)
     db_sess.commit()
     db_sess.close()
-    return make_response(jsonify({"success": "Пользователь успешно добавлен в бан-лист"}), 201)
+    return make_response(
+        jsonify({"success": "Пользователь успешно добавлен в бан-лист"}), 201
+    )
+
+
+@blueprint.route("/api/ban_list/<id>", methods=["DELETE"], endpoint="delete_ban")
+@access_verification
+def delete_ban(id):
+    db_sess = db_session.create_session()
+    ban = db_sess.query(Ban_list).filter(Ban_list.id == id).first()
+    db_sess.delete(ban)
+    db_sess.commit()
+    db_sess.close()
+    return make_response(jsonify({"success": "Пользователь успешно разбанен"}), 200)
+
+
+@blueprint.route(
+    "/api/ban_list/class/<platform>/<id>", methods=["GET"], endpoint="get_class_bans"
+)
+@access_verification
+def get_class_ban_list(platform, userid):
+    id = user_id_processing(platform, userid)
+    db_sess = db_session.create_session()
+    class_id = db_sess.query(Student.class_id).filter(Student.id == id).first()[0]
+    ban_list = db_sess.query(Ban_list).filter(Ban_list.class_id == class_id).all()
+    if len(ban_list) == 0:
+        return make_response(jsonify({"error": "Бан-лист класса пуст"}), 404)
+    res = [ban.to_dict(only=("id", "tg_id", "class_id")) for ban in ban_list]
+    db_sess.close()
+    return jsonify({"data": res})

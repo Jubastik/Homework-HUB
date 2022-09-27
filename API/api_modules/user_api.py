@@ -6,6 +6,7 @@ from api_modules.core import user_id_processing, IDError, TG, access_verificatio
 from data import db_session
 from data.classes import Class
 from data.students import Student
+from data.ban_list import Ban_list
 
 blueprint = flask.Blueprint("user", __name__, template_folder="templates")
 
@@ -62,6 +63,10 @@ def create_user():  # Создает пользователя на основе 
         else:
             db_sess.close()
             return make_response(jsonify({"error": "Нет такого класса"}), 404)
+        ban_check = (db_sess.query(Ban_list).filter(Ban_list.tg_id == data["id"]).filter(Ban_list.class_id == class_id).first())
+        if ban_check is not None:
+            db_sess.close()
+            return make_response(jsonify({"error": "Пользователь забанен в этом классе"}), 403)
     if data["platform"] == TG:
         student = Student(tg_id=data["id"], name=data["name"], class_id=class_id)
     else:

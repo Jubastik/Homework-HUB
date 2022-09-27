@@ -16,7 +16,8 @@ from api_modules import (
     schedule_api,
     time_table_api,
     additional_methods_api,
-    chat_api
+    chat_api,
+    ban_list_api
 )
 
 load_dotenv()
@@ -37,6 +38,7 @@ def main():
     app.register_blueprint(time_table_api.blueprint)
     app.register_blueprint(additional_methods_api.blueprint)
     app.register_blueprint(chat_api.blueprint)
+    app.register_blueprint(ban_list_api.blueprint)
     init_weekday()
     # http_server = WSGIServer((os.getenv("API_HOST", ""), int(os.getenv('API_PORT', 8000))), app)
     # http_server.serve_forever()

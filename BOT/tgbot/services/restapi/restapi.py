@@ -158,6 +158,10 @@ async def delete_user(tguser_id, force=False):
     return return_error(res)
 
 
+async def ban_user(admin_tgid, user_tgid):
+    pass
+
+
 async def get_subjects_by_time(tguser_id):
     """По времени получает 2 ближайших предмета и возвращает список их названий"""
     query = f"/tg/{tguser_id}" + URL_PARAM

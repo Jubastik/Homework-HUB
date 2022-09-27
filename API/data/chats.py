@@ -15,4 +15,4 @@ class Chat(SqlAlchemyBase, SerializerMixin):
     # my_class = orm.relationship("Class", back_populates="chats")
 
     def __repr__(self):
-        return f"<Group> {self.id} {self.my_class}"
+        return f"<Group> {self.id} {self.class_id}"

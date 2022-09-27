@@ -188,7 +188,7 @@ markup_class_panel = InlineKeyboardMarkup(
             )
         ],
         [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
-        [InlineKeyboardButton(text="Кикнуть одноклассника", callback_data="kick")],
+        [InlineKeyboardButton(text="Забанить одноклассника", callback_data="ban")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
 )

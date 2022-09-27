@@ -30,7 +30,7 @@ def add_ban():
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
     if "user_tg_id" not in request.json:
-        return make_response(jsonify({"error": 'Отсутствует поле "user_tg_id""'}), 422)
+        return make_response(jsonify({"error": 'Отсутствует поле "user_tg_id"'}), 422)
     data = request.json
     db_sess = db_session.create_session()
     class_id = (
@@ -44,8 +44,42 @@ def add_ban():
     else:
         return make_response(jsonify({"error": "Пользователь не был найден."}), 404)
     ban = Ban_list(tg_id=data["user_tg_id"], class_id=class_id)
+    id = user_id_processing("tg", data["user_tg_id"])
+    student = db_sess.query(Student).get(id)
+    if student.is_admin is True:
+        admins_in_class = (
+            db_sess.query(Student)
+            .join(Class)
+            .filter(Class.id == student.class_id, Student.is_admin == True)
+            .count()
+        )
+        students_in_class = (
+            db_sess.query(Student)
+            .join(Class)
+            .filter(Class.id == student.class_id)
+            .count()
+        )
+        if admins_in_class == 1 and students_in_class != 1:
+            db_sess.close()
+            return make_response(
+                jsonify(
+                    {"error": "Нельзя забанить последнего админа в классе с учениками"}
+                ),
+                422,
+            )
+    classmates_count = (
+        db_sess.query(Student).join(Class).filter(Class.id == student.class_id).count()
+    )
+    if classmates_count == 1:
+        db_sess.delete(student.my_class)
+    else:
+        db_sess.delete(student)
     db_sess.add(ban)
-    db_sess.commit()
+    try:
+        db_sess.commit()
+    except sqlalchemy.exc.IntegrityError:
+        db_sess.close()
+        return make_response(jsonify({"error": "Пользователь уже забанен в этом классе"}), 409)
     db_sess.close()
     return make_response(
         jsonify({"success": "Пользователь успешно добавлен в бан-лист"}), 201

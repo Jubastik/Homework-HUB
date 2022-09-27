@@ -8,7 +8,7 @@ from tgbot.filters.admin_filter import AdminFilter
 from tgbot.keyboards.inline.markup import get_markup_classmates
 from tgbot.services.restapi.restapi import (
     get_names_classmates,
-    delete_user,
+    ban_user,
     assign_admin,
     change_class_token,
     get_student_info,
@@ -53,10 +53,10 @@ async def query_add_admin(callback: CallbackQuery):
     await send_panel(callback, status=process_text(TextKeys.admin_added, callback))
 
 
-@dp.callback_query_handler(state=StudentClass.ClassPanel, text="kick")
-async def query_kick(callback: CallbackQuery):
+@dp.callback_query_handler(state=StudentClass.ClassPanel, text="ban")
+async def query_ban(callback: CallbackQuery):
     await callback.answer()
-    await StudentClass.KickClassmate.set()
+    await StudentClass.BanClassmate.set()
     res = await get_names_classmates(callback.from_user.id)
     FSMContext = dp.current_state(user=callback.from_user.id)
     if isinstance(res, RestErorr):
@@ -74,13 +74,13 @@ async def query_kick(callback: CallbackQuery):
 
 
 @dp.callback_query_handler(
-    state=StudentClass.KickClassmate,
+    state=StudentClass.BanClassmate,
     text_contains="student_name",
 )
-async def query_delete_user(callback: CallbackQuery):
+async def query_ban_user(callback: CallbackQuery):
     await callback.answer()
     data = callback.data.split(":")[1]
-    res = await delete_user(data)
+    res = await ban_user(data)
     if isinstance(res, RestErorr):
         FSMContext = dp.current_state(user=callback.from_user.id)
         await FSMContext.reset_state()

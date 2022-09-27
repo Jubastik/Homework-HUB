@@ -11,6 +11,7 @@ from CONSTANTS import (
     WEEKDAYS,
     URL_CHAT,
     URL_PARAM,
+    URL_BAN_LIST,
 )
 from tgbot.services.restapi.scripts import return_error, send_error, send_success
 from tgbot.services.sub_classes import SheduleData
@@ -71,6 +72,8 @@ async def register_user(tguser_id, classid, user_name):
     if response.status_code == 201:
         return True
     if response.status_code == 404:
+        await send_error(tguser_id, response, menu=False)
+    if response.status_code == 403:
         await send_error(tguser_id, response, menu=False)
     return return_error(response)
 
@@ -358,4 +361,25 @@ async def get_shedule(tguser_id):
         res = SheduleData()
         res.load_shedule(data.json())
         return res
-    return return_error(res)
+    return return_error(data)
+
+
+async def ban_user(tguser_id):
+    data = requests.post(URL_BAN_LIST + URL_PARAM, json={"user_tg_id": tguser_id})
+    if data.status_code == 201:
+        return True
+    return return_error(data)
+
+
+async def unban_user(id):
+    data = requests.delete(URL_BAN_LIST + f"/{id}" + URL_PARAM)
+    if data.status_code == 200:
+        return True
+    return return_error(data)
+
+
+async def get_ban_list(tg_user_id):
+    data = requests.get(URL_BAN_LIST + f"/class/tg{tg_user_id}" + URL_PARAM)
+    if data.status_code == 200:
+        return data.json()["data"]
+    return return_error(data)

@@ -12,6 +12,7 @@ from tgbot.services.restapi.restapi import (
     assign_admin,
     change_class_token,
     get_student_info,
+    get_ban_list
 )
 from tgbot.services.sub_classes import RestErorr
 from languages.text_keys import TextKeys
@@ -26,6 +27,9 @@ async def query_get_classmate(callback: CallbackQuery):
     FSMContext = dp.current_state(user=callback.from_user.id)
     if isinstance(res, RestErorr):
         await FSMContext.reset_state()
+        return
+    if len(res) == 0:
+        await send_panel(callback, status=process_text(TextKeys.no_classmates, callback))
         return
     async with FSMContext.proxy() as FSMdata:
         main_msg_id = FSMdata["main_msg_id"]
@@ -62,6 +66,9 @@ async def query_ban(callback: CallbackQuery):
     if isinstance(res, RestErorr):
         await FSMContext.reset_state()
         return
+    if len(res) == 0:
+        await send_panel(callback, status=process_text(TextKeys.no_classmates, callback))
+        return
     async with FSMContext.proxy() as FSMdata:
         main_msg_id = FSMdata["main_msg_id"]
         chat_id = callback.from_user.id
@@ -79,8 +86,8 @@ async def query_ban(callback: CallbackQuery):
 )
 async def query_ban_user(callback: CallbackQuery):
     await callback.answer()
-    data = callback.data.split(":")[1]
-    res = await ban_user(data)
+    data = callback.data.split(":")
+    res = await ban_user(data[1], data[0])
     if isinstance(res, RestErorr):
         FSMContext = dp.current_state(user=callback.from_user.id)
         await FSMContext.reset_state()
@@ -104,3 +111,27 @@ async def query_remove_token(callback: CallbackQuery):
     await send_panel(
         callback, status=process_text(TextKeys.token_changed, callback, token=token)
     )
+
+
+@dp.callback_query_handler(state=StudentClass.ClassPanel, text="unban")
+async def query_unban(callback: CallbackQuery):
+    await callback.answer()
+    await StudentClass.UnbanClassmate.set()
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    ban_list = await get_ban_list(callback.from_user.id)
+    if isinstance(ban_list, RestErorr):
+        if ban_list.status_code == 404:
+            await send_panel(callback, status=process_text(TextKeys.empty_ban_list, callback))
+            return
+        else:
+            await FSMContext.reset_state()
+            return
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        chat_id = callback.from_user.id
+        await bot.edit_message_text(
+            process_text(TextKeys.choose_classmate, callback),
+            chat_id=chat_id,
+            message_id=main_msg_id,
+            reply_markup=get_markup_classmates(ban_list),
+        )

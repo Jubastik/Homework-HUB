@@ -1,7 +1,7 @@
 from . import students
-from . import classes
 from . import chats
 from . import ban_list
+from . import classes
 
 from . import schedules
 from . import time_tables

@@ -26,6 +26,8 @@ class TextKeys:
     user_kicked = "user_kicked"
     choose_classmate = "choose_classmate"
     token_changed = "token_changed"
+    empty_ban_list = "empty_ban_list"
+    no_classmates = "no_classmates"
 
     choose_action = "choose_action"
     chat_registered = "chat_registered"

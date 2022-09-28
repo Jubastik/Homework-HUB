@@ -12,6 +12,9 @@ class Ban_list(SqlAlchemyBase, SerializerMixin):
     class_id = sqlalchemy.Column(
         sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), nullable=False
     )
+    my_class = orm.relationship("Class", back_populates="bans")
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+
 
     def __repr__(self):
-        return f"<Banned user> {self.id} {self.tg_id} {self.class_id}"
+        return f"<Banned user> {self.id} {self.tg_id} {self.class_id} {self.name}"

@@ -103,6 +103,8 @@ class LanguageRussian:
     user_kicked = "Пользователь исключен из класса"
     choose_classmate = "Выбери одноклассника:"
     token_changed = "Токен изменен - <code>{token}</code>"
+    empty_ban_list = "Нету забаненых пользователей"
+    no_classmates = "Нету одноклассников"
 
     choose_action = "Выбери действие:"
     chat_registered = """

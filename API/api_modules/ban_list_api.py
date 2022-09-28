@@ -19,7 +19,7 @@ def get_banned_user(platform, userid):
     id = user_id_processing(platform, userid)
     db_sess = db_session.create_session()
     banned_user = db_sess.query(Ban_list).filter(Ban_list.id == id).first()
-    res = banned_user.to_dict(only=("tg_id", "class_id"))
+    res = banned_user.to_dict(only=("id", "tg_id", "class_id", "name"))
     db_sess.close()
     return jsonify({"data": res})
 
@@ -29,8 +29,8 @@ def get_banned_user(platform, userid):
 def add_ban():
     if not request.json:
         return make_response(jsonify({"error": "Пустой json"}), 400)
-    if "user_tg_id" not in request.json:
-        return make_response(jsonify({"error": 'Отсутствует поле "user_tg_id"'}), 422)
+    if "user_tg_id" not in request.json or "username" not in request.json:
+        return make_response(jsonify({"error": 'Отсутствует поле "user_tg_id" или "username"'}), 422)
     data = request.json
     db_sess = db_session.create_session()
     class_id = (
@@ -43,7 +43,7 @@ def add_ban():
         class_id = class_id[0]
     else:
         return make_response(jsonify({"error": "Пользователь не был найден."}), 404)
-    ban = Ban_list(tg_id=data["user_tg_id"], class_id=class_id)
+    ban = Ban_list(tg_id=data["user_tg_id"], class_id=class_id, name=data["username"])
     id = user_id_processing("tg", data["user_tg_id"])
     student = db_sess.query(Student).get(id)
     if student.is_admin is True:
@@ -70,16 +70,18 @@ def add_ban():
     classmates_count = (
         db_sess.query(Student).join(Class).filter(Class.id == student.class_id).count()
     )
+    db_sess.add(ban)
     if classmates_count == 1:
         db_sess.delete(student.my_class)
     else:
         db_sess.delete(student)
-    db_sess.add(ban)
     try:
         db_sess.commit()
     except sqlalchemy.exc.IntegrityError:
         db_sess.close()
-        return make_response(jsonify({"error": "Пользователь уже забанен в этом классе"}), 409)
+        return make_response(
+            jsonify({"error": "Пользователь уже забанен в этом классе"}), 409
+        )
     db_sess.close()
     return make_response(
         jsonify({"success": "Пользователь успешно добавлен в бан-лист"}), 201
@@ -98,7 +100,7 @@ def delete_ban(id):
 
 
 @blueprint.route(
-    "/api/ban_list/class/<platform>/<id>", methods=["GET"], endpoint="get_class_bans"
+    "/api/ban_list/class/<platform>/<userid>", methods=["GET"], endpoint="get_class_bans"
 )
 @access_verification
 def get_class_ban_list(platform, userid):
@@ -108,6 +110,6 @@ def get_class_ban_list(platform, userid):
     ban_list = db_sess.query(Ban_list).filter(Ban_list.class_id == class_id).all()
     if len(ban_list) == 0:
         return make_response(jsonify({"error": "Бан-лист класса пуст"}), 404)
-    res = [ban.to_dict(only=("id", "tg_id", "class_id")) for ban in ban_list]
+    res = [ban.to_dict(only=("id", "name")) for ban in ban_list]
     db_sess.close()
     return jsonify({"data": res})

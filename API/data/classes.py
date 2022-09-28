@@ -15,6 +15,7 @@ class Class(SqlAlchemyBase, SerializerMixin):
     chats = orm.relationship("Chat", cascade="all, delete-orphan")
     schedules = orm.relationship("Schedule", back_populates="my_class", cascade="all, delete-orphan")
     time_tables = orm.relationship("TimeTable", cascade="all, delete-orphan")
+    bans = orm.relationship("Ban_list", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Class> {self.id} {self.name} {self.vk_id}"

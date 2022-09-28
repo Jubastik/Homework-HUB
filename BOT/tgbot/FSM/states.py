@@ -48,6 +48,7 @@ class StudentClass(StatesGroup):
     ClassPanel = State()
     AddAdmin = State()
     BanClassmate = State()
+    UnbanClassmate = State()
 
 
 class StudentGetHomework(StatesGroup):

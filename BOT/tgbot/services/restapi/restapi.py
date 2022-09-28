@@ -261,7 +261,8 @@ async def get_names_classmates(tguser_id):
         students = res.json()["data"]
         students_names = {}
         for student in students:
-            students_names[student["tg_id"]] = student["name"]
+            if student["tg_id"] != tguser_id:
+                students_names[student["tg_id"]] = student["name"]
         return students_names
     await send_error(tguser_id, res)
     return return_error(res)
@@ -364,8 +365,8 @@ async def get_shedule(tguser_id):
     return return_error(data)
 
 
-async def ban_user(tguser_id):
-    data = requests.post(URL_BAN_LIST + URL_PARAM, json={"user_tg_id": tguser_id})
+async def ban_user(tguser_id, username):
+    data = requests.post(URL_BAN_LIST + URL_PARAM, json={"user_tg_id": tguser_id, "username": username})
     if data.status_code == 201:
         return True
     return return_error(data)
@@ -379,7 +380,11 @@ async def unban_user(id):
 
 
 async def get_ban_list(tg_user_id):
-    data = requests.get(URL_BAN_LIST + f"/class/tg{tg_user_id}" + URL_PARAM)
+    data = requests.get(URL_BAN_LIST + f"/class/tg/{tg_user_id}" + URL_PARAM)
     if data.status_code == 200:
-        return data.json()["data"]
+        res = {}
+        for i in data.json()["data"]:
+            if tg_user_id != i["tg_id"]:
+                res[i["username"]] = [i["id"]]
+        return res
     return return_error(data)

@@ -21,6 +21,7 @@ class TextKeys:
     menu = "menu"
     profile = "profile"
     delete_account = "delete_account"
+    homework_history_dates = "homework_history_dates"
     class_panel = "class_panel"
     admin_added = "admin_added"
     user_kicked = "user_kicked"

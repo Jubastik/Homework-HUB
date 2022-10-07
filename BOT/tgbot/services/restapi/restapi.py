@@ -388,3 +388,10 @@ async def get_ban_list(tg_user_id):
                 res[i["username"]] = [i["id"]]
         return res
     return return_error(data)
+
+
+async def get_study_days(tguser_id):
+    data = requests.get(URL_SCHEDULE + f"/study_days/tg/{tguser_id}" + URL_PARAM)
+    if data.status_code == 200:
+        return data.json()["data"]
+    return return_error(data)

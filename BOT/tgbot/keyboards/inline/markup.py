@@ -74,6 +74,7 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
 markup_profile = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
+        [InlineKeyboardButton(text="История домашки", callback_data="get_homework_history")],
         [InlineKeyboardButton(text="Моё расписание", callback_data="get_shedule")],
         [InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account")],
     ]

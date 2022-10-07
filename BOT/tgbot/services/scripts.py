@@ -1,7 +1,7 @@
 import datetime
 
 from tgbot.services.restapi.restapi import get_user_by_id
-from CONSTANTS import WEEKDAYS
+from CONSTANTS import WEEKDAYS, WEEKDAYS_TRASNLATE
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 
@@ -47,6 +47,19 @@ def generate_dates(saturday_lesson) -> list:
             else:
                 dates.append([f'{day.strftime("%d.%m")} {WEEKDAYS[day_name]}', day])
         c += 1
+    return dates
+
+
+def generate_dates_back(weekdays) -> list:
+    """Генерирует даты за последние 14 дней"""
+    # weekdays = weekdays_to_num(weekdays)
+    now = datetime.datetime.now()
+    dates = []
+    for i in range(21):
+        day = now - datetime.timedelta(days=i)
+        day_name = day.weekday()
+        if WEEKDAYS[day_name] in weekdays:
+            dates += [[f'{day.strftime("%d.%m")}, {WEEKDAYS[day_name]}', day.date()]]
     return dates
 
 

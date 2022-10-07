@@ -143,3 +143,17 @@ def create_schedule():  # Создает расписание на основе 
         db_sess.close()
         return make_response(jsonify({"error": "Расписание уже существует"}), 422)
     return make_response(jsonify({"success": f"Расписание успешно создано."}), 201)
+
+
+@blueprint.route("/api/schedule/study_days/<platform>/<int:user_id>", methods=["GET"], endpoint="get_study_days")
+@access_verification
+def get_study_days(platform, user_id):
+    id = user_id_processing(platform, user_id)
+    db_sess = db_session.create_session()
+    schedules = (
+        db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
+    )
+    res = set()
+    for i in schedules:
+        res.add(i.day.name)
+    return jsonify({"data": list(res)})

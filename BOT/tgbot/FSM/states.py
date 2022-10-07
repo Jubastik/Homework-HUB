@@ -36,6 +36,7 @@ class StudentProfile(StatesGroup):
     Profile = State()
     Shedule = State()
     DeleteAccount = State()
+    HomeworkHistoryDates = State()
 
 
 class StudentMenu(StatesGroup):

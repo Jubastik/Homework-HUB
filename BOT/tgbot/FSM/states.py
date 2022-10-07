@@ -63,6 +63,7 @@ class Developer(StatesGroup):
     Panel = State()
     MailingGetText = State()
     MailingCheck = State()
+    MsgGetData = State()
 
 
 class Group(StatesGroup):

@@ -74,7 +74,11 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
 markup_profile = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
-        [InlineKeyboardButton(text="История домашки", callback_data="get_homework_history")],
+        [
+            InlineKeyboardButton(
+                text="История домашки", callback_data="get_homework_history"
+            )
+        ],
         [InlineKeyboardButton(text="Моё расписание", callback_data="get_shedule")],
         [InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account")],
     ]
@@ -196,7 +200,10 @@ markup_class_panel = InlineKeyboardMarkup(
 )
 
 
-markup_get_shedule = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="back")]])
+markup_get_shedule = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="back")]]
+)
+
 
 def get_markup_classmates(data):
     keyboard = InlineKeyboardMarkup(row_width=2)
@@ -208,12 +215,14 @@ def get_markup_classmates(data):
     return keyboard
 
 
-
 # | Developer | Developer | Developer | Developer | Developer | Developer | Developer | Developer |
 
 
 markup_developer_menu = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text="Рассылка", callback_data="mailing")]]
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Рассылка", callback_data="mailing")],
+        [InlineKeyboardButton(text="Отправить сообщение", callback_data="mail_to")],
+    ]
 )
 
 markup_developer_deny = InlineKeyboardMarkup(

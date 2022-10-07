@@ -67,7 +67,27 @@ async def query_mailing_get_text(callback: CallbackQuery):
 
 
 @dp.callback_query_handler(DeveloperFilter(), state="*", text="deny")
-async def query_mailing_get_text(callback: CallbackQuery):
+async def deny_mailing(callback: CallbackQuery):
     await callback.answer()
     await Developer.Panel.set()
     await callback.message.answer("Developer panel", reply_markup=markup_developer_menu)
+
+
+# | send_msg | send_msg | send_msg | send_msg | send_msg | send_msg | send_msg | send_msg |
+
+
+@dp.callback_query_handler(DeveloperFilter(), state=Developer.Panel, text="mail_to")
+async def get_msg_info(callback: CallbackQuery):
+    await callback.answer()
+    await Developer.MsgGetData.set()
+    await callback.message.answer("send info in format: 'chat_id | text'")
+
+@dp.message_handler(DeveloperFilter(), state=Developer.MsgGetData)
+async def send_msg(msg: Message):
+    try:
+        chat_id, text = msg.text.split('|')
+    except ValueError:
+        await msg.answer('wrong format')
+        return
+    await bot.send_message(chat_id, text)
+    await msg.answer("message sent")

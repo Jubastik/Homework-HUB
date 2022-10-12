@@ -349,6 +349,14 @@ async def is_registreted_chat(chat_id):
     return return_error(res)
 
 
+async def get_all_chats(tg_id):
+    res = requests.get(URL_CHAT + f"/all/tg/{tg_id}" + URL_PARAM)
+    if res.status_code == 200:
+        return res.json()["data"]
+    else:
+        return return_error(res)
+
+
 async def delete_chat(chat_id):
     res = requests.delete(URL_CHAT + f"/tg_tgchat/{chat_id}" + URL_PARAM)
     if res.status_code == 200:

@@ -2,7 +2,7 @@ import flask
 import sqlalchemy
 from flask import request, make_response, jsonify
 
-from api_modules.core import chat_id_processing, access_verification
+from api_modules.core import chat_id_processing, access_verification, user_id_processing
 from data import db_session
 from data.classes import Class
 from data.students import Student
@@ -64,3 +64,15 @@ def delete_chat(platform, chat_id):  # Удаление группы
     db_sess.commit()
     db_sess.close()
     return make_response(jsonify({"success": "Беседа успешно удалена"}), 200)
+
+
+@blueprint.route("/api/chats/all/<platform>/<chat_id>", methods=["GET"], endpoint="all_chats")
+@access_verification
+def get_all_chats(platform, chat_id):
+    print(platform, chat_id)
+    id = user_id_processing(platform, chat_id)
+    db_sess = db_session.create_session()
+    chats = db_sess.query(Chat).filter(Chat.class_id == id).all()
+    data = [chat.to_dict(only=("tg_id", "class_id")) for chat in chats]
+    db_sess.close()
+    return jsonify({"data": data})

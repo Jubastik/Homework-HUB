@@ -1,19 +1,11 @@
-import requests
 import datetime
 
-from CONSTANTS import (
-    URL_USER,
-    URL_CLASS,
-    URL_SCHEDULE,
-    URL_HOMEWORK,
-    URL_TIME_TABLE,
-    URL_CURRENT_LESSONS,
-    WEEKDAYS,
-    URL_CHAT,
-    URL_PARAM,
-    URL_BAN_LIST,
-)
-from tgbot.services.restapi.scripts import return_error, send_error, send_success
+import requests
+from CONSTANTS import (URL_BAN_LIST, URL_CHAT, URL_CLASS, URL_CURRENT_LESSONS,
+                       URL_HOMEWORK, URL_PARAM, URL_SCHEDULE, URL_TIME_TABLE,
+                       URL_USER, WEEKDAYS)
+from tgbot.services.restapi.scripts import (return_error, send_error,
+                                            send_success)
 from tgbot.services.sub_classes import SheduleData
 
 
@@ -374,7 +366,9 @@ async def get_shedule(tguser_id):
 
 
 async def ban_user(tguser_id, username):
-    data = requests.post(URL_BAN_LIST + URL_PARAM, json={"user_tg_id": tguser_id, "username": username})
+    data = requests.post(
+        URL_BAN_LIST + URL_PARAM, json={"user_tg_id": tguser_id, "username": username}
+    )
     if data.status_code == 201:
         return True
     return return_error(data)
@@ -403,3 +397,23 @@ async def get_study_days(tguser_id):
     if data.status_code == 200:
         return data.json()["data"]
     return return_error(data)
+
+
+# Получение списка рассылок
+async def get_all_mailings() -> list:
+    pass
+
+
+# Отключение рассылки
+async def turn_off_mailing():
+    pass
+
+
+# Включение рассылки
+async def turn_on_mailing():
+    pass
+
+
+# Изменеие времени рассылки
+async def change_mailing_time():
+    pass

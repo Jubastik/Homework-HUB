@@ -1,12 +1,12 @@
 import flask
 import sqlalchemy
-from flask import request, make_response, jsonify
-
-from api_modules.core import chat_id_processing, access_verification, user_id_processing
+from api_modules.core import (access_verification, chat_id_processing,
+                              user_id_processing)
 from data import db_session
+from data.chats import Chat
 from data.classes import Class
 from data.students import Student
-from data.chats import Chat
+from flask import jsonify, make_response, request
 
 blueprint = flask.Blueprint("chat", __name__, template_folder="templates")
 

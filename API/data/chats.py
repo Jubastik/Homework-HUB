@@ -13,6 +13,7 @@ class Chat(SqlAlchemyBase, SerializerMixin):
         sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id")
     )
     my_class = orm.relationship("Class", back_populates="chats")
+    mailing_time = sqlalchemy.Column(sqlalchemy.Time, nullable=False, default="17:00")
 
     def __repr__(self):
         return f"<Group> {self.id} {self.class_id}"

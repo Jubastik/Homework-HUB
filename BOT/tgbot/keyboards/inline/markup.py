@@ -1,13 +1,7 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-from tgbot.keyboards.inline.callback_data import (
-    SubjectData,
-    ArrowsData,
-    CheckHomework,
-    DatesData,
-    StudentsData,
-)
-
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from tgbot.keyboards.inline.callback_data import (ArrowsData, CheckHomework,
+                                                  DatesData, StudentsData,
+                                                  SubjectData)
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
 

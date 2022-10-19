@@ -1,12 +1,11 @@
 import flask
 import sqlalchemy
-from flask import request, make_response, jsonify
-
-from api_modules.core import user_id_processing, access_verification
+from api_modules.core import access_verification, user_id_processing
 from data import db_session
+from data.ban_list import Ban_list
 from data.classes import Class
 from data.students import Student
-from data.ban_list import Ban_list
+from flask import jsonify, make_response, request
 
 blueprint = flask.Blueprint("ban_list", __name__, template_folder="templates")
 

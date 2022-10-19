@@ -1,16 +1,16 @@
 from asyncio import sleep
-from aiogram.types import Message, CallbackQuery
 
-from bot import dp, bot
+from aiogram.types import CallbackQuery, Message
 from tgbot.filters.developer_filter import DeveloperFilter
 from tgbot.FSM.states import Developer
+from tgbot.keyboards.inline.markup import (markup_developer_deny,
+                                           markup_developer_mailingcheck,
+                                           markup_developer_menu)
+from tgbot.services.restapi.restapi import get_all_chats, get_all_users
 from tgbot.services.sub_classes import RestErorr
-from tgbot.services.restapi.restapi import get_all_users, get_all_chats
-from tgbot.keyboards.inline.markup import (
-    markup_developer_menu,
-    markup_developer_mailingcheck,
-    markup_developer_deny,
-)
+
+from bot import bot, dp
+
 
 @dp.message_handler(DeveloperFilter(), commands=["test"], state="*")
 async def dev_panel(msg: Message):

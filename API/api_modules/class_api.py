@@ -1,11 +1,11 @@
 import flask
 import sqlalchemy
-from flask import request, make_response, jsonify
-
-from api_modules.core import user_id_processing, generate_token, access_verification
+from api_modules.core import (access_verification, generate_token,
+                              user_id_processing)
 from data import db_session
 from data.classes import Class
 from data.students import Student
+from flask import jsonify, make_response, request
 
 blueprint = flask.Blueprint("class", __name__, template_folder="templates")
 

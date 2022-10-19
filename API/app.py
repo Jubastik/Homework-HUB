@@ -1,24 +1,16 @@
 import logging
 import os
-from gevent.pywsgi import WSGIServer
 
+from api_modules import (additional_methods_api, ban_list_api, chat_api,
+                         class_api, homework_api, schedule_api, time_table_api,
+                         user_api)
+from api_modules.core import IDError
+from CONSTANTS import day_id_to_weekday
+from data import db_session
+from data.week_days import WeekDay
 from dotenv import load_dotenv
 from flask import Flask, jsonify
-
-from api_modules.core import IDError
-from data import db_session
-from CONSTANTS import day_id_to_weekday
-from data.week_days import WeekDay
-from api_modules import (
-    user_api,
-    homework_api,
-    class_api,
-    schedule_api,
-    time_table_api,
-    additional_methods_api,
-    chat_api,
-    ban_list_api
-)
+from gevent.pywsgi import WSGIServer
 
 load_dotenv()
 

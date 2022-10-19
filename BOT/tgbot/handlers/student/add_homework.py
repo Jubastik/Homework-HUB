@@ -1,30 +1,21 @@
-from aiogram.types import Message, CallbackQuery, ContentType
 import datetime
 
-from bot import dp, bot
-from tgbot.FSM.states import (
-    StudentAddHomework,
-    StudentMenu,
-)
-from tgbot.filters.student_filter import StudentFilter
-from tgbot.services.scripts import generate_dates
-from tgbot.keyboards.inline.markup import (
-    get_markup_student_menu,
-    markup_check_homework,
-    markup_done,
-    get_markup_dates,
-    get_subjects_markup,
-)
-from tgbot.services.restapi.restapi import (
-    get_subjects_by_time,
-    add_homework,
-    get_schedule_on_date,
-    is_lessons_in_saturday,
-    is_admin
-)
-from tgbot.services.sub_classes import RestErorr
-from languages.text_proccesor import process_text
+from aiogram.types import CallbackQuery, ContentType, Message
 from languages.text_keys import TextKeys
+from languages.text_proccesor import process_text
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.FSM.states import StudentAddHomework, StudentMenu
+from tgbot.keyboards.inline.markup import (get_markup_dates,
+                                           get_markup_student_menu,
+                                           get_subjects_markup,
+                                           markup_check_homework, markup_done)
+from tgbot.services.restapi.restapi import (add_homework, get_schedule_on_date,
+                                            get_subjects_by_time, is_admin,
+                                            is_lessons_in_saturday)
+from tgbot.services.scripts import generate_dates
+from tgbot.services.sub_classes import RestErorr
+
+from bot import bot, dp
 
 
 @dp.callback_query_handler(state=StudentAddHomework.AddHomework, text="fast_add")

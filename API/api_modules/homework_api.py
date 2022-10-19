@@ -2,16 +2,11 @@ import datetime
 
 import flask
 import sqlalchemy
-from flask import request, jsonify, make_response
-
-from api_modules.core import (
-    user_id_processing,
-    IDError,
-    get_next_lesson,
-    day_to_weekday,
-    chat_id_processing, access_verification,
-)
+from api_modules.core import (IDError, access_verification, chat_id_processing,
+                              day_to_weekday, get_next_lesson,
+                              user_id_processing)
 from data import db_session
+from data.chats import Chat
 from data.classes import Class
 from data.homeworks import Homework
 from data.lessons import Lesson
@@ -19,7 +14,7 @@ from data.schedules import Schedule
 from data.students import Student
 from data.tg_photos import TgPhoto
 from data.week_days import WeekDay
-from data.chats import Chat
+from flask import jsonify, make_response, request
 
 blueprint = flask.Blueprint("homework", __name__, template_folder="templates")
 

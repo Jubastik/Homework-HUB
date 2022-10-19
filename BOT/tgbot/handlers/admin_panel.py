@@ -1,22 +1,18 @@
 from aiogram.types import CallbackQuery
-
-from bot import dp, bot
-from tgbot.handlers.shortcuts import send_panel
-from tgbot.FSM.states import StudentClass
-from tgbot.filters.student_filter import StudentFilter
-from tgbot.filters.admin_filter import AdminFilter
-from tgbot.keyboards.inline.markup import get_markup_classmates
-from tgbot.services.restapi.restapi import (
-    get_names_classmates,
-    ban_user,
-    assign_admin,
-    change_class_token,
-    get_student_info,
-    get_ban_list
-)
-from tgbot.services.sub_classes import RestErorr
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
+from tgbot.filters.admin_filter import AdminFilter
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.FSM.states import StudentClass
+from tgbot.handlers.shortcuts import send_panel
+from tgbot.keyboards.inline.markup import get_markup_classmates
+from tgbot.services.restapi.restapi import (assign_admin, ban_user,
+                                            change_class_token, get_ban_list,
+                                            get_names_classmates,
+                                            get_student_info)
+from tgbot.services.sub_classes import RestErorr
+
+from bot import bot, dp
 
 
 @dp.callback_query_handler(state=StudentClass.ClassPanel, text="add_admin")

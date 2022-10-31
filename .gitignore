@@ -162,3 +162,5 @@ cython_debug/
 API/db/API.db
 BOT/bot.ini
 test.py
+API/alembic.ini
+API/alembic

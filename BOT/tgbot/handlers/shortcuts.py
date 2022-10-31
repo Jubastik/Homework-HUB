@@ -1,3 +1,4 @@
+from subprocess import call
 from aiogram.types import CallbackQuery, InputMediaPhoto
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text

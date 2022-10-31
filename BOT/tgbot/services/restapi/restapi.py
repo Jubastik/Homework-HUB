@@ -1,11 +1,19 @@
 import datetime
 
 import requests
-from CONSTANTS import (URL_BAN_LIST, URL_CHAT, URL_CLASS, URL_CURRENT_LESSONS,
-                       URL_HOMEWORK, URL_PARAM, URL_SCHEDULE, URL_TIME_TABLE,
-                       URL_USER, WEEKDAYS)
-from tgbot.services.restapi.scripts import (return_error, send_error,
-                                            send_success)
+from CONSTANTS import (
+    URL_BAN_LIST,
+    URL_CHAT,
+    URL_CLASS,
+    URL_CURRENT_LESSONS,
+    URL_HOMEWORK,
+    URL_PARAM,
+    URL_SCHEDULE,
+    URL_TIME_TABLE,
+    URL_USER,
+    WEEKDAYS,
+)
+from tgbot.services.restapi.scripts import return_error, send_error, send_success
 from tgbot.services.sub_classes import SheduleData
 
 
@@ -68,6 +76,15 @@ async def register_user(tguser_id, classid, user_name):
     if response.status_code == 403:
         await send_error(tguser_id, response, menu=False)
     return return_error(response)
+
+
+async def get_class(tguser_id):
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_CLASS + query + URL_PARAM)
+    if res.status_code == 200:
+        return res.json()["data"]
+    await send_error(tguser_id, res)
+    return return_error(res)
 
 
 async def register_class(tguser_id, data):
@@ -341,12 +358,29 @@ async def is_registreted_chat(chat_id):
     return return_error(res)
 
 
-async def get_all_chats(tg_id):
-    res = requests.get(URL_CHAT + f"/all/tg/{tg_id}" + URL_PARAM)
+async def get_all_chats():
+    res = requests.get(URL_CHAT + f"/all" + URL_PARAM)
     if res.status_code == 200:
         return res.json()["data"]
     else:
         return return_error(res)
+
+
+async def get_all_chats_by_user(user_id):
+    res = requests.get(URL_CHAT + f"/by_user/tg/{user_id}" + URL_PARAM)
+    if res.status_code == 200:
+        return res.json()["data"]
+    else:
+        return return_error(res)
+
+
+async def class_have_chats(user_id) -> bool:
+    res = requests.get(URL_CHAT + f"/by_user/tg/{user_id}" + URL_PARAM)
+    if res.status_code == 200:
+        return True
+    elif res.status_code == 404:
+        return False
+    return return_error(res)
 
 
 async def delete_chat(chat_id):
@@ -404,16 +438,20 @@ async def get_all_mailings() -> list:
     pass
 
 
-# Отключение рассылки
-async def turn_off_mailing():
-    pass
-
-
-# Включение рассылки
-async def turn_on_mailing():
-    pass
+async def change_class_mailing(userid, mailing):
+    data = requests.patch(
+        URL_CLASS + f"/tg/{userid}" + URL_PARAM, json={"mailing_stopped": mailing}
+    )
+    if data.status_code == 200:
+        return True
+    return return_error(data)
 
 
 # Изменеие времени рассылки
-async def change_mailing_time():
-    pass
+async def change_class_mailing_time(userid, time):
+    data = requests.patch(
+        URL_CLASS + f"/tg/{userid}" + URL_PARAM, json={"mailing_time": time}
+    )
+    if data.status_code == 200:
+        return True
+    return return_error(data)

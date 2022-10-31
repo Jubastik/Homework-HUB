@@ -1,7 +1,11 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from tgbot.keyboards.inline.callback_data import (ArrowsData, CheckHomework,
-                                                  DatesData, StudentsData,
-                                                  SubjectData)
+from tgbot.keyboards.inline.callback_data import (
+    ArrowsData,
+    CheckHomework,
+    DatesData,
+    StudentsData,
+    SubjectData,
+)
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
 
@@ -181,12 +185,13 @@ markup_error_menu = InlineKeyboardMarkup(
 
 markup_class_panel = InlineKeyboardMarkup(
     inline_keyboard=[
+        [InlineKeyboardButton(text="Рассылка", callback_data="mailing")],
+        [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
         [
             InlineKeyboardButton(
                 text="Добавить администратора", callback_data="add_admin"
             )
         ],
-        [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
         [InlineKeyboardButton(text="Разбанить одноклассника", callback_data="unban")],
         [InlineKeyboardButton(text="Забанить одноклассника", callback_data="ban")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
@@ -194,7 +199,40 @@ markup_class_panel = InlineKeyboardMarkup(
 )
 
 
-markup_get_shedule = InlineKeyboardMarkup(
+markup_mailing_disabled = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Изменить время рассылки", callback_data="change_time"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Включить рассылку", callback_data="enable_mailing"
+            )
+        ],
+        [InlineKeyboardButton(text="Меню", callback_data="menu")],
+    ]
+)
+
+markup_mailing_enabled = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Изменить время рассылки", callback_data="change_time"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Отключить рассылку", callback_data="disable_mailing"
+            )
+        ],
+        [InlineKeyboardButton(text="Меню", callback_data="menu")],
+    ]
+)
+
+
+markup_back = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="back")]]
 )
 

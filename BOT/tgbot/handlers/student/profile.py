@@ -8,7 +8,7 @@ from tgbot.FSM.states import StudentProfile
 from tgbot.handlers.shortcuts import send_homework
 from tgbot.handlers.student.menu import query_profile
 from tgbot.keyboards.inline.markup import (get_markup_dates, markup_are_u_sure,
-                                           markup_get_shedule)
+                                           markup_back)
 from tgbot.services.restapi.restapi import (delete_user, get_shedule,
                                             get_study_days)
 from tgbot.services.scripts import generate_dates_back
@@ -77,7 +77,7 @@ async def query_delete_true(callback: CallbackQuery):
         ),
         chat_id=callback.message.chat.id,
         message_id=msgid,
-        reply_markup=markup_get_shedule,
+        reply_markup=markup_back,
     )
 
 

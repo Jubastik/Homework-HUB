@@ -1,5 +1,8 @@
+import datetime
+
 import sqlalchemy
 from sqlalchemy import orm
+from sqlalchemy.sql import func
 from sqlalchemy_serializer import SerializerMixin
 
 from .db_session import SqlAlchemyBase
@@ -17,6 +20,9 @@ class Student(SqlAlchemyBase, SerializerMixin):
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     is_superuser = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     homeworks = orm.relationship("Homework", cascade="all, delete-orphan")
+    # Mailings
+    mailing_time = sqlalchemy.Column(sqlalchemy.Time, server_default=func.time(17, 0, 0), default=datetime.time(17, 0, 0))
+    mailing_stopped = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
     def __repr__(self):
         return f"<Student> {self.id} {self.name} {self.my_class} {self.is_admin}"

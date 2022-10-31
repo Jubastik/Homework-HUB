@@ -1,5 +1,6 @@
 import flask
 import sqlalchemy
+import datetime
 from api_modules.core import (access_verification, generate_token,
                               user_id_processing)
 from data import db_session
@@ -36,7 +37,7 @@ def get_class(platform, user_id):
     if my_class is None:
         return make_response(jsonify({"error": "Вы не состоите в классе"}), 404)
     return jsonify(
-        {"data": my_class.to_dict(only=("id", "name", "class_token", "vk_id"))}
+        {"data": my_class.to_dict(only=("id", "name", "class_token", "vk_id", "mailing_time", "mailing_stopped"))}
     )
 
 
@@ -84,7 +85,7 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
     if not student.is_admin:
         return make_response(jsonify({"error": "Нет прав"}), 404)
     my_class = student.my_class
-    for key, data in json_data.items():
+    for key, data in json_data.items():  # TODO: Проверка на валидность данных
         if key == "class_token":
             if data == "auto":
                 my_class.class_token = generate_token()
@@ -94,6 +95,10 @@ def edit_class(platform, user_id):  # Изменение класс на осн�
             my_class.vk_id = data
         elif key == "name":
             my_class.name = data
+        elif key == "mailing_time":
+            my_class.mailing_time = datetime.time(*[int(t) for t in data.split(":")])
+        elif key == "mailing_stopped":
+            my_class.mailing_stopped = data
         else:
             db_sess.close()
             return make_response(jsonify({"error": f"Неизвестный параметр {key}"}), 422)

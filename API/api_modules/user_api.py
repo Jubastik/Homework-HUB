@@ -100,6 +100,7 @@ def edit_user(platform, user_id):  # Изменение пользователя
             student.class_id = data
         elif key == "is_admin":
             student.is_admin = data
+        # TODO: Добавить изменение рассылки
         else:
             db_sess.close()
             return make_response(jsonify({"error": f"Неизвестный параметр {key}"}), 422)

@@ -17,7 +17,7 @@ def get_chat(platform, chat_id):  # Возвращает группу
     id = chat_id_processing(platform, chat_id)
     db_sess = db_session.create_session()
     chat = db_sess.query(Chat).filter(Chat.id == id).first()
-    data = chat.to_dict(only=("tg_id", "class_id"))
+    data = chat.to_dict(only=("tg_id", "class_id", "mailing_time"))
     db_sess.close()
     return jsonify({"data": data})
 
@@ -66,13 +66,32 @@ def delete_chat(platform, chat_id):  # Удаление группы
     return make_response(jsonify({"success": "Беседа успешно удалена"}), 200)
 
 
-@blueprint.route("/api/chats/all/<platform>/<chat_id>", methods=["GET"], endpoint="all_chats")
+@blueprint.route("/api/chats/all", methods=["GET"], endpoint="all_chats")
 @access_verification
-def get_all_chats(platform, chat_id):
-    print(platform, chat_id)
-    id = user_id_processing(platform, chat_id)
+def get_chats():  # Возвращает все чаты, у которых включена рассылка
     db_sess = db_session.create_session()
-    chats = db_sess.query(Chat).filter(Chat.class_id == id).all()
-    data = [chat.to_dict(only=("tg_id", "class_id")) for chat in chats]
+    chats = db_sess.query(Chat).join(Class).filter(Chat.class_id == Class.id and Class.stop_mailing == False).all()
+    data = [chat.to_dict(only=("tg_id", "class_id", "my_class.mailing_time")) for chat in chats]
     db_sess.close()
     return jsonify({"data": data})
+
+
+@blueprint.route("/api/chats/by_user/<platform>/<user_id>", methods=["GET"], endpoint="chats_by_user")
+@access_verification
+def get_chats_by_userid(platform, user_id):  # Возвращает все чаты юзера
+    id = user_id_processing(platform, user_id)
+    db_sess = db_session.create_session()
+    student = db_sess.query(Student).filter(Student.id == id).first()
+    class_id = student.my_class.id
+    chats = db_sess.query(Chat).join(Class).filter(Chat.class_id == class_id and Class.stop_mailing == False).all()
+    data = [chat.to_dict(only=("tg_id", "class_id", "my_class.mailing_time")) for chat in chats]
+    db_sess.close()
+    if len(data) == 0:
+        return make_response(jsonify({"error": "У пользователя нет чатов"}), 404)
+    return jsonify({"data": data})
+
+
+# TODO:
+# 1) Изменение времени отправки у класса ☑️
+# 2) Получение всех чатов с включенной рассыкой ☑️
+# 3) Включение выключение рассылки у класса ☑️

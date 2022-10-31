@@ -42,4 +42,5 @@ async def send_hw_mailing(id, date, is_chat=False):  # Отправляет до
 
 
 async def activate_hw_mailing():  # Запускает рассылки
-    data = await get_all_mailings()
+    # data = await get_all_mailings()
+    print("Mailing: IN DEVELOPMENT")

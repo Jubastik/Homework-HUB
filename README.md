@@ -10,7 +10,8 @@
 * Можно **добавить бота в беседу** и делиться домашкой с незарегестрированными пользователями
 ___
 ### О проекте
-Бот написан на базе библиотек [aiogram](https://pypi.org/project/aiogram/) и [Flask](https://pypi.org/project/Flask/)
+Бот написан на базе библиотек [aiogram](https://pypi.org/project/aiogram/), [Flask](https://pypi.org/project/Flask/) и [SQLAlchemy](https://github.com/sqlalchemy)
+
 Архитектура бота ориентируется на концепцию _REST_ и состоит из двух подпроектов:
 * API - сервер, с базой данных и обработчиком запросов к ней
 * BOT - телеграм бот, отвечающий за взаимодействие с юзером

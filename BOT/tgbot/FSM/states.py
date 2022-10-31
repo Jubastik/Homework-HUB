@@ -50,6 +50,8 @@ class StudentClass(StatesGroup):
     AddAdmin = State()
     BanClassmate = State()
     UnbanClassmate = State()
+    Mailing = State()
+    MailingTime = State()
 
 
 class StudentGetHomework(StatesGroup):

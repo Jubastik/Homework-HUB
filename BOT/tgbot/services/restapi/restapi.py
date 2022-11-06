@@ -223,7 +223,7 @@ async def add_homework(tguser_id, data, auto=False):
     return return_error(response)
 
 
-async def get_homework(userid, date, is_chat=False):
+async def get_homework(userid, date, is_chat=False, except_404=False, messages=False):
     """Возвращает домашку на дату"""
     if is_chat:
         userid *= -1  # HTTP не одобряет отрицательные числа (вернее знак "-")
@@ -247,9 +247,12 @@ async def get_homework(userid, date, is_chat=False):
             else:
                 hw[lesson] = [lesson_data]
         return [hw]
+    if except_404 and res.status_code == 404:
+        return []
     if is_chat:
         userid *= -1
-    await send_error(userid, res)
+    if messages:
+        await send_error(userid, res)
     return return_error(res)
 
 
@@ -426,16 +429,31 @@ async def get_ban_list(tg_user_id):
     return return_error(data)
 
 
-async def get_study_days(tguser_id):
-    data = requests.get(URL_SCHEDULE + f"/study_days/tg/{tguser_id}" + URL_PARAM)
+async def get_study_days(tguser_id=None, class_id=None):
+    if tguser_id is None and class_id is None:
+        raise ValueError("You must specify tguser_id or class_id")
+    if class_id is None:
+        class_id = await get_class(tguser_id)
+        class_i = class_id["id"]
+    data = requests.get(URL_SCHEDULE + f"/study_days/no/{class_id}" + URL_PARAM)
     if data.status_code == 200:
         return data.json()["data"]
+    elif data.status_code == 404:
+        return []
     return return_error(data)
 
 
 # Получение списка рассылок
 async def get_all_mailings() -> list:
-    pass
+    data = requests.get(URL_CHAT + "/all" + URL_PARAM)
+    if data.status_code == 200:
+        res = []
+        for i in data.json()["data"]:
+            res += [{"class_id": i["class_id"], "mailing_time": i["my_class"]["mailing_time"], "chat_id": i["tg_id"], "tg_userid": i["my_class"]["tg_id"]}]
+        return res
+    elif data.status_code == 404:
+        return []
+    return return_error(data)
 
 
 async def change_class_mailing(userid, mailing):

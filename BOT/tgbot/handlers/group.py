@@ -19,6 +19,10 @@ from tgbot.services.sub_classes import RestErorr
 from bot import bot, dp
 
 
+# !!!WARNING!!! Handlers in this file isn't connected. They don't work.
+# !!!WARNING!!! Handlers in this file isn't connected. They don't work.
+# !!!WARNING!!! Handlers in this file isn't connected. They don't work.
+
 @dp.callback_query_handler(GroupFilter(), state="*", text="menu")
 @dp.callback_query_handler(GroupFilter(), state="*", text="error_menu")
 async def group_menu(callback: CallbackQuery):

@@ -185,7 +185,7 @@ markup_error_menu = InlineKeyboardMarkup(
 
 markup_class_panel = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text="Рассылка", callback_data="mailing")],
+        # [InlineKeyboardButton(text="Рассылка", callback_data="mailing")],
         [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
         [
             InlineKeyboardButton(

@@ -1,4 +1,4 @@
-# HomeBot
+# **HomeBot**
 
 
 **[Бот](https://t.me/hw_assistant_bot)** для сохранения и обмена домашним заданием  
@@ -8,7 +8,7 @@
 * Можно **сохранять** домашку в виде текста или картинки
 * Можно **обмениваться** домашку с одноклассниками
 * Можно **добавить бота в беседу** и делиться домашкой с незарегестрированными пользователями
-___
+
 ### О проекте
 Бот написан на базе библиотек [aiogram](https://pypi.org/project/aiogram/), [Flask](https://pypi.org/project/Flask/) и [SQLAlchemy](https://github.com/sqlalchemy)
 
@@ -16,11 +16,12 @@ ___
 * API - сервер, с базой данных и обработчиком запросов к ней
 * BOT - телеграм бот, отвечающий за взаимодействие с юзером
 ___
-### .env конфигурация
+## **Setup bot**
+## *.env конфигурация*
 Для работы проекта необходимо создать два **.env** файла в **/BOT** и **/API**
 Пустая конфигурация есть в **.env.example** файла
 
-##### API/.env
+### API/.env
 ```
 API_DEBUG=True
 API_HOST=""
@@ -47,7 +48,7 @@ SQLITE_DIR = 'db/API.db'
 
 *Должно **совпадать** с конфигурацией в BOT
 
-##### BOT/.env
+### BOT/.env
 ```
 TG_TOKEN=""
 API_SERVER=""
@@ -61,7 +62,8 @@ TG_OFFICAL_CHANNEL_ID=""
 | TG_TOKEN              |       Токен бота        |        str         |
 | API_SERVER            |        Адрес API        |        str         |
 | API_TOKEN             | Секретный ключ сервера* |        str         |
-| VERSION               |         Версия          |   local / server   |
+| VERSION               |         Версия          |   "local" / "server"   |
 | TG_ADMIN_CHAT         |   Чат администраторов   |        str         |
 | TG_OFFICAL_CHANNEL_ID |   Телеграм канал бота   |        str         |
+
 *Должно **совпадать** с конфигурацией в API

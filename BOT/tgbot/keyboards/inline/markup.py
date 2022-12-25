@@ -241,7 +241,7 @@ def get_markup_classmates(data):
     keyboard = InlineKeyboardMarkup(row_width=2)
     for key in data.keys():
         keyboard.insert(
-            InlineKeyboardButton(text=data[key], callback_data=StudentsData.new(key))
+            InlineKeyboardButton(text=data[key], callback_data=StudentsData.new(tguser_id=key, name=data[key]))
         )
     keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
     return keyboard

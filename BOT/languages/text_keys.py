@@ -25,6 +25,7 @@ class TextKeys:
     class_panel = "class_panel"
     admin_added = "admin_added"
     user_kicked = "user_kicked"
+    user_unbanned = "user_unbanned"
     choose_classmate = "choose_classmate"
     token_changed = "token_changed"
     empty_ban_list = "empty_ban_list"

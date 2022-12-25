@@ -223,7 +223,7 @@ async def add_homework(tguser_id, data, auto=False):
     return return_error(response)
 
 
-async def get_homework(userid, date, is_chat=False, except_404=False, messages=False):
+async def get_homework(userid, date, is_chat=False, except_404=False, messages=True):
     """Возвращает домашку на дату"""
     if is_chat:
         userid *= -1  # HTTP не одобряет отрицательные числа (вернее знак "-")
@@ -424,18 +424,20 @@ async def get_ban_list(tg_user_id):
         res = {}
         for i in data.json()["data"]:
             if tg_user_id != i["tg_id"]:
-                res[i["username"]] = [i["id"]]
+                res[i["id"]] = i["name"]
         return res
     return return_error(data)
 
 
 async def get_study_days(tguser_id=None, class_id=None):
     if tguser_id is None and class_id is None:
-        raise ValueError("You must specify tguser_id or class_id")
-    if class_id is None:
-        class_id = await get_class(tguser_id)
-        class_i = class_id["id"]
-    data = requests.get(URL_SCHEDULE + f"/study_days/no/{class_id}" + URL_PARAM)
+        raise ValueError("You have to specify tguser_id or class_id")
+    # NEED FIX
+    # server//study_days/no/{tguser_id} waiting for tguser_id not class_id
+    # if class_id is not None:
+    #     class_id = await get_class(tguser_id)
+    #     class_id = class_id["id"]
+    data = requests.get(URL_SCHEDULE + f"/study_days/tg/{tguser_id}" + URL_PARAM)
     if data.status_code == 200:
         return data.json()["data"]
     elif data.status_code == 404:

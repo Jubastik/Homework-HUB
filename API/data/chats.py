@@ -10,7 +10,7 @@ from .db_session import SqlAlchemyBase
 class Chat(SqlAlchemyBase, SerializerMixin):
     __tablename__ = "Chats"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    tg_id = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=False)
+    tg_id = sqlalchemy.Column(sqlalchemy.BigInteger, unique=True, nullable=False)
     class_id = sqlalchemy.Column(
         sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id")
     )

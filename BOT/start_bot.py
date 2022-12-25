@@ -26,7 +26,6 @@ async def on_startup(dp):
         bot_name = bot_info["username"]
         await bot.send_message(chat_id, f"Start polling. [@{bot_name}]")
     await activate_hw_mailing()
-    
 
 
 async def on_shutdown(dp):

@@ -93,6 +93,7 @@ async def homework_history_dates(callback: CallbackQuery):
     dates = generate_dates_back(days)
     async with FSMContext.proxy() as FSMdata:
         msgid = FSMdata["main_msg_id"]
+    print(f"days: {days}")
     await bot.edit_message_text(
         process_text(TextKeys.homework_history_dates, callback),
         chat_id=callback.message.chat.id,

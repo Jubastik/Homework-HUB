@@ -109,6 +109,6 @@ def get_class_ban_list(platform, userid):
     ban_list = db_sess.query(Ban_list).filter(Ban_list.class_id == class_id).all()
     if len(ban_list) == 0:
         return make_response(jsonify({"error": "Бан-лист класса пуст"}), 404)
-    res = [ban.to_dict(only=("id", "name")) for ban in ban_list]
+    res = [ban.to_dict(only=("id", "name", "tg_id")) for ban in ban_list]
     db_sess.close()
     return jsonify({"data": res})

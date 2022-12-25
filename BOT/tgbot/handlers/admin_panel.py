@@ -13,6 +13,7 @@ from tgbot.keyboards.inline.markup import (
 from tgbot.services.restapi.restapi import (
     assign_admin,
     ban_user,
+    unban_user,
     change_class_token,
     get_ban_list,
     get_names_classmates,
@@ -99,7 +100,7 @@ async def query_ban(callback: CallbackQuery):
 async def query_ban_user(callback: CallbackQuery):
     await callback.answer()
     data = callback.data.split(":")
-    res = await ban_user(data[1], data[0])
+    res = await ban_user(data[1], data[2])
     if isinstance(res, RestErorr):
         FSMContext = dp.current_state(user=callback.from_user.id)
         await FSMContext.reset_state()
@@ -149,6 +150,17 @@ async def query_unban(callback: CallbackQuery):
             message_id=main_msg_id,
             reply_markup=get_markup_classmates(ban_list),
         )
+
+@dp.callback_query_handler(state=StudentClass.UnbanClassmate, text_contains="student_name")
+async def query_unban_user(callback: CallbackQuery):
+    await callback.answer()
+    data = callback.data.split(":")
+    res = await unban_user(data[1])
+    if isinstance(res, RestErorr):
+        FSMContext = dp.current_state(user=callback.from_user.id)
+        await FSMContext.reset_state()
+        return
+    await send_panel(callback, status=process_text(TextKeys.user_unbanned, callback, name=data[0]))
 
 
 @dp.callback_query_handler(state=StudentClass.ClassPanel, text="mailing")

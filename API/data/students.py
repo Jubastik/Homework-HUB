@@ -11,7 +11,7 @@ from .db_session import SqlAlchemyBase
 class Student(SqlAlchemyBase, SerializerMixin):
     __tablename__ = "students"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    tg_id = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=True)
+    tg_id = sqlalchemy.Column(sqlalchemy.BigInteger, unique=True, nullable=True)
     class_id = sqlalchemy.Column(
         sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id")
     )

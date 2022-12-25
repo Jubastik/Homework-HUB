@@ -4,11 +4,13 @@ import sqlalchemy as sa
 import sqlalchemy.ext.declarative as dec
 import sqlalchemy.orm as orm
 from sqlalchemy.orm import Session
+
 from settings import settings
 
 SqlAlchemyBase = dec.declarative_base()
 
 __factory = None
+print("Инициализация базы данных...")
 
 
 def global_init():
@@ -28,14 +30,17 @@ def global_init():
 
     print(f"Подключение к базе данных по адресу {db_connection}")
 
-    engine = sa.create_engine(db_connection, echo=False)
-    __factory = orm.sessionmaker(bind=engine)
+    engine = sa.create_engine(db_connection)
+    __factory = orm.sessionmaker(engine)
 
     from . import __all_models
 
     SqlAlchemyBase.metadata.create_all(engine)
 
 
-def create_session() -> Session:
-    global __factory
-    return __factory()
+def get_session() -> Session:
+    session = __factory()
+    try:
+        yield session
+    finally:
+        session.close()

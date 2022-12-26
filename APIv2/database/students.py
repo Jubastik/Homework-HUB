@@ -15,7 +15,7 @@ class Student(SqlAlchemyBase):
         sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id")
     )
     my_class = orm.relationship("Class", back_populates="student")
-    name = sqlalchemy.Column(sqlalchemy.String)
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     is_superuser = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     homeworks = orm.relationship("Homework", cascade="all, delete-orphan")

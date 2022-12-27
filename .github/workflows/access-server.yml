@@ -13,7 +13,7 @@ jobs:
           user: root
           pass: ${{ secrets.PASS}}
           command: |
-              cd /HomeBot
+              cd /root/HomeBot
               git pull
               cd ..
               pm2 restart pm2home.json

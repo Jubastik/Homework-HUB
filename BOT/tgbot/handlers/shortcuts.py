@@ -1,10 +1,12 @@
-from subprocess import call
 from aiogram.types import CallbackQuery, InputMediaPhoto
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 from tgbot.FSM.states import Group, StudentClass, StudentMenu
-from tgbot.keyboards.inline.markup import (get_markup_student_menu,
-                                           markup_class_panel)
+from tgbot.keyboards.inline.markup import (
+    get_markup_student_menu,
+    markup_class_panel,
+    markup_start,
+)
 from tgbot.services.restapi.restapi import get_homework, is_admin
 from tgbot.services.scripts import convert_homework
 from tgbot.services.sub_classes import RestErorr
@@ -78,3 +80,16 @@ async def send_homework_group(callback: CallbackQuery, date):
             await callback.message.answer(lesson["text"])
     await FSMContext.reset_state()
     await Group.Menu.set()
+
+
+async def back_to_registration_menu(callback: CallbackQuery):
+    await callback.answer()
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    async with FSMContext.proxy() as FSMdata:
+        main_msg_id = FSMdata["main_msg_id"]
+        await bot.edit_message_text(
+            process_text(TextKeys.hello, callback),
+            chat_id=callback.from_user.id,
+            message_id=main_msg_id,
+            reply_markup=markup_start,
+        )

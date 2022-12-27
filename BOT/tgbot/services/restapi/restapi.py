@@ -72,7 +72,9 @@ async def register_user(tguser_id, classid, user_name):
     if response.status_code == 201:
         return True
     if response.status_code == 404:
-        await send_error(tguser_id, response, menu=False)
+        pass
+        # DEPRECATED
+        # await send_error(tguser_id, response, menu=False)
     if response.status_code == 403:
         await send_error(tguser_id, response, menu=False)
     return return_error(response)

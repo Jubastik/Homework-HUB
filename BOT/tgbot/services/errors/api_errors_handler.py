@@ -1,0 +1,1 @@
+# TODO: API ERROR HANDLER (всплывашки, выход в меню с ошибкой) + loogging

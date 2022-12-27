@@ -21,7 +21,7 @@ from bot import bot, dp
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")
 async def hanldler_start(msg: Message):
     # !Обработка deeplinking
-    # пример: t.me/YandexLyceum_rulka_bot?start=class_token94811
+    # пример: t.me/YandexLyceum_rulka_bot?start=94811
     # print(msg.text)
     userid = msg.from_user.id
     FSMContext = dp.current_state(user=userid)
@@ -38,7 +38,6 @@ async def hanldler_start(msg: Message):
         await FSMContext.reset_state()
         if isinstance(res, RestErorr):
             return
-        await StudentMenu.Menu.set()
         await StudentMenu.Menu.set()
         msg = await msg.answer(
             process_text(TextKeys.menu, msg),

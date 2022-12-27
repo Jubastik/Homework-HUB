@@ -7,9 +7,7 @@ from .db_session import SqlAlchemyBase
 class TimeTable(SqlAlchemyBase):
     __tablename__ = "time_tables"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    class_id = sqlalchemy.Column(
-        sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), nullable=False
-    )
+    class_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("classes.id"), nullable=False)
     number_of_lesson = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     begin_time = sqlalchemy.Column(sqlalchemy.Time, nullable=False)
     end_time = sqlalchemy.Column(sqlalchemy.Time, nullable=False)

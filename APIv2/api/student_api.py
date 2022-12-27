@@ -43,8 +43,9 @@ async def create_student(student: StudentCreate, service: StudentService = Depen
 
 
 @router.patch("/{obj_id}", response_model=StudentReturn)
-async def update_student(student: StudentUpdate, obj_id: int = Depends(process_id),
-                         service: StudentService = Depends()):
+async def update_student(
+    student: StudentUpdate, obj_id: int = Depends(process_id), service: StudentService = Depends()
+):
     """
     Обновить ученика
     """

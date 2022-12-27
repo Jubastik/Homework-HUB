@@ -5,8 +5,8 @@ from pydantic import BaseSettings
 
 
 class Engine(str, Enum):
-    sqlite = 'sqlite'
-    postgresql = 'postgresql'
+    sqlite = "sqlite"
+    postgresql = "postgresql"
 
 
 class Settings(BaseSettings):
@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     POSTGRESQL_PORT: int = 5432
     POSTGRESQL_DB_NAME: str
 
-    SQLITE_DIR: str = 'db/API.db'
+    SQLITE_DIR: str = "db/API.db"
 
 
 @lru_cache()

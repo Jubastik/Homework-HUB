@@ -35,7 +35,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-
 @app.exception_handler(my_err.APIError)
 async def api_error_handler(request: Request, exc: my_err.APIError):
     # print(exc)

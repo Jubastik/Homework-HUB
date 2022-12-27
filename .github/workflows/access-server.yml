@@ -1,0 +1,14 @@
+name: Access server
+on: push
+jobs:
+  access_server:
+    name: Access server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a file
+        uses: appleboy/ssh-action@master
+        with:
+          host: 35.154.253.216
+          username: ubuntu
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: echo hello world > hello.txt

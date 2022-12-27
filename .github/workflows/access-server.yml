@@ -9,6 +9,6 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-            username: ${{ secrets.HOST_USERNAME }}
+          username: ${{ secrets.HOST_USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: echo hello world > hello.txt

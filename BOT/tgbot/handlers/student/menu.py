@@ -1,29 +1,19 @@
-from aiogram.types import Message, CallbackQuery
-
-from bot import dp, bot
-from tgbot.handlers.shortcuts import send_panel
+from aiogram.types import CallbackQuery, Message
 from CONSTANTS import TG_BOT_LINK
-from tgbot.FSM.states import (
-    StudentAddHomework,
-    StudentProfile,
-    StudentMenu,
-    StudentGetHomework,
-)
-from tgbot.filters.student_filter import StudentFilter
-from tgbot.filters.admin_filter import AdminFilter
-from tgbot.keyboards.inline.markup import (
-    get_markup_student_menu,
-    markup_profile,
-    markup_add_homework,
-    markup_get_homework,
-)
-from tgbot.services.restapi.restapi import (
-    is_admin,
-    get_student_info,
-)
-from tgbot.services.sub_classes import RestErorr
-from languages.text_proccesor import process_text
 from languages.text_keys import TextKeys
+from languages.text_proccesor import process_text
+from tgbot.filters.admin_filter import AdminFilter
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.FSM.states import (StudentAddHomework, StudentGetHomework,
+                              StudentMenu, StudentProfile)
+from tgbot.handlers.shortcuts import send_panel
+from tgbot.keyboards.inline.markup import (get_markup_student_menu,
+                                           markup_add_homework,
+                                           markup_get_homework, markup_profile)
+from tgbot.services.restapi.restapi import get_student_info, is_admin
+from tgbot.services.sub_classes import RestErorr
+
+from bot import bot, dp
 
 
 @dp.callback_query_handler(state=StudentMenu.Menu, text="profile")

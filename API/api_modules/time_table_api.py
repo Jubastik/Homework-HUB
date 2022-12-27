@@ -2,12 +2,11 @@ import datetime
 
 import flask
 import sqlalchemy
-from flask import request, jsonify, make_response
-
-from api_modules.core import user_id_processing, IDError, access_verification
+from api_modules.core import IDError, access_verification, user_id_processing
 from data import db_session
 from data.students import Student
 from data.time_tables import TimeTable
+from flask import jsonify, make_response, request
 
 blueprint = flask.Blueprint("time_table", __name__, template_folder="templates")
 

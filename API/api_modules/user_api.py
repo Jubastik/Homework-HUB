@@ -1,11 +1,12 @@
 import flask
 import sqlalchemy
-from flask import request, jsonify, make_response
-
-from api_modules.core import user_id_processing, IDError, TG, access_verification
+from api_modules.core import (TG, IDError, access_verification,
+                              user_id_processing)
 from data import db_session
+from data.ban_list import Ban_list
 from data.classes import Class
 from data.students import Student
+from flask import jsonify, make_response, request
 
 blueprint = flask.Blueprint("user", __name__, template_folder="templates")
 
@@ -62,6 +63,10 @@ def create_user():  # Создает пользователя на основе 
         else:
             db_sess.close()
             return make_response(jsonify({"error": "Нет такого класса"}), 404)
+        ban_check = (db_sess.query(Ban_list).filter(Ban_list.tg_id == data["id"]).filter(Ban_list.class_id == class_id).first())
+        if ban_check is not None:
+            db_sess.close()
+            return make_response(jsonify({"error": "Пользователь забанен в этом классе"}), 403)
     if data["platform"] == TG:
         student = Student(tg_id=data["id"], name=data["name"], class_id=class_id)
     else:
@@ -95,6 +100,7 @@ def edit_user(platform, user_id):  # Изменение пользователя
             student.class_id = data
         elif key == "is_admin":
             student.is_admin = data
+        # TODO: Добавить изменение рассылки
         else:
             db_sess.close()
             return make_response(jsonify({"error": f"Неизвестный параметр {key}"}), 422)

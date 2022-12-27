@@ -2,14 +2,13 @@ import datetime
 import os
 from random import randint
 
-from flask import make_response, jsonify, request
-
+from CONSTANTS import day_id_to_weekday
 from data import db_session
 from data.chats import Chat
 from data.schedules import Schedule
 from data.students import Student
-from CONSTANTS import day_id_to_weekday
 from data.week_days import WeekDay
+from flask import jsonify, make_response, request
 
 TG = "tg"
 NO = "no"

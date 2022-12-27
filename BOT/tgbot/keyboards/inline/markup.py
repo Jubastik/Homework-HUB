@@ -1,13 +1,11 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from tgbot.keyboards.inline.callback_data import (
-    SubjectData,
     ArrowsData,
     CheckHomework,
     DatesData,
     StudentsData,
+    SubjectData,
 )
-
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
 
@@ -74,6 +72,11 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
 markup_profile = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
+        [
+            InlineKeyboardButton(
+                text="История домашки", callback_data="get_homework_history"
+            )
+        ],
         [InlineKeyboardButton(text="Моё расписание", callback_data="get_shedule")],
         [InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account")],
     ]
@@ -182,36 +185,76 @@ markup_error_menu = InlineKeyboardMarkup(
 
 markup_class_panel = InlineKeyboardMarkup(
     inline_keyboard=[
+        # [InlineKeyboardButton(text="Рассылка", callback_data="mailing")],
+        [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
         [
             InlineKeyboardButton(
                 text="Добавить администратора", callback_data="add_admin"
             )
         ],
-        [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
-        [InlineKeyboardButton(text="Кикнуть одноклассника", callback_data="kick")],
+        [InlineKeyboardButton(text="Разбанить одноклассника", callback_data="unban")],
+        [InlineKeyboardButton(text="Забанить одноклассника", callback_data="ban")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
 )
 
 
-markup_get_shedule = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="back")]])
+markup_mailing_disabled = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Изменить время рассылки", callback_data="change_time"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Включить рассылку", callback_data="enable_mailing"
+            )
+        ],
+        [InlineKeyboardButton(text="Меню", callback_data="menu")],
+    ]
+)
+
+markup_mailing_enabled = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Изменить время рассылки", callback_data="change_time"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Отключить рассылку", callback_data="disable_mailing"
+            )
+        ],
+        [InlineKeyboardButton(text="Меню", callback_data="menu")],
+    ]
+)
+
+
+markup_back = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="back")]]
+)
+
 
 def get_markup_classmates(data):
     keyboard = InlineKeyboardMarkup(row_width=2)
     for key in data.keys():
         keyboard.insert(
-            InlineKeyboardButton(text=data[key], callback_data=StudentsData.new(key))
+            InlineKeyboardButton(text=data[key], callback_data=StudentsData.new(tguser_id=key, name=data[key]))
         )
     keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
     return keyboard
-
 
 
 # | Developer | Developer | Developer | Developer | Developer | Developer | Developer | Developer |
 
 
 markup_developer_menu = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text="Рассылка", callback_data="mailing")]]
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Рассылка", callback_data="mailing")],
+        [InlineKeyboardButton(text="Отправить сообщение", callback_data="mail_to")],
+    ]
 )
 
 markup_developer_deny = InlineKeyboardMarkup(

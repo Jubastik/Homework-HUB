@@ -1,16 +1,17 @@
-import requests
 import datetime
 
+import requests
 from CONSTANTS import (
-    URL_USER,
-    URL_CLASS,
-    URL_SCHEDULE,
-    URL_HOMEWORK,
-    URL_TIME_TABLE,
-    URL_CURRENT_LESSONS,
-    WEEKDAYS,
+    URL_BAN_LIST,
     URL_CHAT,
+    URL_CLASS,
+    URL_CURRENT_LESSONS,
+    URL_HOMEWORK,
     URL_PARAM,
+    URL_SCHEDULE,
+    URL_TIME_TABLE,
+    URL_USER,
+    WEEKDAYS,
 )
 from tgbot.services.restapi.scripts import return_error, send_error, send_success
 from tgbot.services.sub_classes import SheduleData
@@ -72,7 +73,18 @@ async def register_user(tguser_id, classid, user_name):
         return True
     if response.status_code == 404:
         await send_error(tguser_id, response, menu=False)
+    if response.status_code == 403:
+        await send_error(tguser_id, response, menu=False)
     return return_error(response)
+
+
+async def get_class(tguser_id):
+    query = f"/tg/{tguser_id}"
+    res = requests.get(URL_CLASS + query + URL_PARAM)
+    if res.status_code == 200:
+        return res.json()["data"]
+    await send_error(tguser_id, res)
+    return return_error(res)
 
 
 async def register_class(tguser_id, data):
@@ -158,13 +170,16 @@ async def delete_user(tguser_id, force=False):
     return return_error(res)
 
 
+async def ban_user(admin_tgid, user_tgid):
+    pass
+
+
 async def get_subjects_by_time(tguser_id):
     """По времени получает 2 ближайших предмета и возвращает список их названий"""
     query = f"/tg/{tguser_id}" + URL_PARAM
     res = requests.get(URL_CURRENT_LESSONS + query)
     if res.status_code == 200:
         data = res.json()["lessons"]
-        print([_["lesson"]["name"] for _ in data])
         return [_["lesson"]["name"] for _ in data]
     await send_error(tguser_id, res)
     return return_error(res)
@@ -208,7 +223,7 @@ async def add_homework(tguser_id, data, auto=False):
     return return_error(response)
 
 
-async def get_homework(userid, date, is_chat=False):
+async def get_homework(userid, date, is_chat=False, except_404=False, messages=True):
     """Возвращает домашку на дату"""
     if is_chat:
         userid *= -1  # HTTP не одобряет отрицательные числа (вернее знак "-")
@@ -232,9 +247,12 @@ async def get_homework(userid, date, is_chat=False):
             else:
                 hw[lesson] = [lesson_data]
         return [hw]
+    if except_404 and res.status_code == 404:
+        return []
     if is_chat:
         userid *= -1
-    await send_error(userid, res)
+    if messages:
+        await send_error(userid, res)
     return return_error(res)
 
 
@@ -255,7 +273,8 @@ async def get_names_classmates(tguser_id):
         students = res.json()["data"]
         students_names = {}
         for student in students:
-            students_names[student["tg_id"]] = student["name"]
+            if student["tg_id"] != tguser_id:
+                students_names[student["tg_id"]] = student["name"]
         return students_names
     await send_error(tguser_id, res)
     return return_error(res)
@@ -342,6 +361,31 @@ async def is_registreted_chat(chat_id):
     return return_error(res)
 
 
+async def get_all_chats():
+    res = requests.get(URL_CHAT + f"/all" + URL_PARAM)
+    if res.status_code == 200:
+        return res.json()["data"]
+    else:
+        return return_error(res)
+
+
+async def get_all_chats_by_user(user_id):
+    res = requests.get(URL_CHAT + f"/by_user/tg/{user_id}" + URL_PARAM)
+    if res.status_code == 200:
+        return res.json()["data"]
+    else:
+        return return_error(res)
+
+
+async def class_have_chats(user_id) -> bool:
+    res = requests.get(URL_CHAT + f"/by_user/tg/{user_id}" + URL_PARAM)
+    if res.status_code == 200:
+        return True
+    elif res.status_code == 404:
+        return False
+    return return_error(res)
+
+
 async def delete_chat(chat_id):
     res = requests.delete(URL_CHAT + f"/tg_tgchat/{chat_id}" + URL_PARAM)
     if res.status_code == 200:
@@ -355,4 +399,79 @@ async def get_shedule(tguser_id):
         res = SheduleData()
         res.load_shedule(data.json())
         return res
-    return return_error(res)
+    return return_error(data)
+
+
+async def ban_user(tguser_id, username):
+    data = requests.post(
+        URL_BAN_LIST + URL_PARAM, json={"user_tg_id": tguser_id, "username": username}
+    )
+    if data.status_code == 201:
+        return True
+    return return_error(data)
+
+
+async def unban_user(id):
+    data = requests.delete(URL_BAN_LIST + f"/{id}" + URL_PARAM)
+    if data.status_code == 200:
+        return True
+    return return_error(data)
+
+
+async def get_ban_list(tg_user_id):
+    data = requests.get(URL_BAN_LIST + f"/class/tg/{tg_user_id}" + URL_PARAM)
+    if data.status_code == 200:
+        res = {}
+        for i in data.json()["data"]:
+            if tg_user_id != i["tg_id"]:
+                res[i["id"]] = i["name"]
+        return res
+    return return_error(data)
+
+
+async def get_study_days(tguser_id=None, class_id=None):
+    if tguser_id is None and class_id is None:
+        raise ValueError("You have to specify tguser_id or class_id")
+    # NEED FIX
+    # server//study_days/no/{tguser_id} waiting for tguser_id not class_id
+    # if class_id is not None:
+    #     class_id = await get_class(tguser_id)
+    #     class_id = class_id["id"]
+    data = requests.get(URL_SCHEDULE + f"/study_days/tg/{tguser_id}" + URL_PARAM)
+    if data.status_code == 200:
+        return data.json()["data"]
+    elif data.status_code == 404:
+        return []
+    return return_error(data)
+
+
+# Получение списка рассылок
+async def get_all_mailings() -> list:
+    data = requests.get(URL_CHAT + "/all" + URL_PARAM)
+    if data.status_code == 200:
+        res = []
+        for i in data.json()["data"]:
+            res += [{"class_id": i["class_id"], "mailing_time": i["my_class"]["mailing_time"], "chat_id": i["tg_id"], "tg_userid": i["my_class"]["tg_id"]}]
+        return res
+    elif data.status_code == 404:
+        return []
+    return return_error(data)
+
+
+async def change_class_mailing(userid, mailing):
+    data = requests.patch(
+        URL_CLASS + f"/tg/{userid}" + URL_PARAM, json={"mailing_stopped": mailing}
+    )
+    if data.status_code == 200:
+        return True
+    return return_error(data)
+
+
+# Изменеие времени рассылки
+async def change_class_mailing_time(userid, time):
+    data = requests.patch(
+        URL_CLASS + f"/tg/{userid}" + URL_PARAM, json={"mailing_time": time}
+    )
+    if data.status_code == 200:
+        return True
+    return return_error(data)

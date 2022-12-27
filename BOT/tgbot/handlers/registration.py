@@ -1,28 +1,21 @@
-from aiogram.types import Message, CallbackQuery, User
-
+from aiogram.types import CallbackQuery, Message, User
 # | start | start | start | start | start | start | start | start |
 from CONSTANTS import SUBJECTS, TG_BOT_LINK, TG_OFFICAL_CHANNEL
-from bot import dp, bot
-from tgbot.FSM.states import RegistrationStates, StudentMenu
-from tgbot.filters import RegistrationFilter
-from tgbot.keyboards.inline.markup import (
-    markup_yes_or_no,
-    markup_check_subjects1,
-    markup_start,
-    get_markup_shedule,
-    markup_shedule2,
-    get_markup_student_menu,
-)
-from tgbot.services.restapi.restapi import (
-    register_user,
-    register_class,
-    is_admin,
-    get_student_info,
-)
-from tgbot.services.scripts import convert_time, time_is_correct, make_username
-from tgbot.services.sub_classes import RestErorr, SheduleData
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
+from tgbot.filters import RegistrationFilter
+from tgbot.FSM.states import RegistrationStates, StudentMenu
+from tgbot.keyboards.inline.markup import (get_markup_shedule,
+                                           get_markup_student_menu,
+                                           markup_check_subjects1,
+                                           markup_shedule2, markup_start,
+                                           markup_yes_or_no)
+from tgbot.services.restapi.restapi import (get_student_info, is_admin,
+                                            register_class, register_user)
+from tgbot.services.scripts import convert_time, make_username, time_is_correct
+from tgbot.services.sub_classes import RestErorr, SheduleData
+
+from bot import bot, dp
 
 
 @dp.message_handler(RegistrationFilter(), commands=["start"], state="*")

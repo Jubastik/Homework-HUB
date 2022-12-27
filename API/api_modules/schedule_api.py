@@ -1,8 +1,6 @@
 import flask
 import sqlalchemy
-from flask import request, jsonify, make_response
-
-from api_modules.core import user_id_processing, IDError, access_verification
+from api_modules.core import IDError, access_verification, user_id_processing
 from data import db_session
 from data.classes import Class
 from data.lessons import Lesson
@@ -10,6 +8,7 @@ from data.schedules import Schedule
 from data.students import Student
 from data.time_tables import TimeTable
 from data.week_days import WeekDay
+from flask import jsonify, make_response, request
 
 blueprint = flask.Blueprint("schedule", __name__, template_folder="templates")
 
@@ -143,3 +142,17 @@ def create_schedule():  # Создает расписание на основе 
         db_sess.close()
         return make_response(jsonify({"error": "Расписание уже существует"}), 422)
     return make_response(jsonify({"success": f"Расписание успешно создано."}), 201)
+
+
+@blueprint.route("/api/schedule/study_days/<platform>/<int:user_id>", methods=["GET"], endpoint="get_study_days")
+@access_verification
+def get_study_days(platform, user_id):
+    id = user_id_processing(platform, user_id)
+    db_sess = db_session.create_session()
+    schedules = (
+        db_sess.query(Schedule).join(Class).join(Student).filter(Student.id == id).all()
+    )
+    res = set()
+    for i in schedules:
+        res.add(i.day.name)
+    return jsonify({"data": list(res)})

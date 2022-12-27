@@ -1,31 +1,27 @@
-from aiogram.types import Message, CallbackQuery
 import datetime
 
-from bot import dp, bot
-from tgbot.handlers.shortcuts import send_homework_group
-from tgbot.filters.group_filter import (
-    GroupFilter,
-    IsRegisteredGroupFilter,
-    RegistrationGroupFilter,
-)
-from tgbot.services.restapi.restapi import (
-    is_student,
-    register_chat,
-    is_lessons_in_saturday,
-    get_student_info,
-)
-from tgbot.services.scripts import generate_dates
-from tgbot.services.sub_classes import RestErorr
-from tgbot.keyboards.inline.markup import (
-    makrup_group_menu,
-    get_markup_dates,
-    markup_get_homework,
-)
-from tgbot.FSM.states import Group
+from aiogram.types import CallbackQuery, Message
+from CONSTANTS import TG_BOT_LINK
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
-from CONSTANTS import TG_BOT_LINK
+from tgbot.filters.group_filter import (GroupFilter, IsRegisteredGroupFilter,
+                                        RegistrationGroupFilter)
+from tgbot.FSM.states import Group
+from tgbot.handlers.shortcuts import send_homework_group
+from tgbot.keyboards.inline.markup import (get_markup_dates, makrup_group_menu,
+                                           markup_get_homework)
+from tgbot.services.restapi.restapi import (get_student_info,
+                                            is_lessons_in_saturday, is_student,
+                                            register_chat)
+from tgbot.services.scripts import generate_dates
+from tgbot.services.sub_classes import RestErorr
 
+from bot import bot, dp
+
+
+# !!!WARNING!!! Handlers in this file isn't connected. They don't work.
+# !!!WARNING!!! Handlers in this file isn't connected. They don't work.
+# !!!WARNING!!! Handlers in this file isn't connected. They don't work.
 
 @dp.callback_query_handler(GroupFilter(), state="*", text="menu")
 @dp.callback_query_handler(GroupFilter(), state="*", text="error_menu")

@@ -1,14 +1,20 @@
-from aiogram.types import CallbackQuery
+import datetime
 
-from bot import dp, bot
-from tgbot.handlers.student.menu import query_profile
-from tgbot.FSM.states import StudentProfile
-from tgbot.filters.student_filter import StudentFilter
-from tgbot.services.sub_classes import RestErorr
-from tgbot.keyboards.inline.markup import markup_are_u_sure, markup_get_shedule
-from tgbot.services.restapi.restapi import delete_user, get_shedule
+from aiogram.types import CallbackQuery
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.FSM.states import StudentProfile
+from tgbot.handlers.shortcuts import send_homework
+from tgbot.handlers.student.menu import query_profile
+from tgbot.keyboards.inline.markup import (get_markup_dates, markup_are_u_sure,
+                                           markup_back)
+from tgbot.services.restapi.restapi import (delete_user, get_shedule,
+                                            get_study_days)
+from tgbot.services.scripts import generate_dates_back
+from tgbot.services.sub_classes import RestErorr
+
+from bot import bot, dp
 
 
 @dp.callback_query_handler(state=StudentProfile.Profile, text="delete_account")
@@ -71,5 +77,36 @@ async def query_delete_true(callback: CallbackQuery):
         ),
         chat_id=callback.message.chat.id,
         message_id=msgid,
-        reply_markup=markup_get_shedule,
+        reply_markup=markup_back,
     )
+
+
+# | homework_history | homework_history | homework_history | homework_history | homework_history | homework_history | homework_history | homework_history |
+
+
+@dp.callback_query_handler(state=StudentProfile.Profile, text="get_homework_history")
+async def homework_history_dates(callback: CallbackQuery):
+    await callback.answer()
+    FSMContext = dp.current_state(user=callback.from_user.id)
+    await StudentProfile.HomeworkHistoryDates.set()
+    days = await get_study_days(callback.from_user.id)
+    dates = generate_dates_back(days)
+    async with FSMContext.proxy() as FSMdata:
+        msgid = FSMdata["main_msg_id"]
+    print(f"days: {days}")
+    await bot.edit_message_text(
+        process_text(TextKeys.homework_history_dates, callback),
+        chat_id=callback.message.chat.id,
+        message_id=msgid,
+        reply_markup=get_markup_dates(dates),
+    )
+
+
+@dp.callback_query_handler(
+    state=StudentProfile.HomeworkHistoryDates, text_contains="date"
+)
+async def get_homework_history(callback: CallbackQuery):
+    await callback.answer()
+    str_date = list(map(int, callback.data.split(":")[1].split("-")))
+    date = datetime.date(year=str_date[0], month=str_date[1], day=str_date[2])
+    await send_homework(callback, date)

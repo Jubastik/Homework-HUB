@@ -1,4 +1,4 @@
-from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
 class RegistrationStates(StatesGroup):
@@ -36,6 +36,7 @@ class StudentProfile(StatesGroup):
     Profile = State()
     Shedule = State()
     DeleteAccount = State()
+    HomeworkHistoryDates = State()
 
 
 class StudentMenu(StatesGroup):
@@ -47,7 +48,10 @@ class StudentClass(StatesGroup):
     # Ветка панели управления классом
     ClassPanel = State()
     AddAdmin = State()
-    KickClassmate = State()
+    BanClassmate = State()
+    UnbanClassmate = State()
+    Mailing = State()
+    MailingTime = State()
 
 
 class StudentGetHomework(StatesGroup):
@@ -61,6 +65,7 @@ class Developer(StatesGroup):
     Panel = State()
     MailingGetText = State()
     MailingCheck = State()
+    MsgGetData = State()
 
 
 class Group(StatesGroup):

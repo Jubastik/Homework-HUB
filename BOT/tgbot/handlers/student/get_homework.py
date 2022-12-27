@@ -1,16 +1,17 @@
-from aiogram.types import CallbackQuery
 import datetime
 
-from bot import dp, bot
-from tgbot.handlers.shortcuts import send_homework
-from tgbot.FSM.states import StudentGetHomework
-from tgbot.filters.student_filter import StudentFilter
-from tgbot.services.scripts import generate_dates
-from tgbot.keyboards.inline.markup import get_markup_dates
-from tgbot.services.restapi.restapi import is_lessons_in_saturday
-from tgbot.services.sub_classes import RestErorr
+from aiogram.types import CallbackQuery
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
+from tgbot.filters.student_filter import StudentFilter
+from tgbot.FSM.states import StudentGetHomework
+from tgbot.handlers.shortcuts import send_homework
+from tgbot.keyboards.inline.markup import get_markup_dates
+from tgbot.services.restapi.restapi import is_lessons_in_saturday
+from tgbot.services.scripts import generate_dates
+from tgbot.services.sub_classes import RestErorr
+
+from bot import bot, dp
 
 
 @dp.callback_query_handler(state=StudentGetHomework.GetHomework, text="fast_get")

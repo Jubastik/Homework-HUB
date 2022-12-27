@@ -1,17 +1,15 @@
+from subprocess import call
 from aiogram.types import CallbackQuery, InputMediaPhoto
-
-from bot import dp, bot
-from tgbot.FSM.states import StudentClass, StudentMenu, Group
-from tgbot.keyboards.inline.markup import markup_class_panel, get_markup_student_menu
-from tgbot.services.restapi.restapi import (
-    get_homework,
-    is_admin,
-)
+from languages.text_keys import TextKeys
+from languages.text_proccesor import process_text
+from tgbot.FSM.states import Group, StudentClass, StudentMenu
+from tgbot.keyboards.inline.markup import (get_markup_student_menu,
+                                           markup_class_panel)
+from tgbot.services.restapi.restapi import get_homework, is_admin
 from tgbot.services.scripts import convert_homework
 from tgbot.services.sub_classes import RestErorr
 
-from languages.text_keys import TextKeys
-from languages.text_proccesor import process_text
+from bot import bot, dp
 
 
 async def send_panel(callback: CallbackQuery, status=""):

@@ -1,16 +1,15 @@
 import datetime
 
 import flask
-from flask import jsonify, make_response
-
+from api_modules.core import IDError, access_verification, user_id_processing
 from CONSTANTS import day_id_to_weekday
-from api_modules.core import user_id_processing, IDError, access_verification
 from data import db_session
 from data.classes import Class
 from data.schedules import Schedule
 from data.students import Student
 from data.time_tables import TimeTable
 from data.week_days import WeekDay
+from flask import jsonify, make_response
 
 blueprint = flask.Blueprint("additional", __name__, template_folder="templates")
 

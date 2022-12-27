@@ -5,6 +5,7 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+.vscode
 
 # Local History for Visual Studio Code
 .history/
@@ -161,3 +162,5 @@ cython_debug/
 API/db/API.db
 BOT/bot.ini
 test.py
+API/alembic.ini
+API/alembic

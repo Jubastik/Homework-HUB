@@ -1,8 +1,9 @@
 import logging
 
-from bot import bot
-from tgbot.keyboards.inline.markup import markup_menu, markup_error_menu
+from tgbot.keyboards.inline.markup import markup_error_menu, markup_menu
 from tgbot.services.sub_classes import RestErorr
+
+from bot import bot
 
 
 # Скрипты Rest.

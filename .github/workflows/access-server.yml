@@ -14,4 +14,4 @@ jobs:
             echo hello world > hello.txt
           host: ${{ secrets.HOST }}
           user: root
-          key: ${{ secrets.PRIVATE_KEY}}
+          pass: ${{ secrets.PASS}}

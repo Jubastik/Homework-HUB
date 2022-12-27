@@ -1,14 +1,18 @@
-name: Access server
-on: push
+name: CD
+on:
+  push:
+    branches: [main]
 jobs:
-  access_server:
-    name: Access server
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Create a file
-        uses: appleboy/ssh-action@master
+      - name: Repository checkout
+        uses: actions/checkout@v2
+      - name: Connects to VPS via SSH
+        uses: appleboy/ssh-action@v0.1.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.HOST_USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.SERVER_IP }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
           script: echo hello world > hello.txt

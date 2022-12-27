@@ -13,5 +13,7 @@ jobs:
           user: root
           pass: ${{ secrets.PASS}}
           command: |
-              cd /tmp
-              echo hello world > hello.txt
+              cd /HomeBot
+              git pull
+              cd ..
+              pm2 restart pm2home.json

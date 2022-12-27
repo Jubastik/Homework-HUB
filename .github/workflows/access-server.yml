@@ -8,10 +8,10 @@ jobs:
     steps:
       - name: ls -a via ssh
         uses: fifsky/ssh-action@master
-        with:
-          command: |
-            cd /tmp
-            echo hello world > hello.txt
           host: ${{ secrets.HOST }}
           user: root
           pass: ${{ secrets.PASS}}
+          with:
+            command: |
+              cd /tmp
+              echo hello world > hello.txt

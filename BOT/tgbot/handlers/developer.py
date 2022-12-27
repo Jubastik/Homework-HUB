@@ -103,10 +103,12 @@ async def get_msg_info(callback: CallbackQuery):
 
 @dp.message_handler(DeveloperFilter(), state=Developer.MsgGetData)
 async def send_msg(msg: Message):
+    await Developer.Panel.set()
     try:
         chat_id, text = msg.text.split('|')
     except ValueError:
         await msg.answer('wrong format')
-        return
+        return   
     await bot.send_message(chat_id, text)
     await msg.answer("message sent")
+    await msg.answer("Developer panel", reply_markup=markup_developer_menu)

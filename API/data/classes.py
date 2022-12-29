@@ -15,7 +15,7 @@ class Class(SqlAlchemyBase, SerializerMixin):
     class_token = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=False)
     vk_id = sqlalchemy.Column(sqlalchemy.Integer, unique=True, nullable=True)
     # Mailings
-    mailing_time = sqlalchemy.Column(sqlalchemy.Time, server_default="17:0:0", default="17:0:0")
+    mailing_time = sqlalchemy.Column(sqlalchemy.Time, server_default="17:0:0", default=datetime.time(17, 0, 0))
     mailing_stopped = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     # Relationships
     student = orm.relationship("Student", back_populates="my_class", cascade="all, delete-orphan")

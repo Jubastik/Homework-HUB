@@ -1,23 +1,21 @@
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, User
 
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
-from tgbot.handlers.registration.registration_stages import (
+from tgbot.handlers.registration.stages import (
+    JoinByIdStage,
     StartStage,
     TimeStage,
     SubjectsStage,
     SheduleStage,
-    JoinByIdStage,
 )
-from tgbot.keyboards.inline.markup import (
-    get_markup_shedule,
-    get_markup_student_menu,
-    markup_check_subjects1,
-    markup_shedule2,
-    markup_start,
-    markup_yes_or_no,
-    markup_back,
-)
+from tgbot.keyboards.inline.markup import markup_start, get_markup_student_menu
+from tgbot.services.restapi.restapi import register_class, is_admin, get_student_info
+from tgbot.services.scripts import make_username
+from tgbot.services.sub_classes import RestErorr
+from tgbot.FSM.states import StudentMenu
+from CONSTANTS import TG_OFFICAL_CHANNEL, TG_BOT_LINK
+
 
 from bot import dp
 
@@ -63,23 +61,48 @@ class RegistrationManager:  # О ДААА! НОРМАЛЬНЫЙ ООП КОД
             await self.stages[self.current_stage].activate(call)
         return self.stages[self.current_stage]
 
-    def check_data(self):
-        pass
+    async def register(self, call):
+        data = self.get_data()
+        res = await register_class(self.userid, data)
+        if isinstance(res, RestErorr):
+            await call.answer(res.error_message)
+            return
+        return "registered"
+
 
     def get_data(self):
-        pass
+        start_time = self.stages[2].get_time()
+        username = make_username(User.get_current())
+        shedule = {}
+        for i in range(4, 10):
+            shedule[i] = self.stages[i].get_shedule()
+        return {
+            "start_time": start_time,
+            "shedule": shedule,
+            "subjects": self.get_subjects(),
+            "username": username,
+        }
 
     async def on_callback(self, call: CallbackQuery) -> None:
         cb_data = call.data
-        if cb_data == "back":
+        if await self.stages[self.current_stage].on_callback(call):
+            return True
+        elif cb_data == "back":
             await self.stage_down(call=call)
         elif cb_data == "next":
             await self.stage_up(call=call)
         elif "change_stage:" in cb_data:
             stage = int(cb_data.split(":")[1])
             await self.change_stage(stage).on_callback(call)
+        elif cb_data == "register":
+            res = await self.register(call)
+            return res
         else:
-            await self.stages[self.current_stage].on_callback(call)
+            return False
+        return True
 
     async def on_message(self, msg: Message) -> None:
         await self.stages[self.current_stage].on_message(msg)
+
+    def get_subjects(self):
+        return self.stages[3].get_subjects()

@@ -21,7 +21,7 @@ class Student(SqlAlchemyBase, SerializerMixin):
     is_superuser = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     homeworks = orm.relationship("Homework", cascade="all, delete-orphan")
     # Mailings
-    mailing_time = sqlalchemy.Column(sqlalchemy.Time, server_default="17:0:0", default="17:0:0")
+    mailing_time = sqlalchemy.Column(sqlalchemy.Time, server_default="17:0:0", default=datetime.time(17, 0, 0))
     mailing_stopped = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
     def __repr__(self):

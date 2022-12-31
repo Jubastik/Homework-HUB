@@ -21,7 +21,7 @@ markup_subjects_stage = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="Удалить последний предмет", callback_data="remove"
+                text="Удалить добавленный предмет", callback_data="remove"
             )
         ],
         DEFAULT_REGISTRATION,

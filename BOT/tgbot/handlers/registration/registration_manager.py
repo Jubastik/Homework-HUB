@@ -8,6 +8,7 @@ from tgbot.handlers.registration.stages import (
     TimeStage,
     SubjectsStage,
     SheduleStage,
+    LastSheduleStage
 )
 from tgbot.keyboards.inline.markup import markup_start, get_markup_student_menu
 from tgbot.services.restapi.restapi import register_class, is_admin, get_student_info
@@ -36,7 +37,7 @@ class RegistrationManager:  # О ДААА! НОРМАЛЬНЫЙ ООП КОД
             SheduleStage(self, 2),
             SheduleStage(self, 3),
             SheduleStage(self, 4),
-            SheduleStage(self, 5),
+            LastSheduleStage(self, 5),
         ]
 
     async def init_registration(self, msg):  # to start you have to call this method

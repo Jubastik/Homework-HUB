@@ -29,7 +29,7 @@ markup_subjects_stage = InlineKeyboardMarkup(
 )
 
 
-def get_markup_shedule_stage(subjects):
+def get_markup_shedule_stage(subjects, last_day=False):
     keyboard = InlineKeyboardMarkup(
         row_width=3,
     )
@@ -42,7 +42,10 @@ def get_markup_shedule_stage(subjects):
                 text=subject, callback_data=SubjectData.new(name=subject)
             )
         )
-    keyboard.add(*DEFAULT_REGISTRATION)
+    if last_day:
+        keyboard.add(InlineKeyboardButton(text="< Назад", callback_data="back"))
+    else:
+        keyboard.add(*DEFAULT_REGISTRATION)
     keyboard.add(InlineKeyboardButton(text="Зарегистрироваться", callback_data="register"))
     return keyboard
 

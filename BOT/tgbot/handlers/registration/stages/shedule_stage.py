@@ -73,3 +73,9 @@ class SheduleStage(Stage):
             "day_tag": self.day_tag,
             "shedule": self.shedule,
         }
+
+
+class LastSheduleStage(SheduleStage):
+    def __init__(self, rm, day) -> None:
+        super().__init__(rm, day)
+        self.markup = lambda subjects: get_markup_shedule_stage(subjects, last_day=True)

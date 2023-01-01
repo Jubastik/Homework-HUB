@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Response
 from starlette import status
 
-from api.dependencies import process_id, optional_process_id
+from api.dependencies import process_user_id, optional_process_user_id
 from schemas.student_pdc import StudentReturn, StudentCreate, StudentUpdate
 from services.student import StudentService
 
@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[StudentReturn])
-async def get_students(obj_id: int = Depends(optional_process_id), service: StudentService = Depends()):
+async def get_students(obj_id: int = Depends(optional_process_user_id), service: StudentService = Depends()):
     """
     Получить всех учеников
 
@@ -27,7 +27,7 @@ async def get_students(obj_id: int = Depends(optional_process_id), service: Stud
 
 
 @router.get("/{obj_id}", response_model=StudentReturn)
-async def get_student(obj_id: int = Depends(process_id), service: StudentService = Depends()):
+async def get_student(obj_id: int = Depends(process_user_id), service: StudentService = Depends()):
     """
     Получить ученика по id
     """
@@ -44,7 +44,7 @@ async def create_student(student: StudentCreate, service: StudentService = Depen
 
 @router.patch("/{obj_id}", response_model=StudentReturn)
 async def update_student(
-    student: StudentUpdate, obj_id: int = Depends(process_id), service: StudentService = Depends()
+    student: StudentUpdate, obj_id: int = Depends(process_user_id), service: StudentService = Depends()
 ):
     """
     Обновить ученика
@@ -53,7 +53,7 @@ async def update_student(
 
 
 @router.delete("/{obj_id}")
-async def delete_student(obj_id: int = Depends(process_id), service: StudentService = Depends()):
+async def delete_student(obj_id: int = Depends(process_user_id), service: StudentService = Depends()):
     """
     Удалить ученика
     """

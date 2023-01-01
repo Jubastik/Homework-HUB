@@ -6,6 +6,16 @@ from schemas.class_pdc import ExtendedIdType
 from schemas.student_pdc import IdType
 from services.my_class import MyClassService
 from services.student import StudentService
+from settings import settings
+
+
+def verify_root_token(root_token: str):
+    if root_token != settings().ROOT_TOKEN:
+        raise APIError(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            msg="Invalid root token",
+            err_id=my_err.INVALID_ROOT_TOKEN,
+        )
 
 
 def process_user_id(obj_id: int, id_type: IdType, service: StudentService = Depends()):

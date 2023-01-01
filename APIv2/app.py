@@ -1,14 +1,14 @@
 from urllib.request import Request
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette import status
 from starlette.responses import JSONResponse
 
 import my_err
 from api import router
+from api.dependencies import verify_root_token
 from database import db_session
 
 tags_metadata = [
@@ -23,6 +23,7 @@ app = FastAPI(
     title="APIv2",
     description="Обновлённое API для Homework HUB",
     openapi_tags=tags_metadata,
+    dependencies=[Depends(verify_root_token)],
 )
 app.include_router(router)
 

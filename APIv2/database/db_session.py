@@ -31,7 +31,7 @@ def global_init():
     print(f"Подключение к базе данных по адресу {db_connection}")
 
     engine = sa.create_engine(db_connection)
-    __factory = orm.sessionmaker(engine)
+    __factory = orm.sessionmaker(engine, autocommit=False, autoflush=False)
 
     from . import __all_models
 

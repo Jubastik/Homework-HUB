@@ -1,0 +1,101 @@
+import datetime
+
+from fastapi import Depends
+from datetime import date
+from sqlalchemy.orm import Session
+from starlette import status
+
+import my_err
+from database.chats import Chat
+from database.classes import Class
+from database.db_session import get_session
+from database.homeworks import Homework
+from database.lessons import Lesson
+from database.schedules import Schedule
+from database.students import Student
+from database.tg_photos import TgPhoto
+from database.week_days import WeekDay
+from my_err import APIError
+from schemas.homework_pdc import HomeworkCreate
+from schemas.student_pdc import IdType
+from services.CONSTANTS import day_id_to_weekday
+from services.student import StudentService
+
+
+class HomeworkService:
+    def __init__(self, session: Session = Depends(get_session)):
+        self.session = session
+
+    def get_homework_date(self, my_class_id: int, homework_date: date):
+        homeworks = (
+            self.session.query(Homework)
+            .join(Schedule)
+            .join(Class)
+            .filter(Class.id == my_class_id, Homework.date == homework_date)
+            .all()
+        )
+        return homeworks
+
+    def create_homework(self, my_class_id: int, homework_raw_data: HomeworkCreate):
+        homework_data = homework_raw_data.dict(exclude_unset=True, exclude={"photo_tg_id"})
+        if homework_data["date"] == "auto":
+            homework_data["date"] = self.get_next_lesson(my_class_id, homework_data["lesson"])
+            if homework_data["date"] is None:
+                raise APIError(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    msg="The automatic date did not find the lesson",
+                    err_id=my_err.HOMEWORK_NO_SUCH_LESSON,
+                )
+
+        homework_data["schedule_id"] = (
+            self.session.query(Schedule.id)
+            .join(Lesson)
+            .join(Class)
+            .filter(Lesson.name == homework_data["lesson"], Class.id == my_class_id)
+            .first()
+        )
+        del homework_data["lesson"]
+        if homework_data["schedule_id"] is None:
+            raise APIError(
+                status_code=status.HTTP_404_NOT_FOUND, msg="Schedule not found", err_id=my_err.HOMEWORK_NO_SUCH_LESSON
+            )
+        homework_data["schedule_id"] = homework_data["schedule_id"][0]
+        homework_data["author_id"] = self.session.query(Student).filter(Student.tg_id == homework_data['author_tg_id']).first().id
+        del homework_data['author_tg_id']
+
+        homework = Homework(**homework_data)
+        self.session.add(homework)
+        self.session.flush()
+
+        homework_data = homework_raw_data.dict(exclude_unset=True, include={"photo_tg_id"})
+        if "photo_tg_id" in homework_data:
+            for photo_id in homework_data["photo_tg_id"]:
+                self.session.add(TgPhoto(homework_id=homework.id, photo_id=photo_id))
+        self.session.commit()
+        return homework
+
+    def get_next_lesson(self, my_class_id: int, lesson: str):
+        """
+        Получение дня недели, в котором присутствует необходимый нам урок
+        """
+        now_date = datetime.date.today()
+        weekday = datetime.datetime.today().weekday()
+        count = 0
+        while count != 7:
+            count += 1
+            weekday += 1
+            if weekday == 6:
+                continue
+            elif weekday == 7:
+                weekday = 0
+
+            schedules = (
+                self.session.query(Schedule)
+                .join(WeekDay)
+                .filter(Schedule.class_id == my_class_id, WeekDay.name == day_id_to_weekday[weekday])
+                .all()
+            )
+            for schedule in schedules:
+                if schedule.lesson.name == lesson:
+                    return now_date + datetime.timedelta(days=count)
+        return None

@@ -3,7 +3,7 @@
 Первые 2 цифры - место ошибки
 Вторые 2 цифры - номер ошибки
 
-Описание первых 2 цифр:ё
+Описание первых 2 цифр:
 10: Ошибка валидации
 11: ошибка ученика
 12: ошибка класса
@@ -20,6 +20,7 @@ class APIError(Exception):
 
 VALIDATION_ERROR = 1000
 INVALID_ROOT_TOKEN = 1001
+IN_DEVELOPMENT = 1002
 
 STUDENT_NOT_FOUND = 1100
 STUDENT_NOT_IN_CLASS = 1101
@@ -32,3 +33,5 @@ UPDATE_CLASS_INVALID_DATA = 1203
 
 SLOT_NOT_FOUND = 1301
 HOMEWORK_NO_SUCH_LESSON = 1302
+
+

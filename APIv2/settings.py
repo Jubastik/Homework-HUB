@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     POSTGRESQL_PORT: int = 5432
     POSTGRESQL_DB_NAME: str
 
-    SQLITE_DIR: str = "db/API.db"
+    SQLITE_DIR: str = "database/APIv2.db"
 
 
 @lru_cache()

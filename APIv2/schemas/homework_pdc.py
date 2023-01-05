@@ -29,7 +29,7 @@ class HomeworkCreate(HomeworkBase):
 
     @root_validator
     def correctness_check(cls, values):
-        if values["text_homework"] is None and values["photo_tg_ids"] is None:
+        if values["text_homework"] is None and values["photo_tg_id"] is None:
             raise APIError(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 msg="The request must contain a photo id or text",

@@ -9,24 +9,46 @@ from tgbot.keyboards.inline.callback_data import (
 
 
 # | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager |
-markup_registration_default = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text="< Назад", callback_data="back"),
-            InlineKeyboardButton(text="Дальше >", callback_data="next"),
-        ],
-    ]
-)
+DEFAULT_REGISTRATION = [
+    InlineKeyboardButton(text="< Назад", callback_data="back"),
+    InlineKeyboardButton(text="Дальше >", callback_data="next"),
+]
+
+
+markup_registration_default = InlineKeyboardMarkup(inline_keyboard=[DEFAULT_REGISTRATION])
 
 markup_subjects_stage = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text="Удалить последний предмет", callback_data="remove")],
         [
-            InlineKeyboardButton(text="< Назад", callback_data="back"),
-            InlineKeyboardButton(text="Дальше >", callback_data="next"),
+            InlineKeyboardButton(
+                text="Удалить добавленный предмет", callback_data="remove"
+            )
         ],
+        DEFAULT_REGISTRATION,
     ]
 )
+
+
+def get_markup_shedule_stage(subjects, last_day=False):
+    keyboard = InlineKeyboardMarkup(
+        row_width=3,
+    )
+    keyboard.insert(InlineKeyboardButton(text="Вверх ↑", callback_data=ArrowsData.new(num=-1)))
+    keyboard.insert(InlineKeyboardButton(text="Удалить", callback_data="remove"))
+    keyboard.insert(InlineKeyboardButton(text="Вниз ↓", callback_data=ArrowsData.new(num=1)))
+    for subject in subjects:
+        keyboard.insert(
+            InlineKeyboardButton(
+                text=subject, callback_data=SubjectData.new(name=subject)
+            )
+        )
+    if last_day:
+        keyboard.add(InlineKeyboardButton(text="< Назад", callback_data="back"))
+    else:
+        keyboard.add(*DEFAULT_REGISTRATION)
+    keyboard.add(InlineKeyboardButton(text="Зарегистрироваться", callback_data="register"))
+    return keyboard
+
 
 markup_join_by_id_stage = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="next")]]

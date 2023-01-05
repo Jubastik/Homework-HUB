@@ -76,11 +76,38 @@ async def registration_menu(msg: Message):  # on /start in registration state
 
 
 @dp.callback_query_handler(RegistrationFilter(), state=RegistrationStates.StartBtn)
-async def handle_start_query(callback: CallbackQuery):
-    FSMcontext = dp.current_state(user=callback.from_user.id)
+async def handle_start_query(call: CallbackQuery):
+    FSMcontext = dp.current_state(user=call.from_user.id)
     async with FSMcontext.proxy() as FSMdata:
         rm = FSMdata["registration_manager"]
-        await rm.on_callback(callback)
+        res = await rm.on_callback(call)
+    if res == "registered":  # Выход из регистрации
+        await FSMcontext.reset_state()
+        await StudentMenu.Menu.set()
+        res = await get_student_info(call.from_user.id)
+        if isinstance(res, RestErorr):
+            await call.answer(res.error_message)
+            return
+        token = res["class_token"]
+
+        await call.message.answer(
+            process_text(TextKeys.register_done, call, token=token, link=TG_BOT_LINK)
+        )
+        await call.message.answer(
+            process_text(TextKeys.register_done2, call, channel=TG_OFFICAL_CHANNEL)
+        )
+        res = await is_admin(call.from_user.id)
+        if isinstance(res, RestErorr):
+            await call.answer(res.error_message)
+            return
+        new_message = await call.message.answer(
+            process_text(TextKeys.menu, call),
+            reply_markup=get_markup_student_menu(res),
+        )
+        async with FSMcontext.proxy() as FSMdata:
+            FSMdata["main_msg_id"] = new_message.message_id
+        await call.message.delete()
+        
 
 
 @dp.message_handler(RegistrationFilter(), state=RegistrationStates.StartBtn)

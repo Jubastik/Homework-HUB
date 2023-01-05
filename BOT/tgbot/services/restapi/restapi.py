@@ -94,7 +94,7 @@ async def register_class(tguser_id, data):
     # сначала регистрация полльзователя
     response = requests.post(
         URL_USER + URL_PARAM,
-        json={"id": tguser_id, "platform": "tg", "name": data["user_name"]},
+        json={"id": tguser_id, "platform": "tg", "name": data["username"]},
     )
     if response.status_code != 201:
         return return_error(response)
@@ -105,7 +105,7 @@ async def register_class(tguser_id, data):
         json={
             "creator_platform": "tg",
             "creator_id": tguser_id,
-            "name": f"Класс {data['user_name']}а",
+            "name": f"Класс {data['username']}",
         },
     )
     if response.status_code != 201:
@@ -114,9 +114,8 @@ async def register_class(tguser_id, data):
 
     # добавление звонков
     duration_lessons = {1: 55, 2: 60, 3: 65, 4: 60, 5: 55, 6: 55, 7: 60, 8: 60}
-    start_time = data["start_time"]
+    start = data["start_time"]
     date_now = datetime.date.today()
-    start = datetime.time(int(start_time[0]), int(start_time[1]))
     my_datetime = datetime.datetime.combine(date_now, start)
     d = my_datetime
     for i in range(1, 9):
@@ -138,22 +137,20 @@ async def register_class(tguser_id, data):
         if response.status_code != 201:
             await delete_user(tguser_id, force=True)
             return return_error(response)
-
     # расписание уроков
-    schedule = data["shedule"].get_shedule()
-    for el in schedule:
-        day_n = schedule[el]["day_name"]
-        for ell in schedule[el]["shedule"]:
-            lesson_name = schedule[el]["shedule"][ell]
-            if lesson_name != "":
+    schedule = data["shedule"]
+    for day_number in schedule.keys():
+        day_name = schedule[day_number]["day_name"]
+        for i in range(len(schedule[day_number]["shedule"])):
+            if schedule[day_number]["shedule"][i] is not None:
                 response = requests.post(
                     URL_SCHEDULE + URL_PARAM,
                     json={
                         "creator_platform": "tg",
                         "creator_id": tguser_id,
-                        "day": day_n.lower(),
-                        "lesson_number": ell + 1,
-                        "lesson": lesson_name,
+                        "day": day_name.lower(),
+                        "lesson_number": i + 1,
+                        "lesson": schedule[day_number]["shedule"][i],
                     },
                 )
                 if response.status_code != 201:

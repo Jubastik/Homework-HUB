@@ -1,0 +1,20 @@
+name: CD
+on:
+  push:
+    branches: [master]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ls -a via ssh
+        uses: fifsky/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          user: root
+          pass: ${{ secrets.PASS}}
+          command: |
+              cd /root/HomeBot
+              git reset --hard HEAD
+              git pull
+              cd ..
+              pm2 restart pm2home.json

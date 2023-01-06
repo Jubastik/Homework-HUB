@@ -15,11 +15,10 @@ class ExtendedIdType(str, Enum):
 
 
 class MyClassBase(BaseModel):
-    pass
+    name: str
 
 
 class MyClassCreate(MyClassBase):
-    name: str
     schedules: list[ScheduleCreate]
     time_tables: list[TimeTableCreate]
 
@@ -33,7 +32,6 @@ class MyClassUpdate(MyClassBase):
 
 class MyClassReturn(MyClassBase):
     id: int
-    name: str
     class_token: int
     mailing_time: time
     mailing_stopped: bool

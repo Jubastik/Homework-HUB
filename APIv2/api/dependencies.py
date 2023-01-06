@@ -4,6 +4,7 @@ import my_err
 from my_err import APIError
 from schemas.class_pdc import ExtendedIdType
 from schemas.student_pdc import IdType
+from services.ban_list import BanListService
 from services.my_class import MyClassService
 from services.student import StudentService
 from settings import settings
@@ -19,6 +20,10 @@ def verify_root_token(root_token: str):
 
 
 def process_user_id(obj_id: int, id_type: IdType, service: StudentService = Depends()):
+    return service.convert_id(id_type, obj_id)
+
+
+def process_banned_id(obj_id: int, id_type: IdType, service: BanListService = Depends()):
     return service.convert_id(id_type, obj_id)
 
 

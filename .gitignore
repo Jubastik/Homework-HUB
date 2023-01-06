@@ -29,6 +29,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+pyproject.toml
 build/
 develop-eggs/
 dist/

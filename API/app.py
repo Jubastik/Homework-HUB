@@ -10,7 +10,6 @@ from data import db_session
 from data.week_days import WeekDay
 from dotenv import load_dotenv
 from flask import Flask, jsonify
-from gevent.pywsgi import WSGIServer
 
 load_dotenv()
 

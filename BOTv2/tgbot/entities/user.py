@@ -8,14 +8,13 @@ class User:
         self.tgid = tgid
         self.um = um
         self.main_msg_id = main_msg_id
+        # TODO: language
 
-    async def init(self, mode: Mode) -> None:
-        self.main_msg_id = await mode.init(self.main_msg_id)
+    def set_mode(self, mode: Mode) -> None:
         self.mode = mode
-
-    async def set_mode(self, mode: Mode) -> None:
-        self.mode = mode
-        self.main_msg_id = await mode.init(self.main_msg_id)
+    
+    def set_main_msg_id(self, msg_id: int) -> None:
+        self.main_msg_id = msg_id
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
         return await self.mode.handle_callback(call)

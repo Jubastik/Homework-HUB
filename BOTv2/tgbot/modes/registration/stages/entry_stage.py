@@ -10,14 +10,20 @@ from bot import bot
 
 
 class EntryStage(Stage):
+    name = "entry_stage"
+
+    def __init__(self, mode) -> None:
+        super().__init__(mode)
+        self.markup = markup_start
+
     async def activate(self, status: str = ""):
         if self.user.main_msg_id is None:
             main_msg_id = await bot.send_message(
                 chat_id=self.user.tgid,
                 text=process_text(TextKeys.hello, status=status),
-                reply_markup=markup_start,
+                reply_markup=self.markup,
             )
-            return main_msg_id
+            return main_msg_id.message_id
         else:
             await bot.edit_message_text(
                 chat_id=self.user.userid,

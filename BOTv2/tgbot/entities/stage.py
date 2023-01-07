@@ -1,5 +1,4 @@
 from aiogram.types import CallbackQuery, Message
-from asyncio import sleep
 
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
@@ -7,6 +6,8 @@ import logging
 
 
 class Stage:  # Abstract class
+    name = "entry_stage"
+
     def __init__(self, mode):
         self.mode = mode
         self.user = mode.user

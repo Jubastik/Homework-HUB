@@ -20,7 +20,8 @@ SUBJECTS = [
 ]
 TG_BOT_LINK = "t.me/homework_hub_bot?start="
 TG_OFFICAL_CHANNEL = "@Homework_bot_HUB"
-URL_PARAM = f"?root_token={os.getenv('API_TOKEN', 'root')}"
+API_TOKEN = os.getenv('API_TOKEN', 'root')
+URL_PARAM = f"?root_token={API_TOKEN}"
 SERVER = os.getenv("API_SERVER")  # при работе с url в следующий раз, сделать рефактор
 URL_USER = SERVER + "/api/user"
 URL_CHAT = SERVER + "/api/chats"

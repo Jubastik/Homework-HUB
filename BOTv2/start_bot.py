@@ -16,9 +16,8 @@ from services.everyday_mailing import activate_hw_mailing
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
-    from services.restapi.restapi import get_student
-    res = await get_student()
-    print(res)
+    from services.restapi.restapi import test
+    await test()
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске
         chat_id = os.getenv("TG_ADMIN_CHAT")

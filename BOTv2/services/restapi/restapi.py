@@ -40,12 +40,18 @@
 
 # Пример асинхронного запроса к API
 
-import aiohttp
+from services.restapi.api_error import ApiError
+from services.restapi.session import aiohttp_session
 
 
-async def get_student():
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "http://localhost:8000/students/?root_token=no_token&obj_id=1&id_type=student_tg"
-        ) as response:
-            return await response.json()
+@aiohttp_session
+async def test(session, params):
+    async with session.get(f"http://localhost:8000/", params=params) as response:
+        status = response.status
+        if status == 200:
+            json = await response.json()
+            print(json)
+            return json
+        else:
+            json = await response.json()
+            return ApiError(response)

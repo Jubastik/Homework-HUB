@@ -4,6 +4,7 @@
 Вторые 2 цифры - номер ошибки
 
 Описание первых 2 цифр:
+3х значные - HTTP код ошибки
 10: Ошибка валидации
 11: ошибка ученика
 12: ошибка класса
@@ -18,6 +19,8 @@ class APIError(Exception):
         self.status_code = status_code
         self.err_id = err_id
 
+
+INTERNAL_SERVER_ERROR = 500
 
 VALIDATION_ERROR = 1000
 INVALID_ROOT_TOKEN = 1001
@@ -38,5 +41,3 @@ HOMEWORK_NO_SUCH_LESSON = 1302
 
 ParserNotActive = 1500
 LoginError = 1501
-
-

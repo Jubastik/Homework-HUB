@@ -25,3 +25,6 @@ class Stage:  # Abstract class
 
     async def handle_message(self, msg: Message):
         return False
+    
+    async def handle_api_error(self, error) -> bool:
+        return False

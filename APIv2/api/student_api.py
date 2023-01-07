@@ -20,7 +20,6 @@ async def get_students(obj_id: int = Depends(optional_process_user_id), service:
 
     - Для получения учеников из класса, в котором состоит ученик с указанным id, необходимо указать id и id_type
     """
-    obj_id[0]
     if obj_id is None:
         return service.get_students()
     else:

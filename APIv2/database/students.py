@@ -17,6 +17,7 @@ class Student(SqlAlchemyBase):
     is_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     is_superuser = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     homeworks = orm.relationship("Homework", cascade="all, delete-orphan")
+    parsers = orm.relationship("Parser", cascade="all, delete-orphan")
     # Mailings
     mailing_time = sqlalchemy.Column(
         sqlalchemy.Time, server_default=func.time(17, 0, 0), default=datetime.time(17, 0, 0)

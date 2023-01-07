@@ -42,6 +42,7 @@ class RegistrationMode(Mode):
         # "shedule_stage4": 8,
         # "shedule_stage5": 9,
     }
+    STAGES_LEN = len(STAGES)
 
     async def handle_callback(self, call) -> bool:
         handled = await self.current_stage.handle_callback(call) if self.current_stage else False

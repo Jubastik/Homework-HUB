@@ -20,13 +20,14 @@ class Mode:
         if isinstance(stage, int):
             stage = min(self.STAGES_LEN - 1, max(0, stage))
             stage = self.STAGES_NUM_TO_NAME[stage]
+            
         if stage in self.stages:
             self.current_stage = self.stages[stage]
         else:
             self.stages[stage] = self.current_stage = self.STAGES[stage](self)
         main_msg_id = await self.stages[stage].activate()
         return main_msg_id
-    
+
     async def handle_callback(self, call) -> bool:
         return await self.current_stage.handle_callback(call)
 

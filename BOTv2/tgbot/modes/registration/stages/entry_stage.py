@@ -26,7 +26,7 @@ class EntryStage(Stage):
             return main_msg_id.message_id
         else:
             await bot.edit_message_text(
-                chat_id=self.user.userid,
+                chat_id=self.user.tgid,
                 message_id=self.user.main_msg_id,
                 text=process_text(TextKeys.hello, status=status),
                 reply_markup=self.markup,

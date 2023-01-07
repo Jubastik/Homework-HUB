@@ -24,15 +24,7 @@ class JoinByIdStage(Stage):
     def __init__(self, mode) -> None:
         super().__init__(mode)
         self.markup = markup_join_by_id_stage
-
-    async def activate(self, status="") -> int:
-        await bot.edit_message_text(
-            chat_id=self.user.tgid,
-            message_id=self.user.main_msg_id,
-            text=process_text(TextKeys.get_class_token, status=status),
-            reply_markup=self.markup,
-        )
-        return self.user.main_msg_id
+        self.text = lambda *args, **kwargs: process_text(TextKeys.get_class_token, status=kwargs.get("status", ""))
 
     async def handle_message(self, msg: Message) -> bool:
         classid = msg.text

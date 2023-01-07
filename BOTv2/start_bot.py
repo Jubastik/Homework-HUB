@@ -10,14 +10,15 @@ load_dotenv()
 from bot import bot, dp
 
 import tgbot
-import tgbot.filters
 import tgbot.handlers
 from services.everyday_mailing import activate_hw_mailing
 
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
-    tgbot.filters.setup(dp)  # Установка фильтров
+    from services.restapi.restapi import get_student
+    res = await get_student()
+    print(res)
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске
         chat_id = os.getenv("TG_ADMIN_CHAT")

@@ -15,12 +15,13 @@ class EntryStage(Stage):
     def __init__(self, mode) -> None:
         super().__init__(mode)
         self.markup = markup_start
+        self.text = lambda *args, **kwargs: process_text(TextKeys.hello, status=kwargs.get("status", ""))
 
     async def activate(self, status: str = ""):
         if self.user.main_msg_id is None:
             main_msg_id = await bot.send_message(
                 chat_id=self.user.tgid,
-                text=process_text(TextKeys.hello, status=status),
+                text=self.text(status=status),
                 reply_markup=self.markup,
             )
             return main_msg_id.message_id
@@ -28,7 +29,7 @@ class EntryStage(Stage):
             await bot.edit_message_text(
                 chat_id=self.user.tgid,
                 message_id=self.user.main_msg_id,
-                text=process_text(TextKeys.hello, status=status),
+                text=self.text(status=status),
                 reply_markup=self.markup,
             )
             return self.user.main_msg_id

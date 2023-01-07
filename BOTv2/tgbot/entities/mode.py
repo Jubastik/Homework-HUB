@@ -14,7 +14,7 @@ class Mode:
         self.stages = {}  # {"stage_name": Stage()}
         self.current_stage: Stage = self.STAGES["entry_stage"](self)
         self.stage_num: int = self.STAGES_NAME_TO_NUM["entry_stage"]
-        self.data = {}  # data for stages
+        self.storage = {}  # data for stages
 
     async def set_stage(self, stage: str | int) -> int:
         if isinstance(stage, int):

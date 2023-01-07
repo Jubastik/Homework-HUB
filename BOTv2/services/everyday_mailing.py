@@ -2,7 +2,7 @@ import asyncio
 import datetime
 
 from aiogram.types import InputMediaPhoto
-from services.restapi.restapi import get_all_mailings, get_homework, get_study_days
+# from services.restapi.restapi import get_all_mailings, get_homework, get_study_days
 from services.sub_classes import RestErorr
 
 from bot import bot

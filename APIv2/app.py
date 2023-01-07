@@ -45,6 +45,14 @@ async def api_error_handler(request: Request, exc: my_err.APIError):
     )
 
 
+@app.exception_handler(500)
+async def internal_server_error_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": [{"msg": "Internal server error"}], "ErrorID": my_err.INTERNAL_SERVER_ERROR},
+    )
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello HomeV2!"}

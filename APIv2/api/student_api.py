@@ -8,8 +8,8 @@ from schemas.student_pdc import StudentReturn, StudentCreate, StudentUpdate
 from services.student import StudentService
 
 router = APIRouter(
-    prefix="/students",
-    tags=["students"],
+    prefix="/student",
+    tags=["student"],
 )
 
 

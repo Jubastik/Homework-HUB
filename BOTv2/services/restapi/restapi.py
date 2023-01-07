@@ -39,14 +39,15 @@
 # unban_user
 
 # Пример асинхронного запроса к API
-
 from services.restapi.api_error import ApiError
-from services.restapi.session import aiohttp_session
+from services.restapi.session import aiohttp_session, add_tg_id
+
+from services.restapi.URLS import URL_STUDENT
 
 
 @aiohttp_session
 async def test(session, params):
-    async with session.get(f"http://localhost:8000/students/", params=params) as response:
+    async with session.get(URL_STUDENT, params=params) as response:
         status = response.status
         if status == 200:
             json = await response.json()
@@ -55,3 +56,29 @@ async def test(session, params):
         else:
             json = await response.text()
             print(json)
+            return json
+
+
+@aiohttp_session
+async def get_user(session, params, tg_id):
+    params = add_tg_id(params, tg_id)
+    async with session.get(URL_STUDENT, params=params) as response:
+        status = response.status
+        if status == 200:
+            json = response.json()
+            return json
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def is_student(session, params, tg_id):
+    params = add_tg_id(params, tg_id)
+    async with session.get(URL_STUDENT + tg_id, params=params) as response:
+        status = response.status
+        if status == 200:
+            return True
+        elif status == 404:
+            return False
+        else:
+            return ApiError(status, await response.json())

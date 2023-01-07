@@ -13,7 +13,7 @@ from database import db_session
 
 tags_metadata = [
     {
-        "name": "students",
+        "name": "student",
         "description": "Взаимодействие с учениками",
     }
 ]

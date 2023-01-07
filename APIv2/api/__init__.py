@@ -6,7 +6,7 @@ from .homework_api import router as homework_router
 from .ban_list_api import router as ban_list_router
 from .parser_api import router as parser_router
 
-router = APIRouter()
+router = APIRouter(prefix="/api2",)
 router.include_router(student_router)
 router.include_router(class_router)
 router.include_router(schedule_router)

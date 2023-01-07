@@ -13,3 +13,9 @@ def aiohttp_session(func):
             await func(session, params, *args, **kwargs)
 
     return wrapper
+
+
+def add_tg_id(params, tg_id):
+    params["id_type"] = "student_tg"
+    params["obj_id"] = tg_id
+    return params

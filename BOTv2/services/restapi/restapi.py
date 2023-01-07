@@ -46,12 +46,12 @@ from services.restapi.session import aiohttp_session
 
 @aiohttp_session
 async def test(session, params):
-    async with session.get(f"http://localhost:8000/", params=params) as response:
+    async with session.get(f"http://localhost:8000/students/", params=params) as response:
         status = response.status
         if status == 200:
             json = await response.json()
             print(json)
             return json
         else:
-            json = await response.json()
-            return ApiError(response)
+            json = await response.text()
+            print(json)

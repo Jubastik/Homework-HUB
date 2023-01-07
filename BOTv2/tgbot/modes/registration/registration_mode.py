@@ -7,8 +7,8 @@ from tgbot.modes.registration import *
 
 class RegistrationMode(Mode):
     STAGES = {
-        "entry_stage": EntryStage,
         "join_by_id_stage": JoinByIdStage,
+        "entry_stage": EntryStage,
         "time_stage": TimeStage,
         "subjects_stage": SubjectsStage,
         "shedule_stage0": lambda *args, **kwargs: SheduleStage(*args, **kwargs, day=0),

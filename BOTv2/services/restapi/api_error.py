@@ -1,2 +1,3 @@
 class ApiError:
-    pass
+    def __init__(self, error):
+        self.error = error

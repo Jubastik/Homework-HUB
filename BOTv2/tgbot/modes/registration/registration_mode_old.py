@@ -2,7 +2,7 @@ from aiogram.types import CallbackQuery, Message, User
 
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
-from tgbot.handlers.registration.stages import (
+from tgbot.modes.registration.stages import (
     JoinByIdStage,
     StartStage,
     TimeStage,
@@ -11,9 +11,9 @@ from tgbot.handlers.registration.stages import (
     LastSheduleStage
 )
 from tgbot.keyboards.inline.markup import markup_start, get_markup_student_menu
-from tgbot.services.restapi.restapi import register_class, is_admin, get_student_info
-from tgbot.services.scripts import make_username
-from tgbot.services.sub_classes import RestErorr
+from services.restapi.restapi import register_class, is_admin, get_student_info
+from services.scripts import make_username
+from services.sub_classes import RestErorr
 from tgbot.FSM.states import StudentMenu
 from CONSTANTS import TG_OFFICAL_CHANNEL, TG_BOT_LINK
 
@@ -21,7 +21,7 @@ from CONSTANTS import TG_OFFICAL_CHANNEL, TG_BOT_LINK
 from bot import dp
 
 
-class RegistrationManager:  # О ДААА! НОРМАЛЬНЫЙ ООП КОД
+class RegistrationManager:
     def __init__(self, start_msg: Message) -> None:
         # dont forget to call init_registration() after creating this object
         self.userid = start_msg.from_user.id

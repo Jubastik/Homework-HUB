@@ -110,7 +110,7 @@ class MyClassService:
                 )
             schedule["day_of_week"] = self.session.query(WeekDay.id).filter(WeekDay.name == schedule["day_of_week"]).first()[0]
             schedule = Schedule(
-                class_id=my_class.id, day_id=schedule["day_of_week"].value, slot_id=slot.id, lesson_id=lesson.id
+                class_id=my_class.id, day_id=schedule["day_of_week"], slot_id=slot.id, lesson_id=lesson.id
             )
             self.session.add(schedule)
         self.session.commit()

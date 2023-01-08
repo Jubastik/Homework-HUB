@@ -16,7 +16,8 @@ def aiohttp_session(func):
     return wrapper
 
 
-def add_tg_id(params, tg_id):
+def add_tg_id(params, tg_id: int = None):
     params["id_type"] = "student_tg"
-    params["obj_id"] = tg_id
+    if tg_id is not None:
+        params["obj_id"] = tg_id
     return params

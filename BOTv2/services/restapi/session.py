@@ -10,7 +10,8 @@ def aiohttp_session(func):
             params = {
                 "root_token": API_TOKEN,
             }
-            await func(session, params, *args, **kwargs)
+            res = await func(session, params, *args, **kwargs)
+            return res
 
     return wrapper
 

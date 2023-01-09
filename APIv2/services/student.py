@@ -71,6 +71,7 @@ class StudentService:
                 )
         if "class_token" in data:
             data["class_id"] = self.convert_class_token(data["class_token"])
+            del data["class_token"]
         if "class_id" in data:
             my_class = self.session.query(Class).filter(Class.id == data["class_id"]).first()
             if not my_class:

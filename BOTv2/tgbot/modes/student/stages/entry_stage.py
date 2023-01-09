@@ -9,8 +9,6 @@ from tgbot.keyboards.inline.markup import (
 from services.restapi.restapi import is_admin
 from services.restapi.api_error import ApiError
 
-from bot import bot
-
 
 class MenuStage(Stage):
     def __init__(self, mode):

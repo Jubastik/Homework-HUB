@@ -8,8 +8,6 @@ from tgbot.keyboards.inline.markup import (
 )
 from CONSTANTS import WEEKDAYS, WEEKDAYS_TRASNLATE, SUBJECTS
 
-from bot import bot
-
 
 class SheduleStage(Stage):
     name = "shedule_stage"
@@ -61,12 +59,16 @@ class SheduleStage(Stage):
             "shedule": text,
         }
 
-    def get_shedule(self):
-        return {
-            "day_name": self.day_name,
-            "day_tag": self.day_tag,
-            "shedule": self.shedule,
-        }
+    def get_shedule(self) -> list:
+        shedule = []
+        for i in range(len(self.shedule)):
+            if self.shedule[i] is not None:
+                shedule.append({
+                    "lesson": self.shedule[i],
+                    "day_of_week": self.day_name,
+                    "lesson_number": i + 1,
+                })
+        return shedule
 
 
 class LastSheduleStage(SheduleStage):

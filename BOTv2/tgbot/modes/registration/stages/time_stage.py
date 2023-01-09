@@ -18,8 +18,6 @@ from services.scripts import convert_time, make_username, time_is_correct
 from CONSTANTS import SUBJECTS, WEEKDAYS
 from services.sub_classes import RestErorr
 
-from bot import bot
-
 
 class TimeStage(Stage):
     name = "time_stage"

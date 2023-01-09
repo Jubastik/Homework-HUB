@@ -30,7 +30,6 @@ class UsersManager:
         # TODO: try to find main message id and his state
 
         user = User(self, userid)
-        await user.setup()
         self.users[userid] = user
         return user
 

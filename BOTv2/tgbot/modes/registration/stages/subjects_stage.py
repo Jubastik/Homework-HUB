@@ -9,8 +9,6 @@ from tgbot.keyboards.inline.markup import (
 )
 from CONSTANTS import SUBJECTS
 
-from bot import bot
-
 
 class SubjectsStage(Stage):
     name = "subjects_stage"

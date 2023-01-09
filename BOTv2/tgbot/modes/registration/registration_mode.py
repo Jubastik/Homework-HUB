@@ -62,4 +62,8 @@ class RegistrationMode(Mode):
 
     async def register(self, call):
         class_name = make_username(User.get_current())
-        await restapi.create_class(tg_id=self.user.id, class_name=class_name)
+        shedule = []
+        for i in range(6):
+            shedule += self.STAGES[f"shedule_stage{i}"].get_shedule()
+        await restapi.create_class(tg_id=self.user.id, class_name=class_name, shedule=shedule, start_time=self.get_time())
+        await self.user.setup()

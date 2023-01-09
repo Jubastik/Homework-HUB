@@ -5,8 +5,16 @@ from tgbot.entities.mode import Mode
 from services.restapi import restapi
 from services.restapi.api_error import ApiError
 
+from tgbot.modes.registration.registration_mode import RegistrationMode
+from tgbot.modes.student.student_mode import StudentMode
+
 
 class User:
+    MODES = {
+        "registration_mode": RegistrationMode,
+        "student_mode": StudentMode,
+    }
+
     def __init__(self, um, tgid: int, main_msg_id: int = None):
         self.tgid = tgid
         self.um = um
@@ -14,9 +22,6 @@ class User:
         # TODO: language
     
     async def setup(self, mode: Mode = None) -> None:
-        from tgbot.modes.registration.registration_mode import RegistrationMode
-        from tgbot.modes.student.student_mode import StudentMode
-
         if mode is not None:
             self.mode = mode
         else:       
@@ -25,17 +30,20 @@ class User:
                 await self.handle_api_error(is_student)
                 return is_student
             if is_student:
-                self.mode = StudentMode(self)
+                self.mode = self.MODES["student_mode"](self)
             else:
-                self.mode = RegistrationMode(self)
+                self.mode = self.MODES["registration_mode"](self)
+        if self.main_msg_id:
+            await self.mode.set_stage("entry_stage")
+        else:
+            self.main_msg_id = await self.mode.send_entry()
     
     async def reset(self, mode: Mode = None) -> None:
         await self.delete_main_msg()
         await self.setup(mode)
-        self.main_msg_id = await self.mode.send_entry()
     
-    async def change_mode(self, mode: Mode) -> None:
-        self.mode = mode
+    async def change_mode(self, mode: str) -> None:
+        self.mode = self.MODES[mode](self)
         await self.mode.set_stage("entry_stage")
     
     async def delete_main_msg(self) -> None:

@@ -23,12 +23,11 @@ class JoinByIdStage(Stage):
         classid = msg.text
         if classid.isdigit():
             username = make_username(User.get_current())
-            print(f"await register_user({self.user.tgid}, {classid}, {username})")
             user = await create_user(self.user.tgid, username, classid)
             if isinstance(user, ApiError):
                 await self.handle_api_error(user)
                 return ApiError
-            
+            await self.user.change_mode("student_mode")
         else:
             await self.activate(status=process_text(TextKeys.wrong_class_token, msg))
             await sleep(1)

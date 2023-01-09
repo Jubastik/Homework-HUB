@@ -27,11 +27,11 @@ async def on_startup(dp):
         get_schedule,
         get_study_week_days,
     )
-    from datetime import date
+    from services.restapi.formatters import create_time_tables
+    from datetime import time
 
-    now_date = date.today()
-
-    data = await get_study_week_days(0)
+    now_date = time(hour=9, minute=0)
+    data = create_time_tables(now_date)
     pprint(data)
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске

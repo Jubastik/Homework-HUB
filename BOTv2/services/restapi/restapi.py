@@ -44,7 +44,7 @@ import datetime
 
 from CONSTANTS import WEEKDAYS
 from services.restapi.api_error import ApiError
-from services.restapi.formatters import f_days_from_schedules
+from services.restapi.formatters import f_days_from_schedules, create_time_tables
 from services.restapi.session import aiohttp_session, add_tg_id
 
 from services.restapi.URLS import URL_STUDENT, URL_CLASS, URL_SCHEDULE
@@ -109,10 +109,9 @@ async def create_user(session, params, tg_id: int, name: str, class_token: int =
 
 
 @aiohttp_session
-async def create_class(session, params, tg_id: int, class_name: str, start_time:datetime.time, schedules=None):
-    schedules = [{"lesson": "string", "day_of_week": "понедельник", "lesson_number": 1}]
-    time_tables = [{"begin_time": "9:00", "end_time": "9:45", "lesson_number": 1}]
-    # TODO: ↑↑↑ заглушка ↑↑↑
+async def create_class(session, params, tg_id: int, class_name: str, start_time: datetime.time, schedules):
+    # Пример: schedules = [{"lesson": "string", "day_of_week": "понедельник", "lesson_number": 1}]
+    time_tables = create_time_tables(start_time)
 
     params = add_tg_id(params, tg_id)
     json = {

@@ -1,5 +1,6 @@
 import logging
 import os
+from pprint import pprint
 
 from aiogram.utils import executor
 from dotenv import load_dotenv
@@ -16,10 +17,22 @@ from services.everyday_mailing import activate_hw_mailing
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
-    from services.restapi.restapi import test
-    from services.restapi.restapi import get_user
-    data = await test()
-    print(data)
+    from services.restapi.restapi import (
+        get_user,
+        is_student,
+        is_admin,
+        create_user,
+        change_class_token,
+        get_class,
+        get_schedule,
+        get_study_week_days,
+    )
+    from datetime import date
+
+    now_date = date.today()
+
+    data = await get_study_week_days(0)
+    pprint(data)
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске
         chat_id = os.getenv("TG_ADMIN_CHAT")

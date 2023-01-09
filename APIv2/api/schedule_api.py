@@ -3,7 +3,7 @@ from typing import List, Literal
 from fastapi import APIRouter, Depends
 
 from api.dependencies import process_class_id
-from schemas.schedule_pdc import ScheduleReturn
+from schemas.schedule_pdc import ScheduleReturn, ScheduleCurrentReturn
 from services.schedule import ScheduleService
 
 router = APIRouter(
@@ -30,3 +30,11 @@ async def get_schedule(
     Получить расписание класса на конкретный день
     """
     return service.get_schedule(obj_id, day)
+
+
+@router.get("/current_schedule/{obj_id}", response_model=List[ScheduleCurrentReturn])
+async def get_current_schedule(obj_id=Depends(process_class_id), service: ScheduleService = Depends()):
+    """
+    Получить сейчас идущий урок
+    """
+    return service.get_current_schedule(obj_id)

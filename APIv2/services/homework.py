@@ -39,7 +39,7 @@ class HomeworkService:
     def create_homework(self, my_class_id: int, homework_raw_data: HomeworkCreate):
         homework_data = homework_raw_data.dict(exclude_unset=True, exclude={"photo_tg_id"})
         if homework_data["date"] == "auto":
-            homework_data["date"] = self.get_next_lesson(my_class_id, homework_data["lesson"])
+            homework_data["date"] = Schedule.get_date_next_lesson(self.session, my_class_id, homework_data["lesson"])
             if homework_data["date"] is None:
                 raise APIError(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -73,29 +73,3 @@ class HomeworkService:
                 self.session.add(TgPhoto(homework_id=homework.id, photo_id=photo_id))
         self.session.commit()
         return homework
-
-    def get_next_lesson(self, my_class_id: int, lesson: str):
-        """
-        Получение дня недели, в котором присутствует необходимый нам урок
-        """
-        now_date = datetime.date.today()
-        weekday = datetime.datetime.today().weekday()
-        count = 0
-        while count != 7:
-            count += 1
-            weekday += 1
-            if weekday == 6:
-                continue
-            elif weekday == 7:
-                weekday = 0
-
-            schedules = (
-                self.session.query(Schedule)
-                .join(WeekDay)
-                .filter(Schedule.class_id == my_class_id, WeekDay.name == day_id_to_weekday[weekday])
-                .all()
-            )
-            for schedule in schedules:
-                if schedule.lesson.name == lesson:
-                    return now_date + datetime.timedelta(days=count)
-        return None

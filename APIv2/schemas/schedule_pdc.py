@@ -1,3 +1,4 @@
+import datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -5,6 +6,7 @@ from pydantic import BaseModel, Field
 from schemas.lesson_pdc import LessonReturn
 from schemas.time_table_pdc import TimeTableReturn
 from schemas.week_days_pdc import WeekDayReturn
+
 
 class ScheduleBase(BaseModel):
     pass
@@ -17,6 +19,10 @@ class ScheduleReturn(ScheduleBase):
 
     class Config:
         orm_mode = True
+
+
+class ScheduleCurrentReturn(ScheduleReturn):
+    lesson_date: datetime.date | None
 
 
 class ScheduleCreate(ScheduleBase):

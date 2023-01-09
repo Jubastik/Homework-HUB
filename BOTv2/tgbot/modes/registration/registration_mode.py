@@ -64,6 +64,11 @@ class RegistrationMode(Mode):
         class_name = make_username(User.get_current())
         shedule = []
         for i in range(6):
-            shedule += self.STAGES[f"shedule_stage{i}"].get_shedule()
-        await restapi.create_class(tg_id=self.user.id, class_name=class_name, shedule=shedule, start_time=self.get_time())
+            if f"shedule_stage{i}" in self.stages:
+                shedule += self.stages[f"shedule_stage{i}"].get_shedule()
+        print("SHEDULE:", shedule)
+        print("tg_id:", self.user.tgid)
+        print("class_name:", class_name)
+        print("start_time:", self.get_time())
+        await restapi.create_class(tg_id=self.user.tgid, class_name=class_name, shedule=shedule, start_time=self.get_time())
         await self.user.setup()

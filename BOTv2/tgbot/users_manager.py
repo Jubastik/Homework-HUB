@@ -3,6 +3,9 @@ from asyncio import sleep
 
 from tgbot.entities.user import User
 
+from services.restapi.api_error import ApiError
+from services.restapi import restapi
+
 
 class UsersManager:
     def __init__(self):
@@ -21,15 +24,13 @@ class UsersManager:
 
     async def _restore_user(self, userid: int) -> User:
         # import here to avoid circular imports
-        from tgbot.modes.registration.registration_mode import RegistrationMode
-        from tgbot.modes.student.student_mode import StudentMode
 
         # try to restore user from database
         # if user is not in database, create new user
         # TODO: try to find main message id and his state
+
         user = User(self, userid)
-        mode = StudentMode(user)
-        user.set_mode(mode)
+        await user.setup()
         self.users[userid] = user
         return user
 

@@ -1,6 +1,9 @@
 from aiogram.types import Message, CallbackQuery
+from asyncio import sleep
 
 from tgbot.entities.mode import Mode
+from services.restapi import restapi
+from services.restapi.api_error import ApiError
 
 
 class User:
@@ -9,27 +12,48 @@ class User:
         self.um = um
         self.main_msg_id = main_msg_id
         # TODO: language
-
-    def set_mode(self, mode: Mode) -> None:
-        self.mode = mode
     
-    def set_main_msg_id(self, msg_id: int) -> None:
-        self.main_msg_id = msg_id
+    async def setup(self, mode: Mode = None) -> None:
+        from tgbot.modes.registration.registration_mode import RegistrationMode
+        from tgbot.modes.student.student_mode import StudentMode
+
+        if mode is not None:
+            self.mode = mode
+        else:       
+            is_student = await restapi.is_student(self.tgid)
+            if isinstance(is_student, ApiError):
+                await self.handle_api_error(is_student)
+                return is_student
+            if is_student:
+                self.mode = StudentMode(self)
+            else:
+                self.mode = RegistrationMode(self)
+    
+    async def reset(self, mode: Mode = None) -> None:
+        await self.delete_main_msg()
+        await self.setup(mode)
+        self.main_msg_id = await self.mode.send_entry()
+    
+    async def change_mode(self, mode: Mode) -> None:
+        self.mode = mode
+        await self.mode.set_stage("entry_stage")
     
     async def delete_main_msg(self) -> None:
         from bot import bot
-
-        await bot.delete_message(self.tgid, self.main_msg_id)
-        self.main_msg_id = None
+        if self.main_msg_id is not None:
+            await bot.delete_message(self.tgid, self.main_msg_id)
+            self.main_msg_id = None
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
         return await self.mode.handle_callback(call)
 
     async def handle_message(self, msg: Message) -> bool:
+        if msg.text == "/start":
+            await self.reset()
+            await sleep(0.5)
+            await msg.delete()
+            return True
         return await self.mode.handle_message(msg)
 
     async def handle_api_error(self, error) -> bool:
-        if self.um.handle_api_error(error):
-            return True
-        else:
-            return False
+        return False

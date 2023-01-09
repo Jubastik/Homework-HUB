@@ -1,5 +1,6 @@
 from aiogram.types import CallbackQuery, Message
 
+from services.restapi.api_error import ApiError
 
 class Stage:  # Abstract class
     name = "entry_stage"
@@ -19,6 +20,8 @@ class Stage:  # Abstract class
     async def activate(self, markup_args={}, text_args={}, **kwargs) -> int:
         from bot import bot
         args = await self.get_args()
+        if isinstance(args, ApiError):
+            return args
         markup_args = self.merge_args(args["markup_args"], markup_args)
         text_args = self.merge_args(args["text_args"], text_args)
 
@@ -34,6 +37,8 @@ class Stage:  # Abstract class
     async def new_message(self, markup_args={}, text_args={}, **kwargs) -> int:
         from bot import bot
         args = await self.get_args()
+        if isinstance(args, ApiError):
+            return args
         markup_args = self.merge_args(args["markup_args"], markup_args)
         text_args = self.merge_args(args["text_args"], text_args)
 
@@ -52,5 +57,6 @@ class Stage:  # Abstract class
         return False
 
     async def handle_api_error(self, error) -> bool:
-        if self.mode.handle_api_error(error):
+        handled = await self.mode.handle_api_error(error)
+        if handled:
             return True

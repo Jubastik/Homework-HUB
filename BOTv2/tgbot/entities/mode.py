@@ -14,12 +14,8 @@ class Mode:
         self.stages = {}  # {"stage_name": Stage()}
         self.current_stage: Stage = self.STAGES["entry_stage"](self)
         self.stage_num: int = self.STAGES_NAME_TO_NUM["entry_stage"]
-
-    async def reset(self):
-        if self.user.main_msg_id:
-            await self.user.delete_main_msg()
-        self.__init__(self.user)
-        # EntryStage.new_message() is required
+    
+    async def send_entry(self):
         msg_id = await self.current_stage.new_message()
         return msg_id
 
@@ -42,7 +38,8 @@ class Mode:
         return await self.current_stage.handle_message(msg)
 
     async def handle_api_error(self, error) -> bool:
-        if self.user.handle_api_error(error):
+        handled = await self.user.handle_api_error(error)
+        if handled:
             return True
         else:
             return False

@@ -21,6 +21,6 @@ class MenuStage(Stage):
     async def get_args(self) -> dict:
         admin = await is_admin(self.user.tgid)
         if isinstance(admin, ApiError):
-            self.handle_api_error(admin)
-            return self.user.main_msg_id
+            await self.handle_api_error(admin)
+            return admin
         return {"markup_args": {"is_admin": admin}, "text_args": {}}

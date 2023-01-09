@@ -165,5 +165,6 @@ BOT/bot.ini
 test.py
 API/alembic.ini
 API/alembic
+APIv2/database/APIv2.db
 
 .db

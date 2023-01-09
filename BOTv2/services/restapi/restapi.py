@@ -109,7 +109,7 @@ async def create_user(session, params, tg_id: int, name: str, class_token: int =
 
 
 @aiohttp_session
-async def create_class(session, params, tg_id: int, class_name: str, schedules=None, time_tables=None):
+async def create_class(session, params, tg_id: int, class_name: str, start_time:datetime.time, schedules=None):
     schedules = [{"lesson": "string", "day_of_week": "понедельник", "lesson_number": 1}]
     time_tables = [{"begin_time": "9:00", "end_time": "9:45", "lesson_number": 1}]
     # TODO: ↑↑↑ заглушка ↑↑↑

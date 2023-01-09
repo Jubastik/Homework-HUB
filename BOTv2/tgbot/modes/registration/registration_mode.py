@@ -1,8 +1,13 @@
 from asyncio import sleep
+from aiogram.types import User
 
 from tgbot.entities.mode import Mode
 
 from tgbot.modes.registration import *
+
+from services.restapi.api_error import ApiError
+from services.restapi import restapi
+from services.scripts import make_username
 
 
 class RegistrationMode(Mode):
@@ -35,18 +40,13 @@ class RegistrationMode(Mode):
             await self.set_stage(num)
             return True
         elif call.data == "register":
+            await self.register(call)
             return True
         return False
     
     async def handle_message(self, msg) -> bool:
-        if msg.text == "/start":
-            msg_id = await self.reset()
-            self.user.set_main_msg_id(msg_id)
-            await sleep(0.5)
-            await msg.delete()
-            return True
         handled = await self.current_stage.handle_message(msg) if self.current_stage else False
-        if handled:
+        if handled or isinstance(handled, ApiError):
             return True
         return False
     
@@ -61,4 +61,5 @@ class RegistrationMode(Mode):
         return None
 
     async def register(self, call):
-        pass
+        class_name = make_username(User.get_current())
+        await restapi.create_class(tg_id=self.user.id, class_name=class_name)

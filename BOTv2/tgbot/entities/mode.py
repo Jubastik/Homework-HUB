@@ -5,8 +5,8 @@ class Mode:
     STAGES = {
         "entry_stage": Stage,  # entry_stage is required
     }
-    STAGES_NUM_TO_NAME = {0: "entry_stage"}
-    STAGES_NAME_TO_NUM = {"entry_stage": 0}
+    STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
+    STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}
     STAGES_LEN = len(STAGES)
 
     def __init__(self, user):
@@ -14,13 +14,20 @@ class Mode:
         self.stages = {}  # {"stage_name": Stage()}
         self.current_stage: Stage = self.STAGES["entry_stage"](self)
         self.stage_num: int = self.STAGES_NAME_TO_NUM["entry_stage"]
-        self.storage = {}  # data for stages
+
+    async def reset(self):
+        if self.user.main_msg_id:
+            await self.user.delete_main_msg()
+        self.__init__(self.user)
+        # EntryStage.new_message() is required
+        msg_id = await self.current_stage.new_message()
+        return msg_id
 
     async def set_stage(self, stage: str | int) -> int:
         if isinstance(stage, int):
             stage = min(self.STAGES_LEN - 1, max(0, stage))
             stage = self.STAGES_NUM_TO_NAME[stage]
-            
+
         if stage in self.stages:
             self.current_stage = self.stages[stage]
         else:
@@ -34,5 +41,8 @@ class Mode:
     async def handle_message(self, msg) -> bool:
         return await self.current_stage.handle_message(msg)
 
-    def handle_api_error(self, error) -> bool:
-        return False
+    async def handle_api_error(self, error) -> bool:
+        if self.user.handle_api_error(error):
+            return True
+        else:
+            return False

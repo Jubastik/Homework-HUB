@@ -3,7 +3,7 @@ import datetime
 from CONSTANTS import WEEKDAYS, WEEKDAYS_TRASNLATE
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
-from services.restapi.restapi import get_user_by_id
+# from services.restapi.restapi import get_user_by_id
 
 
 def time_is_correct(time: list):

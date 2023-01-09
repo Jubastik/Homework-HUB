@@ -1,15 +1,15 @@
 # TODO:
 
 # CHECKERS:
-# is_student
-# is_admin
+# !is_student
+# !is_admin
 # is_developer
-# is_lessons_in_saturday
+# !is_lessons_in_saturday
 # get_user_by_id
 
 # Register:
-# register_user
-# register_class
+# !register_user
+# !register_class
 # ban_user
 
 # UPDATE:
@@ -18,20 +18,20 @@
 #
 
 # POST:
-# add_homework
+# !add_homework
 
 
 # GET:
-# get_class
+# !get_class
 # get_subjects_by_time
-# get_homework
-# get_schedule_on_date
+# !get_homework
+# !get_schedule_on_date
 # get_names_classmates
-# get_student_info
+# !get_student_info
 # get_all_users
-# get_shedule
+# !get_shedule
 # get_ban_list
-# get_study_days
+# !get_study_days (day of week)
 #
 
 # DELETE:
@@ -82,3 +82,7 @@ async def is_student(session, params, tg_id):
             return False
         else:
             return ApiError(status, await response.json())
+
+
+async def is_admin(tg_id):
+    return True

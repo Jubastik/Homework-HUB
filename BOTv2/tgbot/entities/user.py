@@ -15,6 +15,12 @@ class User:
     
     def set_main_msg_id(self, msg_id: int) -> None:
         self.main_msg_id = msg_id
+    
+    async def delete_main_msg(self) -> None:
+        from bot import bot
+
+        await bot.delete_message(self.tgid, self.main_msg_id)
+        self.main_msg_id = None
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
         return await self.mode.handle_callback(call)
@@ -22,5 +28,8 @@ class User:
     async def handle_message(self, msg: Message) -> bool:
         return await self.mode.handle_message(msg)
 
-    def handle_api_error(self, error) -> bool:
-        return False
+    async def handle_api_error(self, error) -> bool:
+        if self.um.handle_api_error(error):
+            return True
+        else:
+            return False

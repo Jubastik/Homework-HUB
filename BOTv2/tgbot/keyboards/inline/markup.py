@@ -1,4 +1,5 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton
+import aiogram.types as types
 from tgbot.keyboards.inline.callback_data import (
     ArrowsData,
     CheckHomework,
@@ -6,6 +7,10 @@ from tgbot.keyboards.inline.callback_data import (
     StudentsData,
     SubjectData,
 )
+
+class InlineKeyboardMarkup(types.InlineKeyboardMarkup):
+    def __call__(self, *args, **kwargs):
+        return self
 
 
 # | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager |

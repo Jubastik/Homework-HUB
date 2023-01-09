@@ -6,6 +6,7 @@ class TextKeys:
     wrong_time = "wrong_time"
     status_time_changed = "status_time_changed"
     shedule_stage = "shedule_stage"
+    status_subject_added = "status_subject_added"
 
     by_link_success = "by_link_success"
     hello = "hello"

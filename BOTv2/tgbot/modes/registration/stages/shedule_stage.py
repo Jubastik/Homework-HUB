@@ -23,19 +23,11 @@ class SheduleStage(Stage):
         self.day_tag = WEEKDAYS_TRASNLATE[self.day_name]
         self.shedule = [None] * 8
         self.markup = get_markup_shedule_stage
+        self.text = lambda *args, **kwargs: process_text(TextKeys.shedule_stage, **kwargs)
         self.max_len = 4  # max len of subject name. Default 4 because "1) -"
-
-    async def activate(self, status=""):
-        await bot.edit_message_text(
-            chat_id=self.user.tgid,
-            message_id=self.user.main_msg_id,
-            text=process_text(
-                TextKeys.shedule_stage,
-                **self.get_text(),
-                status=status,
-            ),
-            reply_markup=self.markup(SUBJECTS + self.mode.storage["subjects"]),
-        )
+    
+    async def get_args(self) -> dict:
+        return {"text_args": {**self.get_text()}, "markup_args": {"subjects": SUBJECTS + self.mode.get_subjects()}}
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
         if "up_or_down" in call.data:

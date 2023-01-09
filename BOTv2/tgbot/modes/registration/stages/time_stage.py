@@ -14,13 +14,6 @@ from tgbot.keyboards.inline.markup import (
     markup_subjects_stage,
     get_markup_shedule_stage,
 )
-from tgbot.FSM.states import RegistrationStates, StudentMenu
-from services.restapi.restapi import (
-    get_student_info,
-    is_admin,
-    register_class,
-    register_user,
-)
 from services.scripts import convert_time, make_username, time_is_correct
 from CONSTANTS import SUBJECTS, WEEKDAYS
 from services.sub_classes import RestErorr
@@ -33,24 +26,27 @@ class TimeStage(Stage):
 
     def __init__(self, mode) -> None:
         super().__init__(mode)
-        self.mode.storage["start_time"] = self.mode.storage.get("start_time", time(hour=9, minute=0))
+        self.time = time(hour=9, minute=0)
         self.markup = markup_registration_default
-        self.text = lambda status="": process_text(
+        self.text = lambda *args, **kwargs: process_text(
             TextKeys.start_time_check,
-            time=self.mode.storage["start_time"].strftime("%H:%M"),
-            status=status,
+            **kwargs,
         )
+
+    async def get_args(self) -> dict:
+        return {"text_args": {"time": self.time.strftime("%H:%M"), "status": ""}, "markup_args": {}}
 
     async def handle_message(self, msg: Message):
         if time_is_correct(msg.text):
-            self.mode.storage["start_time"] = convert_time(msg.text)
-            await self.activate(status=process_text(TextKeys.status_time_changed, msg))
+            self.time = convert_time(msg.text)
+            await self.activate(text_args={"status": process_text(TextKeys.status_time_changed, msg)})
             await sleep(1)
             await msg.delete()
         else:
-            await self.activate(status=process_text(TextKeys.wrong_time, msg))
+            await self.activate(text_args={"status": process_text(TextKeys.wrong_time, msg)})
             await sleep(1)
             await msg.delete()
+        return True
 
     def get_time(self):
         return self.time

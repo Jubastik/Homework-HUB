@@ -22,12 +22,13 @@ class UsersManager:
     async def _restore_user(self, userid: int) -> User:
         # import here to avoid circular imports
         from tgbot.modes.registration.registration_mode import RegistrationMode
+        from tgbot.modes.student.student_mode import StudentMode
 
         # try to restore user from database
         # if user is not in database, create new user
         # TODO: try to find main message id and his state
         user = User(self, userid)
-        mode = RegistrationMode(user)
+        mode = StudentMode(user)
         user.set_mode(mode)
         self.users[userid] = user
         return user
@@ -61,6 +62,3 @@ class UsersManager:
         handled = await user.handle_callback(call)
         if not handled:
             pass
-
-    def handle_api_error(self, error) -> None:
-        pass

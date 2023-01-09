@@ -5,17 +5,8 @@ from tgbot.entities.stage import Stage
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 from tgbot.keyboards.inline.markup import (
-    markup_join_by_id_stage,
-    get_markup_student_menu,
-)
-from services.restapi.restapi import (
-    is_admin,
-    register_user,
-)
+    markup_join_by_id_stage)
 from services.scripts import make_username
-from services.sub_classes import RestErorr
-
-from bot import bot
 
 
 class JoinByIdStage(Stage):
@@ -23,7 +14,7 @@ class JoinByIdStage(Stage):
 
     def __init__(self, mode) -> None:
         super().__init__(mode)
-        self.markup = markup_join_by_id_stage
+        self.markup = lambda *args, **kwargs: markup_join_by_id_stage
         self.text = lambda *args, **kwargs: process_text(TextKeys.get_class_token, status=kwargs.get("status", ""))
 
     async def handle_message(self, msg: Message) -> bool:

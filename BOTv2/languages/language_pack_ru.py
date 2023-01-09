@@ -45,8 +45,6 @@ class LanguageRussian:
 """
     hello = """
 Привет, давай зарегестрируем тебя!
-
-{status}
 """
     start_time_check = """
 Начало уроков в <i><b>{time}</b></i>

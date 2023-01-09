@@ -8,7 +8,7 @@ from tgbot.modes.registration import *
 class RegistrationMode(Mode):
     STAGES = {
         "join_by_id_stage": JoinByIdStage,
-        "entry_stage": EntryStage,
+        "entry_stage": StartStage,
         "time_stage": TimeStage,
         "subjects_stage": SubjectsStage,
         "shedule_stage0": lambda *args, **kwargs: SheduleStage(*args, **kwargs, day=0),
@@ -18,30 +18,8 @@ class RegistrationMode(Mode):
         "shedule_stage4": lambda *args, **kwargs: SheduleStage(*args, **kwargs, day=4),
         "shedule_stage5": lambda *args, **kwargs: LastSheduleStage(*args, **kwargs, day=5),
     }
-    STAGES_NUM_TO_NAME = {
-        1: "entry_stage",
-        0: "join_by_id_stage",
-        2: "time_stage",
-        3: "subjects_stage",
-        4: "shedule_stage0",
-        5: "shedule_stage1",
-        6: "shedule_stage2",
-        7: "shedule_stage3",
-        8: "shedule_stage4",
-        9: "shedule_stage5",
-    }
-    STAGES_NAME_TO_NUM = {
-        "entry_stage": 1,
-        "join_by_id_stage": 0,
-        "time_stage": 2,
-        "subjects_stage": 3,
-        "shedule_stage0": 4,
-        "shedule_stage1": 5,
-        "shedule_stage2": 6,
-        "shedule_stage3": 7,
-        "shedule_stage4": 8,
-        "shedule_stage5": 9,
-    }
+    STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
+    STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}
     STAGES_LEN = len(STAGES)
 
     async def handle_callback(self, call) -> bool:
@@ -57,12 +35,12 @@ class RegistrationMode(Mode):
             await self.set_stage(num)
             return True
         elif call.data == "register":
-            pass
+            return True
         return False
     
     async def handle_message(self, msg) -> bool:
         if msg.text == "/start":
-            msg_id = await self.set_stage("entry_stage")
+            msg_id = await self.reset()
             self.user.set_main_msg_id(msg_id)
             await sleep(0.5)
             await msg.delete()
@@ -71,6 +49,16 @@ class RegistrationMode(Mode):
         if handled:
             return True
         return False
+    
+    def get_subjects(self):
+        if self.stages["subjects_stage"]:
+            return self.stages["subjects_stage"].get_subjects()
+        return []
+    
+    def get_time(self):
+        if self.stages["time_stage"]:
+            return self.stages["time_stage"].get_time()
+        return None
 
     async def register(self, call):
         pass

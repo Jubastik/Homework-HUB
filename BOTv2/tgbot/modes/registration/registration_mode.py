@@ -70,5 +70,5 @@ class RegistrationMode(Mode):
         print("tg_id:", self.user.tgid)
         print("class_name:", class_name)
         print("start_time:", self.get_time())
-        await restapi.create_class(tg_id=self.user.tgid, class_name=class_name, shedule=shedule, start_time=self.get_time())
+        await restapi.create_class(tg_id=self.user.tgid, class_name=class_name, schedules=shedule, start_time=self.get_time())
         await self.user.setup()

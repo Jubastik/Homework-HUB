@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 
@@ -16,6 +17,7 @@ from services.everyday_mailing import activate_hw_mailing
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
+    from pprint import pprint
     from services.restapi.restapi import (
         get_user,
         is_student,
@@ -25,12 +27,16 @@ async def on_startup(dp):
         get_class,
         get_schedule,
         get_study_week_days,
+        get_current_lessons,
+        get_next_lesson_date,
+        create_homework,
+        get_homework,
     )
     from services.restapi.formatters import create_time_tables
     from datetime import time
 
-    # now_date = time(hour=9, minute=0)
-    # data = create_time_tables(now_date)
+    # now_date = datetime.date(2023, 1, 10)
+    # data = await get_homework(472803385, now_date)
     # pprint(data)
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске

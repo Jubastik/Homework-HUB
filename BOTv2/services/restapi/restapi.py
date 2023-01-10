@@ -216,13 +216,13 @@ async def create_homework(
     session,
     params,
     tg_id: int,
-    lessons: str,
+    lesson: str,
     date: datetime.date,
     text_homework: str = None,
     photo_tg_ids: list[int] = None,
 ):
     params = add_tg_id(params, tg_id)
-    json = {"author_tg_id": tg_id, "lesson": lessons, "date": date}
+    json = {"author_tg_id": tg_id, "lesson": lesson, "date": date}
     if text_homework is not None:
         json["text_homework"] = text_homework
     if photo_tg_ids is not None:

@@ -20,11 +20,11 @@ class User:
         self.um = um
         self.main_msg_id = main_msg_id
         # TODO: language
-    
+
     async def setup(self, mode: Mode = None) -> None:
         if mode is not None:
             self.mode = mode
-        else:       
+        else:
             is_student = await restapi.is_student(self.tgid)
             if isinstance(is_student, ApiError):
                 await self.handle_api_error(is_student)
@@ -37,17 +37,18 @@ class User:
             await self.mode.set_stage("entry_stage")
         else:
             self.main_msg_id = await self.mode.send_entry()
-    
+
     async def reset(self, mode: Mode = None) -> None:
         await self.delete_main_msg()
         await self.setup(mode)
-    
+
     async def change_mode(self, mode: str) -> None:
         self.mode = self.MODES[mode](self)
         await self.mode.set_stage("entry_stage")
-    
+
     async def delete_main_msg(self) -> None:
         from bot import bot
+
         if self.main_msg_id is not None:
             await bot.delete_message(self.tgid, self.main_msg_id)
             self.main_msg_id = None

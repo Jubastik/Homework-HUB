@@ -22,7 +22,7 @@ class TextKeys:
     add_time = "add_time"
     uncorrect_time = "uncorrect_time"
     correct_time = "correct_time"
-    register_done = "register_done"
+    register_done1 = "register_done1"
     register_done2 = "register_done2"
 
     menu = "menu"

@@ -1,6 +1,5 @@
 import logging
 import os
-from pprint import pprint
 
 from aiogram.utils import executor
 from dotenv import load_dotenv
@@ -30,9 +29,9 @@ async def on_startup(dp):
     from services.restapi.formatters import create_time_tables
     from datetime import time
 
-    now_date = time(hour=9, minute=0)
-    data = create_time_tables(now_date)
-    pprint(data)
+    # now_date = time(hour=9, minute=0)
+    # data = create_time_tables(now_date)
+    # pprint(data)
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске
         chat_id = os.getenv("TG_ADMIN_CHAT")

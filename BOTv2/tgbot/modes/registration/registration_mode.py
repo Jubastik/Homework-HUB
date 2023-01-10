@@ -22,6 +22,8 @@ class RegistrationMode(Mode):
         "shedule_stage3": lambda *args, **kwargs: SheduleStage(*args, **kwargs, day=3),
         "shedule_stage4": lambda *args, **kwargs: SheduleStage(*args, **kwargs, day=4),
         "shedule_stage5": lambda *args, **kwargs: LastSheduleStage(*args, **kwargs, day=5),
+        "register_done1": RegisterDoneStage1,
+        "register_done2": RegisterDoneStage2,
     }
     STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
     STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}
@@ -66,10 +68,6 @@ class RegistrationMode(Mode):
         for i in range(6):
             if f"shedule_stage{i}" in self.stages:
                 shedule += self.stages[f"shedule_stage{i}"].get_shedule()
-        print("SHEDULE:", shedule)
-        print("tg_id:", self.user.tgid)
-        print("class_name:", class_name)
-        print("start_time:", self.get_time())
         await restapi.create_user(tg_id=self.user.tgid, name=class_name)
-        await restapi.create_class(tg_id=self.user.tgid, class_name=class_name, schedules=shedule, start_time=self.get_time())
-        await self.user.setup()
+        self.students_class = await restapi.create_class(tg_id=self.user.tgid, class_name=class_name, schedules=shedule, start_time=self.get_time())
+        await self.set_stage("register_done1")

@@ -59,6 +59,10 @@ markup_join_by_id_stage = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="next")]]
 )
 
+markup_next = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Далее", callback_data="next")]]
+)
+
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
 

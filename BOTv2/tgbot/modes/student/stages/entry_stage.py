@@ -24,3 +24,5 @@ class MenuStage(Stage):
         elif call.data == "my_shedule":
             await self.mode.set_stage("shedule")
             return True
+        elif call.data == "add_homework":
+            await self.mode.set_stage("fast_add")

@@ -33,11 +33,6 @@ class SendHwStage(Stage):
                 date = self.mode.get_date()
                 for i in self.messages:
                     await bot.delete_message(self.user.tgid, i)
-                print("tgid", self.user.tgid)
-                print("lesson", subject, "type:", type(subject))
-                print("date", date, "type:", type(date))
-                print("txt", self.hw_txt)
-                print("photos", self.hw_photos)
                 created = await restapi.create_homework(self.user.tgid, subject, date, self.hw_txt, self.hw_photos)
                 if isinstance(created, ApiError):
                     pass

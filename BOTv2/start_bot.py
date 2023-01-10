@@ -35,9 +35,6 @@ async def on_startup(dp):
     from services.restapi.formatters import create_time_tables
     from datetime import time
 
-    # now_date = datetime.date(2023, 1, 10)
-    # data = await get_homework(472803385, now_date)
-    # pprint(data)
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске
         chat_id = os.getenv("TG_ADMIN_CHAT")

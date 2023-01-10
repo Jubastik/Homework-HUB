@@ -188,6 +188,29 @@ async def is_lessons_in_saturday(session, params, tg_id: int):
         return ApiError(status, json)
 
 
+@aiohttp_session
+async def get_current_lessons(session, params, tg_id: int):
+    params = add_tg_id(params)
+    async with session.get(URL_SCHEDULE + "current_schedule/" + str(tg_id), params=params) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def get_next_lesson_date(session, params, tg_id: int, lessons: list[str]):
+    params = add_tg_id(params)
+    params['lessons'] = lessons
+    async with session.get(URL_SCHEDULE + "next_date/" + str(tg_id), params=params) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
 # TODO:
-async def current_lesson(tgid: int, date:datetime.date, subject):
+async def current_lesson(tgid: int, date: datetime.date, subject):
     return datetime.date(2023, 1, 16)

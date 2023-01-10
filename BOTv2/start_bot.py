@@ -16,6 +16,7 @@ from services.everyday_mailing import activate_hw_mailing
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
+    from pprint import pprint
     from services.restapi.restapi import (
         get_user,
         is_student,
@@ -25,12 +26,14 @@ async def on_startup(dp):
         get_class,
         get_schedule,
         get_study_week_days,
+        get_current_lessons,
+        get_next_lesson_date,
     )
     from services.restapi.formatters import create_time_tables
     from datetime import time
 
     # now_date = time(hour=9, minute=0)
-    # data = create_time_tables(now_date)
+    # data = await get_next_lesson_date(472803385, ['Обществознание⚖', 'Химия🧪'])
     # pprint(data)
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске

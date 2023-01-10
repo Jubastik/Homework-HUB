@@ -47,7 +47,7 @@ from services.restapi.api_error import ApiError
 from services.restapi.formatters import f_days_from_schedules, create_time_tables
 from services.restapi.session import aiohttp_session, add_tg_id
 
-from services.restapi.URLS import URL_STUDENT, URL_CLASS, URL_SCHEDULE
+from services.restapi.URLS import URL_STUDENT, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK
 
 
 async def _get_user(session, params, tg_id: int):
@@ -202,8 +202,43 @@ async def get_current_lessons(session, params, tg_id: int):
 @aiohttp_session
 async def get_next_lesson_date(session, params, tg_id: int, lessons: list[str]):
     params = add_tg_id(params)
-    params['lessons'] = lessons
+    params["lessons"] = lessons
     async with session.get(URL_SCHEDULE + "next_date/" + str(tg_id), params=params) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def create_homework(
+    session,
+    params,
+    tg_id: int,
+    lessons: str,
+    date: datetime.date,
+    text_homework: str = None,
+    photo_tg_ids: list[int] = None,
+):
+    params = add_tg_id(params, tg_id)
+    json = {"author_tg_id": tg_id, "lesson": lessons, "date": date}
+    if text_homework is not None:
+        json["text_homework"] = text_homework
+    if photo_tg_ids is not None:
+        json["photo_tg_id"] = photo_tg_ids
+    async with session.post(URL_HOMEWORK, params=params, json=json) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def get_homework(session, params, tg_id: int, date: datetime.date):
+    params = add_tg_id(params, tg_id)
+    async with session.get(URL_HOMEWORK + str(date), params=params) as response:
         status = response.status
         if status == 200:
             return await response.json()

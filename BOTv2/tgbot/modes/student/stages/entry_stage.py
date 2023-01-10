@@ -1,5 +1,6 @@
-from tgbot.entities.stage import Stage
+from aiogram.types import CallbackQuery
 
+from tgbot.entities.stage import Stage
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 from tgbot.keyboards.inline.markup import (
@@ -15,10 +16,8 @@ class MenuStage(Stage):
         super().__init__(mode)
         self.text = lambda *args, **kwargs: process_text(TextKeys.menu, **kwargs)
         self.markup = get_markup_student_menu
-
-    async def get_args(self) -> dict:
-        admin = await is_admin(self.user.tgid)
-        if isinstance(admin, ApiError):
-            await self.handle_api_error(admin)
-            return admin
-        return {"markup_args": {"is_admin": admin}, "text_args": {}}
+    
+    async def handle_callback(self, call: CallbackQuery) -> bool:
+        if call.data == "add_on_date":
+            await self.mode.set_stage("choose_date")
+            return True

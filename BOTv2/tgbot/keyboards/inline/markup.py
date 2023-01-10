@@ -8,6 +8,7 @@ from tgbot.keyboards.inline.callback_data import (
     SubjectData,
 )
 
+
 class InlineKeyboardMarkup(types.InlineKeyboardMarkup):
     def __call__(self, *args, **kwargs):
         return self
@@ -24,11 +25,7 @@ markup_registration_default = InlineKeyboardMarkup(inline_keyboard=[DEFAULT_REGI
 
 markup_subjects_stage = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="Удалить добавленный предмет", callback_data="remove"
-            )
-        ],
+        [InlineKeyboardButton(text="Удалить добавленный предмет", callback_data="remove")],
         DEFAULT_REGISTRATION,
     ]
 )
@@ -42,11 +39,7 @@ def get_markup_shedule_stage(subjects, last_day=False):
     keyboard.insert(InlineKeyboardButton(text="Удалить", callback_data="remove"))
     keyboard.insert(InlineKeyboardButton(text="Вниз ↓", callback_data=ArrowsData.new(num=1)))
     for subject in subjects:
-        keyboard.insert(
-            InlineKeyboardButton(
-                text=subject, callback_data=SubjectData.new(name=subject)
-            )
-        )
+        keyboard.insert(InlineKeyboardButton(text=subject, callback_data=SubjectData.new(name=subject)))
     if last_day:
         keyboard.add(InlineKeyboardButton(text="< Назад", callback_data="back"))
     else:
@@ -59,9 +52,7 @@ markup_join_by_id_stage = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="next")]]
 )
 
-markup_next = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text="Далее", callback_data="next")]]
-)
+markup_next = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Далее", callback_data="next")]])
 
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
@@ -76,9 +67,7 @@ markup_start = InlineKeyboardMarkup(
     ]
 )
 
-markup_back = InlineKeyboardMarkup(
-    inline_keyboard=[InlineKeyboardButton(text="Назад", callback_data="back")]
-)
+markup_back = InlineKeyboardMarkup(inline_keyboard=[InlineKeyboardButton(text="Назад", callback_data="back")])
 
 markup_yes_or_no = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -93,18 +82,12 @@ markup_yes_or_no = InlineKeyboardMarkup(
 markup_check_subjects1 = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Продолжить", callback_data="Check_Subjects_okey")],
-        [
-            InlineKeyboardButton(
-                text="Отмена действия", callback_data="Check_Subjects_undo"
-            )
-        ],
+        [InlineKeyboardButton(text="Отмена действия", callback_data="Check_Subjects_undo")],
         [InlineKeyboardButton(text="Назад", callback_data="back")],
     ]
 )
 markup_shedule2 = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Готово", callback_data="shedule_done")]
-    ]
+    inline_keyboard=[[InlineKeyboardButton(text="Готово", callback_data="shedule_done")]]
 )
 
 
@@ -131,11 +114,7 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
 markup_profile = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
-        [
-            InlineKeyboardButton(
-                text="История домашки", callback_data="get_homework_history"
-            )
-        ],
+        [InlineKeyboardButton(text="История домашки", callback_data="get_homework_history")],
         [InlineKeyboardButton(text="Моё расписание", callback_data="get_shedule")],
         [InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account")],
     ]
@@ -150,34 +129,28 @@ markup_add_homework = InlineKeyboardMarkup(
 )
 
 
-def get_markup_student_menu(is_admin) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(text="Добавить дз📌", callback_data="add_homework"),
-                InlineKeyboardButton(text="Получить дз🔍", callback_data="get_homework"),
-            ],
-            [InlineKeyboardButton(text="Профиль👤", callback_data="profile")],
-        ]
+def get_markup_student_menu(subjects=[]) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    for subject in subjects:
+        keyboard.insert(InlineKeyboardButton(text=subject))
+    keyboard.add(
+            InlineKeyboardButton(text="Добавить дз📌", callback_data="add_homework"),
+            InlineKeyboardButton(text="Домашка на завтра⚡️", callback_data="get_next_date_hw"),
     )
-    if is_admin:
-        keyboard.add(InlineKeyboardButton(text="Класс⭐️", callback_data="class_menu"))
+    keyboard.add(
+            InlineKeyboardButton(text="Добавить на дату📆", callback_data="add_on_date"),
+            InlineKeyboardButton(text="Получить дз🔍", callback_data="get_homework"),
+    )
+    keyboard.add(InlineKeyboardButton(text="Моё расписание📚", callback_data="my_shedule"))
+    keyboard.add(InlineKeyboardButton(text="Профиль👤", callback_data="profile"))
 
     return keyboard
 
 
 markup_check_homework = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="Да, все верно", callback_data=CheckHomework.new(boolean="true")
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="Нет", callback_data=CheckHomework.new(boolean="false")
-            )
-        ],
+        [InlineKeyboardButton(text="Да, все верно", callback_data=CheckHomework.new(boolean="true"))],
+        [InlineKeyboardButton(text="Нет", callback_data=CheckHomework.new(boolean="false"))],
     ]
 )
 markup_done = InlineKeyboardMarkup(
@@ -229,16 +202,12 @@ markup_get_homework = InlineKeyboardMarkup(
     ]
 )
 markup_menu = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Вернуться в меню", callback_data="menu")]
-    ]
+    inline_keyboard=[[InlineKeyboardButton(text="Вернуться в меню", callback_data="menu")]]
 )
 
 
 markup_error_menu = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Вернуться в меню", callback_data="error_menu")]
-    ]
+    inline_keyboard=[[InlineKeyboardButton(text="Вернуться в меню", callback_data="error_menu")]]
 )
 
 
@@ -246,11 +215,7 @@ markup_class_panel = InlineKeyboardMarkup(
     inline_keyboard=[
         # [InlineKeyboardButton(text="Рассылка", callback_data="mailing")],
         [InlineKeyboardButton(text="Сменить токен", callback_data="remove_token")],
-        [
-            InlineKeyboardButton(
-                text="Добавить администратора", callback_data="add_admin"
-            )
-        ],
+        [InlineKeyboardButton(text="Добавить администратора", callback_data="add_admin")],
         [InlineKeyboardButton(text="Разбанить одноклассника", callback_data="unban")],
         [InlineKeyboardButton(text="Забанить одноклассника", callback_data="ban")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
@@ -260,40 +225,22 @@ markup_class_panel = InlineKeyboardMarkup(
 
 markup_mailing_disabled = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="Изменить время рассылки", callback_data="change_time"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="Включить рассылку", callback_data="enable_mailing"
-            )
-        ],
+        [InlineKeyboardButton(text="Изменить время рассылки", callback_data="change_time")],
+        [InlineKeyboardButton(text="Включить рассылку", callback_data="enable_mailing")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
 )
 
 markup_mailing_enabled = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="Изменить время рассылки", callback_data="change_time"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="Отключить рассылку", callback_data="disable_mailing"
-            )
-        ],
+        [InlineKeyboardButton(text="Изменить время рассылки", callback_data="change_time")],
+        [InlineKeyboardButton(text="Отключить рассылку", callback_data="disable_mailing")],
         [InlineKeyboardButton(text="Меню", callback_data="menu")],
     ]
 )
 
 
-markup_back = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="back")]]
-)
+markup_back = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="back")]])
 
 
 def get_markup_classmates(data):
@@ -330,7 +277,5 @@ markup_developer_mailingcheck = InlineKeyboardMarkup(
     ]
 )
 makrup_group_menu = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Получить домашку", callback_data="get_homework")]
-    ]
+    inline_keyboard=[[InlineKeyboardButton(text="Получить домашку", callback_data="get_homework")]]
 )

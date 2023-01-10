@@ -10,6 +10,7 @@ class StudentMode(Mode):
         "choose_date": ChooseDate,
         "choose_subject": ChooseSubject,
         "send_hw": SendHwStage,
+        "shedule": Schedule,
     }
     STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
     STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}

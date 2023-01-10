@@ -21,3 +21,6 @@ class MenuStage(Stage):
         if call.data == "add_on_date":
             await self.mode.set_stage("choose_date")
             return True
+        elif call.data == "my_shedule":
+            await self.mode.set_stage("shedule")
+            return True

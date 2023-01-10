@@ -1,6 +1,7 @@
 
 
 class TextKeys:
+    empty = "empty"
     unexpected_message = "unexpected_message"
     wrong_class_token = "wrong_class_token"
     wrong_time = "wrong_time"

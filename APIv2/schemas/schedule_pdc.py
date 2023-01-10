@@ -21,8 +21,9 @@ class ScheduleReturn(ScheduleBase):
         orm_mode = True
 
 
-class ScheduleCurrentReturn(ScheduleReturn):
-    lesson_date: datetime.date | None
+class ScheduleLessonsReturn(BaseModel):
+    name: str
+    date: datetime.date
 
 
 class ScheduleCreate(ScheduleBase):

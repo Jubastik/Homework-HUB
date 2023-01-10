@@ -187,6 +187,7 @@ async def is_lessons_in_saturday(session, params, tg_id: int):
     else:
         return ApiError(status, json)
 
+
 # TODO:
 async def current_lesson(tgid: int, date:datetime.date, subject):
     return datetime.date(2023, 1, 16)

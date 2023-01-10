@@ -3,7 +3,9 @@ import datetime
 import sqlalchemy
 from sqlalchemy import orm
 from sqlalchemy.orm import Session
+from starlette import status
 
+import my_err
 from .db_session import SqlAlchemyBase
 from .lessons import Lesson
 from .week_days import WeekDay
@@ -37,9 +39,13 @@ class Schedule(SqlAlchemyBase):
             .order_by(Schedule.day_id)
             .all()
         )
+        if not schedules:
+            raise my_err.APIError(
+                status.HTTP_404_NOT_FOUND, my_err.HOMEWORK_NO_SUCH_LESSON, f"Lesson '{lesson_name}' not found"
+            )
         days = [_[0] for _ in schedules]
-        now = datetime.datetime.now().weekday() +  1
-        for i in range(now, 8):
+        now = datetime.datetime.now().weekday() + 1
+        for i in range(now + 1, 8):
             if i in days:
                 return datetime.date.today() + datetime.timedelta(days=i - now)
         for i in range(1, now):

@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends
 from api.dependencies import process_user_id
 from schemas.homework_pdc import HomeworkReturn, HomeworkCreate
 from schemas.parser_pdc import ParserReturn, ParserCreate
-from services.homework import HomeworkService
+from service.homework import HomeworkService
 from datetime import date
 
-from services.parser import ParserService
+from service.parser import ParserService
 
 router = APIRouter(
     prefix="/parser",

@@ -8,8 +8,8 @@ from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
 )
 
-from services.restapi.restapi import is_admin
-from services.restapi.api_error import ApiError
+from service.restapi.restapi import is_admin
+from service.restapi.api_error import ApiError
 
 
 class MenuStage(Stage):

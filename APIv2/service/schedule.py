@@ -12,7 +12,7 @@ from database.students import Student
 from database.time_tables import TimeTable
 from database.week_days import WeekDay
 from my_err import APIError
-from services.CONSTANTS import day_id_to_weekday
+from service.CONSTANTS import day_id_to_weekday
 
 
 class ScheduleService:

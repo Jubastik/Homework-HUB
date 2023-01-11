@@ -1,6 +1,6 @@
 from aiogram.types import CallbackQuery, Message
 
-from services.restapi.api_error import ApiError
+from service.restapi.api_error import ApiError
 
 class Stage:  # Abstract class
     name = "entry_stage"

@@ -6,7 +6,7 @@ from starlette import status
 from api.dependencies import process_user_id, process_class_id
 from schemas.ban_list_pdc import BanListReturn, BanListUserReturn
 from schemas.student_pdc import IdType
-from services.ban_list import BanListService
+from service.ban_list import BanListService
 
 router = APIRouter(
     prefix="/ban",

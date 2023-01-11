@@ -13,7 +13,7 @@ from CONSTANTS import (
     URL_USER,
     WEEKDAYS,
 )
-from services.sub_classes import SheduleData
+from service.sub_classes import SheduleData
 
 
 async def is_student(tguser_id):

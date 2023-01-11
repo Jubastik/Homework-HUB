@@ -5,7 +5,7 @@ from starlette import status
 
 from api.dependencies import process_user_id, optional_process_user_id
 from schemas.student_pdc import StudentReturn, StudentCreate, StudentUpdate
-from services.student import StudentService
+from service.student import StudentService
 
 router = APIRouter(
     prefix="/student",

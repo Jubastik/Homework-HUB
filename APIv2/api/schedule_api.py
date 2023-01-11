@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from api.dependencies import process_class_id
 from schemas.schedule_pdc import ScheduleReturn, ScheduleLessonsReturn
-from services.schedule import ScheduleService
+from service.schedule import ScheduleService
 
 router = APIRouter(
     prefix="/schedule",

@@ -4,9 +4,9 @@ import my_err
 from my_err import APIError
 from schemas.class_pdc import ExtendedIdType
 from schemas.student_pdc import IdType
-from services.ban_list import BanListService
-from services.my_class import MyClassService
-from services.student import StudentService
+from service.ban_list import BanListService
+from service.my_class import MyClassService
+from service.student import StudentService
 from settings import settings
 
 

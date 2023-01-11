@@ -6,9 +6,9 @@ from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 from tgbot.keyboards.inline.markup import (
     markup_join_by_id_stage)
-from services.scripts import make_username
-from services.restapi.restapi import create_user
-from services.restapi.api_error import ApiError
+from service.scripts import make_username
+from service.restapi.restapi import create_user
+from service.restapi.api_error import ApiError
 
 
 class JoinByIdStage(Stage):

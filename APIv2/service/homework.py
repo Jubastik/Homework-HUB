@@ -18,8 +18,8 @@ from database.week_days import WeekDay
 from my_err import APIError
 from schemas.homework_pdc import HomeworkCreate
 from schemas.student_pdc import IdType
-from services.CONSTANTS import day_id_to_weekday
-from services.student import StudentService
+from service.CONSTANTS import day_id_to_weekday
+from service.student import StudentService
 
 
 class HomeworkService:

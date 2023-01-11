@@ -7,8 +7,8 @@ from languages.text_proccesor import process_text
 
 from tgbot.keyboards.inline.markup import get_subjects_markup
 
-from services.restapi import restapi
-from services.restapi.api_error import ApiError
+from service.restapi import restapi
+from service.restapi.api_error import ApiError
 
 
 class FastChooseData(Stage):

@@ -29,6 +29,7 @@ class Mode:
         else:
             self.stages[stage] = self.current_stage = self.STAGES[stage](self)
         main_msg_id = await self.stages[stage].activate()
+        self.stage_num = self.STAGES_NAME_TO_NUM[stage]
         return main_msg_id
 
     async def handle_callback(self, call) -> bool:

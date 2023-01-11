@@ -63,25 +63,25 @@ def generate_dates_back(weekdays) -> list:
     return dates
 
 
-async def convert_homework(data, callback) -> dict:
+def convert_homework(data, callback) -> dict:
     res = []
-    for lesson, lesson_data in data.items():
-        for data in lesson_data:
-            # Формирование текста и фото
-            txt = data["text"] if data["text"] is not None else ""
-            author_data = await get_user_by_id(data["author"])
-            author_name = author_data["data"]["name"]
-            info = {
-                "text": process_text(
-                    TextKeys.homework_txt,
-                    callback,
-                    subject=lesson,
-                    author=author_name,
-                    txt=txt,
-                ),
-                "photos": data["photos"],
-            }
-            res.append(info)
+    data.sort(key=lambda x: x["schedule"]["slot"]["number_of_lesson"])
+    for lesson in data:
+        # Формирование текста и фото
+        txt = lesson["text_homework"] if lesson["text_homework"] is not None else ""
+        author_name = lesson["author"]["name"]
+        subject = lesson["schedule"]["lesson"]["name"]
+        info = {
+            "text": process_text(
+                TextKeys.homework_txt,
+                callback,
+                subject=subject,
+                author=author_name,
+                txt=txt,
+            ),
+            "photos": [_["photo_id"] for _ in lesson["photo_tg_id"]],
+        }
+        res.append(info)
     return res
 
     # {предмет: [{txt: txt, photo: [photos]}]}

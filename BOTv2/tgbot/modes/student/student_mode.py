@@ -1,3 +1,4 @@
+from aiogram.types import InputMediaPhoto
 from datetime import datetime
 
 from services.restapi.restapi import get_homework
@@ -16,6 +17,7 @@ class StudentMode(Mode):
         "shedule": Schedule,
         "fast_add": FastChooseData,
         "get_hw_choose_date": GetHwChooseDate,
+        "profile": Profile,
     }
     STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
     STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}
@@ -55,10 +57,24 @@ class StudentMode(Mode):
         self.subject = subject
 
     async def send_homework(self, call: CallbackQuery, date: datetime.date):
+        # Getting and converting homework
         data = await get_homework(self.user.tgid, date)
         if isinstance(data, ApiError):
             # TODO: handle errors
             return
-        print(data)
-        # TODO: send homework
-        await self.user.setup()
+        homeworks = convert_homework(data, call)
+        # Sending homework
+        if len(homeworks) == 0:
+            await call.answer(f"На {date.strftime('%A %d.%m')} нет домашнего задания❌")
+            if self.stage_num != self.STAGES_NAME_TO_NUM["entry_stage"]:
+                await self.set_stage("entry_stage")
+            return
+        for lesson in homeworks:
+            if len(lesson["photos"]) != 0:
+                media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]
+                for photo in lesson["photos"][1:]:
+                    media.append(InputMediaPhoto(photo))
+                await call.message.answer_media_group(media, disable_notification=True)
+            else:
+                await call.message.answer(lesson["text"], disable_notification=True)
+        await self.user.reset()

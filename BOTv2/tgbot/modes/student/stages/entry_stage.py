@@ -34,4 +34,7 @@ class MenuStage(Stage):
             date = datetime.date.today() - datetime.timedelta(hours=4) + datetime.timedelta(days=1)
             await self.mode.send_homework(call, date)
             return True
+        elif call.data == "profile":
+            await self.mode.set_stage("profile")
+            return True
         return False

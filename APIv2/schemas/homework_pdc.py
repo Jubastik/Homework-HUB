@@ -27,7 +27,7 @@ class HomeworkCreate(HomeworkBase):
     lesson: str
     text_homework: str | None
     date: date | Literal["auto"]
-    photo_tg_id: list[int] | None
+    photo_tg_id: list[str] | None
 
     @root_validator
     def correctness_check(cls, values):

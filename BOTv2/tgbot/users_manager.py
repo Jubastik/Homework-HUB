@@ -56,7 +56,7 @@ class UsersManager:
         user = await self.get_user(userid)
         # If user has old message, delete it
         if call.message.message_id != user.main_msg_id:
-            await call.answer("Устаревший запрос, попробуй снова")
+            await call.answer("Устаревший запрос, напиши /start")
             await call.message.delete()
             return
         handled = await user.handle_callback(call)

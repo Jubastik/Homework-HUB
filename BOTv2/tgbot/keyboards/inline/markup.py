@@ -110,15 +110,19 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
 
 # | Student | Student | Student | Student | Student | Student | Student | Student |
 
-
-markup_profile = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Меню", callback_data="menu")],
-        [InlineKeyboardButton(text="История домашки", callback_data="get_homework_history")],
-        [InlineKeyboardButton(text="Моё расписание", callback_data="get_shedule")],
-        [InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account")],
-    ]
-)
+def markup_profile(is_admin, electronic_diary_status="disabled"):
+    markup = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Меню", callback_data="menu")],
+        ]
+    )
+    if electronic_diary_status == "disabled":
+        markup.add(InlineKeyboardButton(text='Подключить "Петербургское Образование"', callback_data="enable_electronic_diary"))
+    markup.add(InlineKeyboardButton(text="История домашки", callback_data="get_homework_history"))
+    if is_admin:
+        markup.add(InlineKeyboardButton(text="Управление классом", callback_data="delete_class"))
+    markup.add(InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account"))
+    return markup
 
 markup_add_homework = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -135,10 +139,10 @@ def get_markup_student_menu(subjects=[]) -> InlineKeyboardMarkup:
         keyboard.insert(InlineKeyboardButton(text=subject))
     keyboard.add(
             InlineKeyboardButton(text="Добавить дз📌", callback_data="add_homework"),
-            InlineKeyboardButton(text="Домашка на завтра⚡️", callback_data="get_next_date_hw"),
+            InlineKeyboardButton(text="Дз на завтра⚡️", callback_data="get_next_date_hw"),
     )
     keyboard.add(
-            InlineKeyboardButton(text="Добавить на дату📆", callback_data="add_on_date"),
+            InlineKeyboardButton(text="Добавить дз на дату📆", callback_data="add_on_date"),
             InlineKeyboardButton(text="Получить дз🔍", callback_data="get_homework"),
     )
     keyboard.add(InlineKeyboardButton(text="Моё расписание📚", callback_data="my_shedule"))

@@ -115,7 +115,7 @@ class LanguageRussian:
 <i><b>Профиль:</b></i>
 Имя - <b>{name}</b>
 Админ - {is_admin}
-Ссылка приглашение - <code>{link}{class_token}</code>
+Ссылка приглашение - <code>""" + TG_BOT_LINK + """{class_token}</code>
 Токен - <code>{class_token}</code>
 Админы класса - <b>{admins}</b>
 """

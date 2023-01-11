@@ -1,4 +1,6 @@
 from aiogram.types import CallbackQuery, Message
+from aiogram.utils.exceptions import MessageToDeleteNotFound
+import datetime
 
 from tgbot.entities.stage import Stage
 from languages.text_keys import TextKeys
@@ -20,7 +22,7 @@ class SendHwStage(Stage):
         self.messages = []  # messages_id to delete
 
     async def get_args(self) -> dict:
-        date = self.mode.get_add_date().strftime("%d.%m.%Y")
+        date = self.mode.get_add_date().strftime("%A %d.%m").capitalize()
         subject = self.mode.get_subject()
         return {"markup_args": {}, "text_args": {"date": date, "subject": subject}}
 
@@ -29,23 +31,28 @@ class SendHwStage(Stage):
 
         if call.data == "done":
             if self.hw_txt or self.hw_photos:
+                print(self.hw_photos)
                 subject = self.mode.get_subject()
                 date = self.mode.get_add_date()
                 for i in self.messages:
-                    await bot.delete_message(self.user.tgid, i)
+                    try:
+                        await bot.delete_message(self.user.tgid, i)
+                    except MessageToDeleteNotFound:
+                        pass
                 created = await restapi.create_homework(self.user.tgid, subject, date, self.hw_txt, self.hw_photos)
                 if isinstance(created, ApiError):
                     pass
                     # TODO: handle error
-                await self.user.setup()
                 date = created["date"].split("-")
+                date = datetime.date(year=int(date[0]), month=int(date[1]), day=int(date[2]))
                 subject = created["schedule"]["lesson"]["name"]
-                await call.answer(f"⚡️Записано на {date[2]}.{date[1]}.{date[0]} {subject}")
+                await call.answer(f"⚡️Записано на {date.strftime('%A %d.%m')} {subject}")
+                await self.user.setup()
             else:
                 await call.answer(process_text(TextKeys.no_hw, call))
             return True
         return False
-    
+
     async def handle_message(self, msg: Message):
         self.messages += [msg.message_id]
         if msg.text or msg.caption:

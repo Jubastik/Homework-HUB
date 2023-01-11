@@ -17,24 +17,37 @@ class SendHwStage(Stage):
         self.text = lambda *args, **kwargs: process_text(TextKeys.send_homework, **kwargs)
         self.hw_txt = ""
         self.hw_photos = []
+        self.messages = []  # messages_id to delete
 
     async def get_args(self) -> dict:
-        date = self.mode.get_date().strftime("%d.%m.%Y")
+        date = self.mode.get_add_date().strftime("%d.%m.%Y")
         subject = self.mode.get_subject()
         return {"markup_args": {}, "text_args": {"date": date, "subject": subject}}
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
+        from bot import bot
+
         if call.data == "done":
             if self.hw_txt or self.hw_photos:
-                print(self.hw_txt)
-                print(self.hw_photos)
-                # TODO: send homework to server
+                subject = self.mode.get_subject()
+                date = self.mode.get_add_date()
+                for i in self.messages:
+                    await bot.delete_message(self.user.tgid, i)
+                created = await restapi.create_homework(self.user.tgid, subject, date, self.hw_txt, self.hw_photos)
+                if isinstance(created, ApiError):
+                    pass
+                    # TODO: handle error
+                await self.user.setup()
+                date = created["date"].split("-")
+                subject = created["schedule"]["lesson"]["name"]
+                await call.answer(f"⚡️Записано на {date[2]}.{date[1]}.{date[0]} {subject}")
             else:
                 await call.answer(process_text(TextKeys.no_hw, call))
             return True
         return False
     
     async def handle_message(self, msg: Message):
+        self.messages += [msg.message_id]
         if msg.text or msg.caption:
             self.hw_txt += msg.text or msg.caption
         if msg.photo:

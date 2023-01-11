@@ -216,13 +216,13 @@ async def create_homework(
     session,
     params,
     tg_id: int,
-    lessons: str,
+    lesson: str,
     date: datetime.date,
     text_homework: str = None,
     photo_tg_ids: list[int] = None,
 ):
     params = add_tg_id(params, tg_id)
-    json = {"author_tg_id": tg_id, "lesson": lessons, "date": date}
+    json = {"author_tg_id": tg_id, "lesson": lesson, "date": str(date)}
     if text_homework is not None:
         json["text_homework"] = text_homework
     if photo_tg_ids is not None:
@@ -244,8 +244,3 @@ async def get_homework(session, params, tg_id: int, date: datetime.date):
             return await response.json()
         else:
             return ApiError(status, await response.json())
-
-
-# TODO:
-async def current_lesson(tgid: int, date: datetime.date, subject):
-    return datetime.date(2023, 1, 16)

@@ -17,7 +17,7 @@ class ChooseSubject(Stage):
         self.text = lambda *args, **kwargs: process_text(TextKeys.choose_subject, **kwargs)
 
     async def get_args(self) -> dict:
-        date = self.mode.get_date()
+        date = self.mode.get_add_date()
         subjects = await restapi.get_schedule(self.user.tgid, date)
         if isinstance(subjects, ApiError):
             await self.handle_api_error(subjects)

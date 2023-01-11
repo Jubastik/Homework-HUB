@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from schemas.schedule_pdc import ScheduleCreate
+from schemas.student_pdc import StudentReturn
 from schemas.time_table_pdc import TimeTableCreate
 
 
@@ -35,6 +36,7 @@ class MyClassReturn(MyClassBase):
     class_token: int
     mailing_time: time
     mailing_stopped: bool
+    student: list[StudentReturn]
 
     class Config:
         orm_mode = True

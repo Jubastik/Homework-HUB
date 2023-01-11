@@ -14,16 +14,11 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[StudentReturn])
-async def get_students(obj_id: int = Depends(optional_process_user_id), service: StudentService = Depends()):
+async def get_students(service: StudentService = Depends()):
     """
     Получить всех учеников
-
-    - Для получения учеников из класса, в котором состоит ученик с указанным id, необходимо указать id и id_type
     """
-    if obj_id is None:
-        return service.get_students()
-    else:
-        return service.get_students_in_my_class(obj_id)
+    return service.get_students()
 
 
 @router.get("/{obj_id}", response_model=StudentReturn)

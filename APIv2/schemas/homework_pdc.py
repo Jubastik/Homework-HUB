@@ -8,7 +8,7 @@ import my_err
 from my_err import APIError
 from schemas.schedule_pdc import ScheduleReturn
 
-from APIv2.schemas.student_pdc import StudentReturn
+from schemas.student_pdc import StudentReturn
 
 
 class TgPhoto(BaseModel):

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from service.restapi.restapi import get_homework
+from services.restapi.restapi import get_homework
 from tgbot.entities.mode import Mode
 
 from tgbot.modes.student.stages import *
-from service.scripts import convert_homework
+from services.scripts import convert_homework
 
 
 class StudentMode(Mode):

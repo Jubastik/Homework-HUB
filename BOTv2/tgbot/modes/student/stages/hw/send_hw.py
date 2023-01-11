@@ -6,8 +6,8 @@ from languages.text_proccesor import process_text
 
 from tgbot.keyboards.inline.markup import markup_done
 
-from service.restapi import restapi
-from service.restapi.api_error import ApiError
+from services.restapi import restapi
+from services.restapi.api_error import ApiError
 
 
 class SendHwStage(Stage):

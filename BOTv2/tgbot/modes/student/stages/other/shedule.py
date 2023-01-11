@@ -8,8 +8,8 @@ from tgbot.keyboards.inline.markup import (
     markup_menu,
 )
 
-from service.restapi import restapi
-from service.restapi.api_error import ApiError
+from services.restapi import restapi
+from services.restapi.api_error import ApiError
 from CONSTANTS import WEEKDAYS_TO_NUM
 
 

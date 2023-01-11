@@ -5,9 +5,9 @@ from tgbot.entities.mode import Mode
 
 from tgbot.modes.registration import *
 
-from service.restapi.api_error import ApiError
-from service.restapi import restapi
-from service.scripts import make_username
+from services.restapi.api_error import ApiError
+from services.restapi import restapi
+from services.scripts import make_username
 
 
 class RegistrationMode(Mode):

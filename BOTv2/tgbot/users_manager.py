@@ -3,8 +3,8 @@ from asyncio import sleep
 
 from tgbot.entities.user import User
 
-from service.restapi.api_error import ApiError
-from service.restapi import restapi
+from services.restapi.api_error import ApiError
+from services.restapi import restapi
 
 
 class UsersManager:

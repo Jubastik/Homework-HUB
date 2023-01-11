@@ -43,11 +43,11 @@
 import datetime
 
 from CONSTANTS import WEEKDAYS
-from service.restapi.api_error import ApiError
-from service.restapi.formatters import f_days_from_schedules, create_time_tables
-from service.restapi.session import aiohttp_session, add_tg_id
+from services.restapi.api_error import ApiError
+from services.restapi.formatters import f_days_from_schedules, create_time_tables
+from services.restapi.session import aiohttp_session, add_tg_id
 
-from service.restapi.URLS import URL_STUDENT, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK
+from services.restapi.URLS import URL_STUDENT, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK
 
 
 async def _get_user(session, params, tg_id: int):

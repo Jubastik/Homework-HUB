@@ -14,9 +14,9 @@ from tgbot.keyboards.inline.markup import (
     markup_subjects_stage,
     get_markup_shedule_stage,
 )
-from service.scripts import convert_time, make_username, time_is_correct
+from services.scripts import convert_time, make_username, time_is_correct
 from CONSTANTS import SUBJECTS, WEEKDAYS
-from service.sub_classes import RestErorr
+from services.sub_classes import RestErorr
 
 
 class TimeStage(Stage):

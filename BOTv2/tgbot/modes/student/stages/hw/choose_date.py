@@ -7,9 +7,9 @@ from languages.text_proccesor import process_text
 
 from tgbot.keyboards.inline.markup import get_markup_dates
 
-from service.scripts import generate_dates
-from service.restapi import restapi
-from service.restapi.api_error import ApiError
+from services.scripts import generate_dates
+from services.restapi import restapi
+from services.restapi.api_error import ApiError
 
 
 class ChooseDate(Stage):

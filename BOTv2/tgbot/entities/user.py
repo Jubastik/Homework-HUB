@@ -2,8 +2,8 @@ from aiogram.types import Message, CallbackQuery
 from asyncio import sleep
 
 from tgbot.entities.mode import Mode
-from service.restapi import restapi
-from service.restapi.api_error import ApiError
+from services.restapi import restapi
+from services.restapi.api_error import ApiError
 
 from tgbot.modes.registration.registration_mode import RegistrationMode
 from tgbot.modes.student.student_mode import StudentMode

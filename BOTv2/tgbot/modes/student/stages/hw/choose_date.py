@@ -31,10 +31,21 @@ class ChooseDate(Stage):
         if "add_date:" in call.data:
             year, month, day = map(int, call.data.split(":")[1].split("-"))
             self.date = datetime.date(year, month, day)
-            self.mode.set_date(self.date)
+            self.mode.set_add_date(self.date)
             await self.mode.set_stage("choose_subject")
             return True
         return False
 
     def get_date(self) -> datetime.date:
         return self.date
+
+
+
+class GetHwChooseDate(ChooseDate):
+    async def handle_callback(self, call: CallbackQuery) -> bool:
+        if "add_date:" in call.data:
+            year, month, day = map(int, call.data.split(":")[1].split("-"))
+            self.date = datetime.date(year, month, day)
+            await self.mode.send_homework(call, self.date)
+            return True
+        return False

@@ -34,6 +34,6 @@ class FastChooseData(Stage):
             if isinstance(date, ApiError):
                 # TODO: handle error
                 return
-            self.mode.set_date(date)
+            self.mode.set_add_date(date)
             await self.mode.set_stage("send_hw")
             return True

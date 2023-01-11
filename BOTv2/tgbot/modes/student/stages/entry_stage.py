@@ -1,4 +1,5 @@
 from aiogram.types import CallbackQuery
+import datetime
 
 from tgbot.entities.stage import Stage
 from languages.text_keys import TextKeys
@@ -26,3 +27,11 @@ class MenuStage(Stage):
             return True
         elif call.data == "add_homework":
             await self.mode.set_stage("fast_add")
+        elif call.data == "get_homework":
+            await self.mode.set_stage("get_hw_choose_date")
+            return True
+        elif call.data == "get_next_date_hw":
+            date = datetime.date.today() - datetime.timedelta(hours=4) + datetime.timedelta(days=1)
+            await self.mode.send_homework(call, date)
+            return True
+        return False

@@ -20,7 +20,7 @@ class SendHwStage(Stage):
         self.messages = []  # messages_id to delete
 
     async def get_args(self) -> dict:
-        date = self.mode.get_date().strftime("%d.%m.%Y")
+        date = self.mode.get_add_date().strftime("%d.%m.%Y")
         subject = self.mode.get_subject()
         return {"markup_args": {}, "text_args": {"date": date, "subject": subject}}
 
@@ -30,7 +30,7 @@ class SendHwStage(Stage):
         if call.data == "done":
             if self.hw_txt or self.hw_photos:
                 subject = self.mode.get_subject()
-                date = self.mode.get_date()
+                date = self.mode.get_add_date()
                 for i in self.messages:
                     await bot.delete_message(self.user.tgid, i)
                 created = await restapi.create_homework(self.user.tgid, subject, date, self.hw_txt, self.hw_photos)
@@ -38,6 +38,9 @@ class SendHwStage(Stage):
                     pass
                     # TODO: handle error
                 await self.user.setup()
+                date = created["date"].split("-")
+                subject = created["schedule"]["lesson"]["name"]
+                await call.answer(f"⚡️Записано на {date[2]}.{date[1]}.{date[0]} {subject}")
             else:
                 await call.answer(process_text(TextKeys.no_hw, call))
             return True

@@ -244,8 +244,3 @@ async def get_homework(session, params, tg_id: int, date: datetime.date):
             return await response.json()
         else:
             return ApiError(status, await response.json())
-
-
-# TODO:
-async def current_lesson(tgid: int, date: datetime.date, subject):
-    return datetime.date(2023, 1, 16)

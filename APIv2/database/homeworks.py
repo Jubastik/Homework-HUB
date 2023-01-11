@@ -8,6 +8,7 @@ class Homework(SqlAlchemyBase):
     __tablename__ = "homeworks"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("students.id"), nullable=False)
+    author = orm.relationship("Student", back_populates="homeworks")
     date = sqlalchemy.Column(sqlalchemy.Date, nullable=False)
     schedule_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("schedules.id"), nullable=False)
     schedule = orm.relationship("Schedule")

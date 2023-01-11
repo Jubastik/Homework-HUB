@@ -8,6 +8,8 @@ import my_err
 from my_err import APIError
 from schemas.schedule_pdc import ScheduleReturn
 
+from APIv2.schemas.student_pdc import StudentReturn
+
 
 class TgPhoto(BaseModel):
     photo_id: str
@@ -43,6 +45,7 @@ class HomeworkReturn(HomeworkBase):
     schedule: ScheduleReturn
     text_homework: str | None
     photo_tg_id: list[TgPhoto] | None
+    author: StudentReturn
 
     class Config:
         orm_mode = True

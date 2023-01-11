@@ -19,13 +19,13 @@
 #
 
 # POST:
-# !add_homework
+# !add_homework ✅
 
 
 # GET:
 # get_class ✅
 # get_subjects_by_time
-# get_homework
+# get_homework ✅
 # get_schedule_on_date ✅
 # get_names_classmates
 # get_student_info ✅

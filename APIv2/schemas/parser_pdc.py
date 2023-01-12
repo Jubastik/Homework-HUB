@@ -13,3 +13,10 @@ class ParserCreate(BaseModel):
     platform_id: int
     login: str
     password: str
+
+
+class ParserHomeworkReturn(BaseModel):
+    subject: str
+    date: str
+    text: str
+

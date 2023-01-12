@@ -40,4 +40,5 @@ SLOT_NOT_FOUND = 1301
 HOMEWORK_NO_SUCH_LESSON = 1302
 
 ParserNotActive = 1500
-LoginError = 1501
+ParserNotFound = 1501
+LoginError = 1502

@@ -94,6 +94,7 @@ class ParserService:
         raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.IN_DEVELOPMENT, "Unknown platform_id")
 
     def _get_day_and_number(self, student_id, name, hwdate: datetime.date):
+        # Получает название урока, дату урока. Возвращает дату предыдущего урока и номер урока
         schedules = (
             self.session.query(Schedule.day_id, TimeTable.number_of_lesson)
             .join(Lesson)

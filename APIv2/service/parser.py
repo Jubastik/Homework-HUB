@@ -15,7 +15,7 @@ from database.schedules import Schedule
 from database.students import Student
 from database.time_tables import TimeTable
 from database.week_days import WeekDay
-from schemas.parser_pdc import ParserCreate, ParserHomeworkReturn
+from schemas.parser_pdc import ParserCreate, ParserHomeworkReturn, ParserHomeworkInfoReturn
 from service.CONSTANTS import day_id_to_weekday
 
 
@@ -187,11 +187,12 @@ class ParserService:
                         all_hw.append(hw["task_name"])
                     if len(all_hw) != 0:
                         return_data.append(
-                            ParserHomeworkReturn(
+                            ParserHomeworkInfoReturn(
                                 subject=ed_lesson["subject_name"],
                                 date=ed_lesson["datetime_from"][0:10],
                                 text="+".join(all_hw),
                             )
                         )
-
+        student = self.session.query(Student).filter(Student.id == student_id).first()
+        return_data = ParserHomeworkReturn(author=student, homework=return_data)
         return return_data

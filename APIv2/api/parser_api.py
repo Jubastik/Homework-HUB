@@ -37,7 +37,7 @@ async def create_parser(parser: ParserCreate, obj_id: int = Depends(process_user
 ch = TTLCache(maxsize=1024, ttl=600)
 
 
-@router.get("/homework/{date}", response_model=List[ParserHomeworkReturn])
+@router.get("/homework/{date}", response_model=ParserHomeworkReturn)
 async def get_pars_homework(
         hwdate: datetime.date, obj_id: int = Depends(process_user_id), service: ParserService = Depends()
 ):

@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from schemas.student_pdc import StudentReturn
+
 
 class ParserReturn(BaseModel):
     platform_id: int
@@ -15,8 +17,12 @@ class ParserCreate(BaseModel):
     password: str
 
 
-class ParserHomeworkReturn(BaseModel):
+class ParserHomeworkInfoReturn(BaseModel):
     subject: str
     date: str
     text: str
 
+
+class ParserHomeworkReturn(BaseModel):
+    author: StudentReturn
+    homework: list[ParserHomeworkInfoReturn]

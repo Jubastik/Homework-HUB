@@ -1,13 +1,13 @@
 import datetime
+from functools import wraps
 from typing import List, Literal
 
+from cachetools import cached, TTLCache
 from fastapi import APIRouter, Depends
 
 from api.dependencies import process_user_id
 from schemas.homework_pdc import HomeworkReturn, HomeworkCreate
 from schemas.parser_pdc import ParserReturn, ParserCreate, ParserHomeworkReturn
-from service.homework import HomeworkService
-from datetime import date
 
 from service.parser import ParserService
 
@@ -26,20 +26,27 @@ async def clarify_parsers(obj_id: int = Depends(process_user_id), service: Parse
 
 
 @router.post("/", response_model=ParserReturn)
-async def create_parser(
-    parser: ParserCreate, obj_id: int = Depends(process_user_id), service: ParserService = Depends()
-):
+async def create_parser(parser: ParserCreate, obj_id: int = Depends(process_user_id),
+                        service: ParserService = Depends()):
     """
     Создать парсер
     """
     return service.create_parser(obj_id, parser)
 
 
+ch = TTLCache(maxsize=1024, ttl=600)
+
+
 @router.get("/homework/{date}", response_model=List[ParserHomeworkReturn])
 async def get_pars_homework(
-    hwdate: datetime.date, obj_id: int = Depends(process_user_id), service: ParserService = Depends()
+        hwdate: datetime.date, obj_id: int = Depends(process_user_id), service: ParserService = Depends()
 ):
     """
     Получить домашку с помощью парсера
     """
-    return service.get_pars_homework(obj_id, hwdate)
+
+    @cached(cache=ch)
+    def _get(obj_id: int, hwdate: datetime.date):
+        return service.get_pars_homework(obj_id, hwdate)
+
+    return _get(obj_id, hwdate)

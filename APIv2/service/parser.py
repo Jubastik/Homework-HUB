@@ -163,12 +163,13 @@ class ParserService:
                     all_hw = []
                     for hw in ed_lesson["tasks"]:
                         all_hw.append(hw["task_name"])
-                    return_data.append(
-                        ParserHomeworkReturn(
-                            subject=ed_lesson["subject_name"],
-                            date=ed_lesson["datetime_from"][0:10],
-                            text="+".join(all_hw),
+                    if len(all_hw) != 0:
+                        return_data.append(
+                            ParserHomeworkReturn(
+                                subject=ed_lesson["subject_name"],
+                                date=ed_lesson["datetime_from"][0:10],
+                                text="+".join(all_hw),
+                            )
                         )
-                    )
 
         return return_data

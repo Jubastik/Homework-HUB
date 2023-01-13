@@ -7,7 +7,7 @@ from languages.text_proccesor import process_text
 
 from tgbot.keyboards.inline.markup import get_markup_dates
 
-from services.scripts import generate_dates
+from services.scripts import generate_dates, generate_dates_back
 from services.restapi import restapi
 from services.restapi.api_error import ApiError
 
@@ -40,7 +40,6 @@ class ChooseDate(Stage):
         return self.date
 
 
-
 class GetHwChooseDate(ChooseDate):
     async def handle_callback(self, call: CallbackQuery) -> bool:
         if "add_date:" in call.data:
@@ -49,3 +48,10 @@ class GetHwChooseDate(ChooseDate):
             await self.mode.send_homework(call, self.date)
             return True
         return False
+
+
+class HwHistoryChooseDate(GetHwChooseDate):
+    async def get_args(self) -> dict:
+        data = await restapi.get_study_week_days(self.user.tgid)
+        dates = generate_dates_back(data)
+        return {"markup_args": {"dates": dates}, "text_args": {}}

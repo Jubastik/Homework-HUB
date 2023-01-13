@@ -244,3 +244,9 @@ async def get_homework(session, params, tg_id: int, date: datetime.date):
             return await response.json()
         else:
             return ApiError(status, await response.json())
+
+
+async def delete_user(tg_id: int):
+    # TODO
+    print("Удаление юзера...")
+    return True

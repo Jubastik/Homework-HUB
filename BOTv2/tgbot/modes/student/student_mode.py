@@ -18,6 +18,9 @@ class StudentMode(Mode):
         "fast_add": FastChooseData,
         "get_hw_choose_date": GetHwChooseDate,
         "profile": Profile,
+        "hw_history": HwHistoryChooseDate,
+        "delete_account": DeleteAccount,
+        "admin_menu": AdminMenu,
     }
     STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
     STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}

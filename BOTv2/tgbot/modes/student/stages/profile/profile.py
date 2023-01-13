@@ -1,5 +1,4 @@
 from aiogram.types import CallbackQuery
-import datetime
 
 from tgbot.entities.stage import Stage
 from languages.text_keys import TextKeys
@@ -39,3 +38,15 @@ class Profile(Stage):
         }
 
         return {"markup_args": {"is_admin": user["is_admin"]}, "text_args": text_args}
+    
+    async def handle_callback(self, call: CallbackQuery) -> bool:
+        if call.data == "get_homework_history":
+            await self.mode.set_stage("hw_history")
+            return True
+        elif call.data == "delete_account":
+            await self.mode.set_stage("delete_account")
+            return True
+        elif call.data == "class_management":
+            await self.mode.set_stage("admin_menu")
+            return True
+        return False

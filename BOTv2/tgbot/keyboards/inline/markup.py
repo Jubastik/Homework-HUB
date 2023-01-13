@@ -116,11 +116,13 @@ def markup_profile(is_admin, electronic_diary_status="disabled"):
             [InlineKeyboardButton(text="Меню", callback_data="menu")],
         ]
     )
-    if electronic_diary_status == "disabled":
+    if electronic_diary_status == "disabled" or electronic_diary_status == "error":
         markup.add(InlineKeyboardButton(text='Подключить "Петербургское Образование"', callback_data="enable_electronic_diary"))
+    else:
+        markup.add(InlineKeyboardButton(text='Отключить "Петербургское Образование"', callback_data="disable_electronic_diary"))
     markup.add(InlineKeyboardButton(text="История домашки", callback_data="get_homework_history"))
     if is_admin:
-        markup.add(InlineKeyboardButton(text="Управление классом", callback_data="delete_class"))
+        markup.add(InlineKeyboardButton(text="Управление классом", callback_data="class_management"))
     markup.add(InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account"))
     return markup
 
@@ -194,7 +196,7 @@ def get_subjects_markup(subjects):
 markup_are_u_sure = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Да", callback_data="true")],
-        [InlineKeyboardButton(text="Отмена", callback_data="false")],
+        [InlineKeyboardButton(text="Отмена", callback_data="menu")],
     ]
 )
 

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 # preload
 load_dotenv()
 
-from bot import bot, dp
+from bot import bot, dp, session
 
 import tgbot
 import tgbot.handlers
@@ -50,7 +50,7 @@ async def on_shutdown(dp):
         bot_info = await bot.get_me()
         bot_name = bot_info["username"]
         await bot.send_message(chat_id, f"Stop polling. [@{bot_name}]")
-
+    await session.close()
     await dp.storage.close()
     await dp.storage.wait_closed()
 

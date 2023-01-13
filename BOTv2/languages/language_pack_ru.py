@@ -129,7 +129,7 @@ class LanguageRussian:
     admin_added = "Администратор добавлен"
     user_kicked = "Пользователь исключен из класса"
     choose_classmate = "Выбери одноклассника:"
-    token_changed = "Токен изменен - <code>{token}</code>"
+    token_changed = "Токен изменен - {token}⚡️"
     empty_ban_list = "Нету забаненых пользователей"
     user_unbanned = "Пользователь {name} разбанен"
     no_classmates = "Нету одноклассников"

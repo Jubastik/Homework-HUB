@@ -31,9 +31,16 @@ async def on_startup(dp):
         get_next_lesson_date,
         create_homework,
         get_homework,
+        create_parser,
+        get_homework_pars,
+        parser_status,
+        delete_parser,
+        get_baned_users,
     )
     from services.restapi.formatters import create_time_tables
     from datetime import time
+    data = await get_baned_users(472803385)
+    print(data)
 
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске

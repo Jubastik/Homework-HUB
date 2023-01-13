@@ -48,12 +48,3 @@ async def update_class(
     return service.update_class(obj_id, my_class)
 
 
-#
-#
-# @router.delete("/{obj_id}")
-# async def delete_student(obj_id: int = Depends(process_id), service: StudentService = Depends()):
-#     """
-#     Удалить ученика
-#     """
-#     service.delete_student(obj_id)
-#     return Response(status_code=status.HTTP_204_NO_CONTENT)

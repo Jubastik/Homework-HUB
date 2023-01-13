@@ -47,7 +47,15 @@ from services.restapi.api_error import ApiError
 from services.restapi.formatters import f_days_from_schedules, create_time_tables
 from services.restapi.session import aiohttp_session, add_tg_id
 
-from services.restapi.URLS import URL_STUDENT, URL_CLASS, URL_SCHEDULE, URL_HOMEWORK
+from services.restapi.URLS import (
+    URL_STUDENT,
+    URL_CLASS,
+    URL_SCHEDULE,
+    URL_HOMEWORK,
+    URL_PARSER_HW,
+    URL_PARSER,
+    URL_BAN_LIST,
+)
 
 
 async def _get_user(session, params, tg_id: int):
@@ -246,7 +254,102 @@ async def get_homework(session, params, tg_id: int, date: datetime.date):
             return ApiError(status, await response.json())
 
 
-async def delete_user(tg_id: int):
-    # TODO
-    print("Удаление юзера...")
-    return True
+@aiohttp_session
+async def get_homework_pars(session, params, tg_id: int, date: datetime.date):
+    params = add_tg_id(params, tg_id)
+    async with session.get(URL_PARSER_HW + str(date), params=params) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def create_parser(session, params, tg_id: int, login: str, password: str):
+    params = add_tg_id(params, tg_id)
+    json = {"login": login, "password": password, "platform_id": 1}
+    async with session.post(URL_PARSER, params=params, json=json) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def parser_status(session, params, tg_id: int):
+    """
+    0 - парсер отсутствует
+    1 - парсер есть и работает
+    2 - парсер есть, но не работает
+    """
+    params = add_tg_id(params, tg_id)
+    async with session.get(URL_PARSER, params=params) as response:
+        status = response.status
+        if status == 200:
+            json = await response.json()
+            if len(json) == 0:
+                return 0
+            if json[0]["active"]:
+                return 1
+            return 2
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def delete_parser(session, params, tg_id: int):
+    params = add_tg_id(params, tg_id)
+    async with session.delete(URL_PARSER, params=params) as response:
+        status = response.status
+        if status == 204:
+            return True
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def delete_user(session, params, tg_id: int):
+    params = add_tg_id(params)
+    async with session.delete(URL_STUDENT + str(tg_id), params=params) as response:
+        status = response.status
+        if status == 204:
+            return True
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def get_baned_users(session, params, tg_id: int):
+    params = add_tg_id(params)
+    async with session.get(URL_BAN_LIST + "class/" + str(tg_id), params=params) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def ban_user(session, params, bun_tg_id: int):
+    # bun_tg_id - тг айди пользователя, которого нужно забанить
+    params = add_tg_id(params)
+    async with session.post(URL_BAN_LIST + str(bun_tg_id), params=params) as response:
+        status = response.status
+        if status == 200:
+            return True
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
+async def unban_user(session, params, bun_tg_id: int):
+    # bun_tg_id - тг айди пользователя, которого нужно разбанить
+    params = add_tg_id(params)
+    async with session.delete(URL_BAN_LIST + str(bun_tg_id), params=params) as response:
+        status = response.status
+        if status == 204:
+            return True
+        else:
+            return ApiError(status, await response.json())

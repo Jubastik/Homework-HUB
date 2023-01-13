@@ -30,7 +30,7 @@ async def get_class_ban_list(obj_id=Depends(process_class_id), service: BanListS
     return service.get_class_ban_list(obj_id)
 
 
-@router.patch("/{obj_id}", response_model=BanListUserReturn)
+@router.post("/{obj_id}", response_model=BanListUserReturn)
 async def ban_student(obj_id: int = Depends(process_user_id), service: BanListService = Depends()):
     """
     Заблокировать ученика в текущем классе

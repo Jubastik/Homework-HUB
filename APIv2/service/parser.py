@@ -114,6 +114,13 @@ class ParserService:
             return parser
         raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.IN_DEVELOPMENT, "Unknown platform_id")
 
+    def delete_parser(self, student_id, parser_type):
+        parsers = self.session.query(Parser).filter(Parser.student_id == student_id, Parser.platform_id == parser_type).all()
+        for parser in parsers:
+            self.session.delete(parser)
+        self.session.commit()
+        return True
+
     def _get_day_and_number(self, student_id, name, hwdate: datetime.date):
         # Получает название урока, дату урока. Возвращает дату предыдущего урока и номер урока
         schedules = (

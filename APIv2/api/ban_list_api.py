@@ -38,10 +38,10 @@ async def ban_student(obj_id: int = Depends(process_user_id), service: BanListSe
     return service.ban_student(obj_id)
 
 
-@router.delete("/{obj_id}")
-async def unban_student(db_id: int, service: BanListService = Depends()):
+@router.delete("/{ban_id}")
+async def unban_student(ban_id: int, service: BanListService = Depends()):
     """
     Разблокировать ученика в классе
     """
-    service.unban_student(db_id)
+    service.unban_student(ban_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

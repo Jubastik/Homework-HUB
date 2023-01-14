@@ -31,8 +31,8 @@ class BanListService:
         self.session.commit()
         return ban
 
-    def unban_student(self, db_id):
-        ban = self.session.query(Ban_list).filter(Ban_list.id == db_id).first()
+    def unban_student(self, ban_id):
+        ban = self.session.query(Ban_list).filter(Ban_list.id == ban_id).first()
         if ban is None:
             raise APIError(404, my_err.STUDENT_NOT_FOUND, "Пользователь не был найден.")
         self.session.delete(ban)

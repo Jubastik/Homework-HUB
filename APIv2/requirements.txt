@@ -1,6 +1,0 @@
-uvicorn
-fastapi
-sqlalchemy
-python-dotenv
-requests
-cachetools

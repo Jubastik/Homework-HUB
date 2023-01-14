@@ -10,6 +10,7 @@ import my_err
 from api import router
 from api.dependencies import verify_root_token
 from database import db_session
+from settings import settings
 
 tags_metadata = [
     {
@@ -24,7 +25,12 @@ app = FastAPI(
     description="Обновлённое API для Homework HUB",
     openapi_tags=tags_metadata,
     dependencies=[Depends(verify_root_token)],
+    debug=settings().API_DEBUG,
 )
+if settings().API_DEBUG:
+    from fastapi_profiler import PyInstrumentProfilerMiddleware
+    # app.add_middleware(PyInstrumentProfilerMiddleware)
+    pass
 app.include_router(router)
 
 

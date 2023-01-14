@@ -15,6 +15,9 @@ aiogram = "^2.24"
 sqlalchemy = "^1.4.46"
 
 
+[tool.poetry.group.dev.dependencies]
+fastapi-profiler = "^1.1.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

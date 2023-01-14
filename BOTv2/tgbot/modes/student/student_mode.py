@@ -24,6 +24,9 @@ class StudentMode(Mode):
         "hw_history": HwHistoryChooseDate,
         "delete_account": DeleteAccount,
         "admin_menu": AdminMenu,
+        "add_admin": AddAdmin,
+        "ban_user": BanUser,
+        "unban_user": UnbanUser,
         "spb_diary_get_login": SPBDiaryGetLogin,
         "spb_diary_get_password": SPBDiaryGetPassword,
     }

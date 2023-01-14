@@ -34,7 +34,11 @@ class Mode:
     def get_stage(self, stage: str | int) -> Stage:
         if isinstance(stage, int):
             stage = self.STAGES_NUM_TO_NAME[stage]
-        return self.stages[stage]
+        if stage in self.stages:
+            return self.stages[stage]
+        else:
+            self.stages[stage] = self.STAGES[stage](self)
+            return self.stages[stage]
 
     async def handle_callback(self, call) -> bool:
         return await self.current_stage.handle_callback(call)

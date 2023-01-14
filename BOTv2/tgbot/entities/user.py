@@ -57,12 +57,18 @@ class User:
         return await self.mode.handle_callback(call)
 
     async def handle_message(self, msg: Message) -> bool:
-        if msg.text == "/start":
+        if "/start" in msg.text:
             await self.reset()
+            if isinstance(self.mode, self.MODES["registration_mode"]):
+                txt = msg.text.split()
+                if len(txt) == 2 and "class_token" in txt[-1]:
+                    await self.mode.join_class(int(txt[-1].replace("class_token", "")))
             await sleep(0.5)
             await msg.delete()
             return True
-        return await self.mode.handle_message(msg)
+
+        handled = await self.mode.handle_message(msg)
+        return handled
 
     async def handle_api_error(self, error) -> bool:
         return False

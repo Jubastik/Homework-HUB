@@ -264,11 +264,23 @@ markup_back = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="
 
 def get_markup_classmates(data):
     keyboard = InlineKeyboardMarkup(row_width=2)
-    for key in data.keys():
+    for mate in data:
         keyboard.insert(
             InlineKeyboardButton(
-                text=data[key],
-                callback_data=StudentsData.new(tguser_id=key, name=data[key]),
+                text=mate["name"],
+                callback_data=StudentsData.new(tguser_id=mate["tg_id"], name=mate["name"]),
+            )
+        )
+    keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
+    return keyboard
+
+def get_markup_banned_users(data):
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    for mate in data:
+        keyboard.insert(
+            InlineKeyboardButton(
+                text=mate["name"],
+                callback_data=StudentsData.new(tguser_id=mate["id"], name=mate["name"]),
             )
         )
     keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))

@@ -22,7 +22,7 @@ class JoinByIdStage(Stage):
     async def handle_message(self, msg: Message) -> bool:
         classid = msg.text
         if classid.isdigit():
-            self.mode.join_class(classid)
+            await self.mode.join_class(classid)
         else:
             await self.activate(status=process_text(TextKeys.wrong_class_token, msg))
             await sleep(1)

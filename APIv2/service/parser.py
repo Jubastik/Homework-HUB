@@ -58,6 +58,7 @@ class ParserService:
                 cookies=cookies,
                 headers=self.headers,
             )
+            print("!!!Запрос на сервер!!!")
             if r.status_code != status.HTTP_200_OK:
                 return 0, 0
             data = r.json()
@@ -100,6 +101,7 @@ class ParserService:
                 headers=self.headers,
                 data=payload,
             )
+            print("!!!Запрос на сервер!!!")
             if r.status_code != status.HTTP_200_OK:
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.LoginError, "Invalid mail or password")
             data = r.json()

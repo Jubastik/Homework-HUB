@@ -17,13 +17,20 @@ router = APIRouter(
     tags=["parser"],
 )
 
+clar_cache = TTLCache(maxsize=100, ttl=15)
+
 
 @router.get("/", response_model=List[ParserReturn])
 async def clarify_parsers(obj_id: int = Depends(process_user_id), service: ParserService = Depends()):
     """
     Актуализировать информацию о состоянии парсеров юзера
     """
-    return service.clarify_parsers(obj_id)
+
+    @cached(cache=clar_cache)
+    def _get(obj_id):
+        return service.clarify_parsers(obj_id)
+
+    return _get(obj_id)
 
 
 @router.post("/", response_model=ParserReturn)
@@ -36,7 +43,7 @@ async def create_parser(
     return service.create_parser(obj_id, parser)
 
 
-ch = TTLCache(maxsize=1024, ttl=600)
+hw_cache = TTLCache(maxsize=500, ttl=600)
 
 
 @router.get("/homework/{hwdate}", response_model=ParserHomeworkReturn)
@@ -47,7 +54,7 @@ async def get_pars_homework(
     Получить домашку с помощью парсера
     """
 
-    @cached(cache=ch)
+    @cached(cache=hw_cache)
     def _get(obj_id: int, hwdate: datetime.date):
         return service.get_pars_homework(obj_id, hwdate)
 

@@ -12,4 +12,4 @@ class Parser(SqlAlchemyBase):
     x_jwt_token = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
     def __repr__(self):
-        return f"<Parser> {self.id} {self.user_id} {self.active}"
+        return f"<Parser> {self.id} {self.student_id} {self.active}"

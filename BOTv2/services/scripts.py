@@ -1,8 +1,10 @@
 import datetime
+from asyncio import sleep
 
 from CONSTANTS import WEEKDAYS, WEEKDAYS_TRASNLATE
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
+
 # from service.restapi.restapi import get_user_by_id
 
 
@@ -78,7 +80,7 @@ def convert_homework(data, callback, diary_data=None) -> dict:
                 subject=subject,
                 author=author_name,
                 txt=txt,
-                info=""
+                info="",
             ),
             "photos": [_["photo_id"] for _ in homework["photo_tg_id"]],
         }
@@ -92,14 +94,19 @@ def convert_homework(data, callback, diary_data=None) -> dict:
                     subject=homework["subject"],
                     author=diary_data["author"]["name"],
                     txt=homework["text"],
-                    info="Получено из электронного дневника"
+                    info="Получено из электронного дневника",
                 ),
-                "photos": []
+                "photos": [],
             }
             res.append(hw)
     return res
 
     # {предмет: [{txt: txt, photo: [photos]}]}
+
+
+async def delete_msg(msg, time=10):
+    await sleep(time)
+    await msg.delete()
 
 
 def convert_users(data):

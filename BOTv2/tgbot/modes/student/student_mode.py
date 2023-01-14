@@ -1,3 +1,4 @@
+import asyncio
 from aiogram.types import InputMediaPhoto
 from datetime import datetime
 
@@ -6,7 +7,7 @@ from tgbot.entities.mode import Mode
 
 from tgbot.modes.student.stages import *
 from tgbot.modes.common_stages.spb_diary import SPBDiaryGetLogin, SPBDiaryGetPassword
-from services.scripts import convert_homework
+from services.scripts import convert_homework, delete_msg
 
 
 
@@ -87,9 +88,10 @@ class StudentMode(Mode):
                 media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]
                 for photo in lesson["photos"][1:]:
                     media.append(InputMediaPhoto(photo))
-                await call.message.answer_media_group(media, disable_notification=True)
+                msg = await call.message.answer_media_group(media, disable_notification=True)
             else:
-                await call.message.answer(lesson["text"], disable_notification=True)
+                msg = await call.message.answer(lesson["text"], disable_notification=True)
+            asyncio.create_task(delete_msg(msg, 600))
         await self.user.reset()
     
     async def register_diary(self, login: str, password: str):

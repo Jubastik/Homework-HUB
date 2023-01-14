@@ -8,6 +8,12 @@ class TextKeys:
     status_time_changed = "status_time_changed"
     shedule_stage = "shedule_stage"
     status_subject_added = "status_subject_added"
+    no_assignable_admins = "no_assignable_admins"
+    user_banned = "user_banned"
+    no_classmates_to_ban = "no_classmates_to_ban"
+    no_banned_users = "no_banned_users"
+    u_are_banned = "u_are_banned"
+    class_not_found = "class_not_found"
 
     spb_diary_get_login = "spb_diary_get_login"
     spb_diary_get_password = "spb_diary_get_password"

@@ -10,6 +10,9 @@ from services.restapi.api_error import ApiError
 from services.restapi import restapi
 from services.scripts import make_username
 
+from languages.text_keys import TextKeys
+from languages.text_proccesor import process_text
+
 
 class RegistrationMode(Mode):
     STAGES = {
@@ -64,6 +67,23 @@ class RegistrationMode(Mode):
         if self.stages["time_stage"]:
             return self.stages["time_stage"].get_time()
         return None
+    
+    async def join_class(self, class_token):
+        from bot import bot
+
+        username = make_username(User.get_current())
+        user = await restapi.create_user(self.user.tgid, username, int(class_token))
+        if isinstance(user, ApiError):
+            if user.error_code == 1102:
+                warning = await bot.send_message(self.user.tgid, process_text(TextKeys.u_are_banned))
+                await sleep(3)
+                await warning.delete()
+            elif user.error_code == 1202:
+                warning = await bot.send_message(self.user.tgid, process_text(TextKeys.class_not_found))
+                await sleep(3)
+                await warning.delete()
+            return ApiError
+        await self.user.change_mode("student_mode")
 
     async def register(self, call):
         class_name = make_username(User.get_current())

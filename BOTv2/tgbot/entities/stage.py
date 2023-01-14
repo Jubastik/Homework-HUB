@@ -2,6 +2,7 @@ from aiogram.types import CallbackQuery, Message
 
 from services.restapi.api_error import ApiError
 
+
 class Stage:  # Abstract class
     name = "entry_stage"
 
@@ -13,12 +14,13 @@ class Stage:  # Abstract class
 
     async def get_args(self) -> dict:
         return {"markup_args": {}, "text_args": {}}
-    
+
     def merge_args(self, args1, args2) -> dict:
         return {**args1, **args2}
 
     async def activate(self, markup_args={}, text_args={}, **kwargs) -> int:
         from bot import bot
+
         args = await self.get_args()
         if isinstance(args, ApiError):
             return args
@@ -36,6 +38,7 @@ class Stage:  # Abstract class
 
     async def new_message(self, markup_args={}, text_args={}, **kwargs) -> int:
         from bot import bot
+
         args = await self.get_args()
         if isinstance(args, ApiError):
             return args

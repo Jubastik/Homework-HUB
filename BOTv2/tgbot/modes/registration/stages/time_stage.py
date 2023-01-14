@@ -5,18 +5,11 @@ from tgbot.entities.stage import Stage
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
 from datetime import time
-import logging
 from tgbot.keyboards.inline.markup import (
-    markup_start,
     markup_registration_default,
-    markup_join_by_id_stage,
-    get_markup_student_menu,
-    markup_subjects_stage,
-    get_markup_shedule_stage,
+
 )
-from services.scripts import convert_time, make_username, time_is_correct
-from CONSTANTS import SUBJECTS, WEEKDAYS
-from services.sub_classes import RestErorr
+from services.scripts import convert_time, time_is_correct
 
 
 class TimeStage(Stage):

@@ -29,6 +29,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+pyproject.toml
 build/
 develop-eggs/
 dist/
@@ -164,3 +165,4 @@ BOT/bot.ini
 test.py
 API/alembic.ini
 API/alembic
+APIv2/database/APIv2.db

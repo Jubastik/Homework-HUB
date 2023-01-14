@@ -10,6 +10,9 @@ class Parser(SqlAlchemyBase):
     platform_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False, default=True)
     x_jwt_token = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    education_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    group_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+
 
     def __repr__(self):
         return f"<Parser> {self.id} {self.student_id} {self.active}"

@@ -115,11 +115,17 @@ class ParserService:
             )
             self.session.add(parser)
             self.session.commit()
+            education_id, group_id = self.get_p_educations_and_p_group_ids(parser)
+            parser.education_id = education_id
+            parser.group_id = group_id
+            self.session.commit()
             return parser
         raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.IN_DEVELOPMENT, "Unknown platform_id")
 
     def delete_parser(self, student_id, parser_type):
-        parsers = self.session.query(Parser).filter(Parser.student_id == student_id, Parser.platform_id == parser_type).all()
+        parsers = (
+            self.session.query(Parser).filter(Parser.student_id == student_id, Parser.platform_id == parser_type).all()
+        )
         for parser in parsers:
             self.session.delete(parser)
         self.session.commit()
@@ -146,6 +152,25 @@ class ParserService:
             if i in days:
                 return hwdate - datetime.timedelta(days=now + (7 - i)), [_[1] for _ in schedules if _[0] == i]
         return hwdate - datetime.timedelta(days=7), [_[1] for _ in schedules if _[0] == i]
+
+    def _fetch_hw_from_ed(self, json_data, date_num) -> list[ParserHomeworkInfoReturn]:
+        data = json_data["data"]["items"]
+        return_data = []
+        for ed_lesson in data:
+            for db_lesson in date_num:
+                if db_lesson[1] == ed_lesson["datetime_from"][0:10] and ed_lesson["number"] in db_lesson[2]:
+                    all_hw = []
+                    for hw in ed_lesson["tasks"]:
+                        all_hw.append(hw["task_name"])
+                    if len(all_hw) != 0:
+                        return_data.append(
+                            ParserHomeworkInfoReturn(
+                                subject=ed_lesson["subject_name"],
+                                date=ed_lesson["datetime_from"][0:10],
+                                text="+".join(all_hw),
+                            )
+                        )
+        return return_data
 
     def get_pars_homework(self, student_id, hwdate: datetime.date):
         weekday = day_id_to_weekday[hwdate.weekday()]
@@ -175,9 +200,12 @@ class ParserService:
         if parser is None:
             # временно
             raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserNotFound, "No active parser")
-        education_id, group_id = self.get_p_educations_and_p_group_ids(parser)
-        if education_id == 0 or group_id == 0:
-            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
+        if parser.education_id is not None and parser.group_id is not None:
+            education_id, group_id = parser.education_id, parser.group_id
+        else:
+            education_id, group_id = self.get_p_educations_and_p_group_ids(parser)
+            if education_id == 0 or group_id == 0:
+                raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
 
         cookies = {"X-JWT-Token": parser.x_jwt_token}
 
@@ -189,22 +217,8 @@ class ParserService:
         print("!!!Запрос на сервер!!!")
         if r.status_code != status.HTTP_200_OK:
             raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
-        data = r.json()["data"]["items"]
-        return_data = []
-        for ed_lesson in data:
-            for db_lesson in date_num:
-                if db_lesson[1] == ed_lesson["datetime_from"][0:10] and ed_lesson["number"] in db_lesson[2]:
-                    all_hw = []
-                    for hw in ed_lesson["tasks"]:
-                        all_hw.append(hw["task_name"])
-                    if len(all_hw) != 0:
-                        return_data.append(
-                            ParserHomeworkInfoReturn(
-                                subject=ed_lesson["subject_name"],
-                                date=ed_lesson["datetime_from"][0:10],
-                                text="+".join(all_hw),
-                            )
-                        )
-
+        parser.x_jwt_token = r.cookies["X-JWT-Token"]
+        self.session.commit()
+        return_data = self._fetch_hw_from_ed(r.json(), date_num)
         return_data = ParserHomeworkReturn(author=student, homework=return_data)
         return return_data

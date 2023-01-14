@@ -356,10 +356,9 @@ async def ban_user(session, params, bun_tg_id: int):
 
 
 @aiohttp_session
-async def unban_user(session, params, bun_tg_id: int):
-    # bun_tg_id - тг айди пользователя, которого нужно разбанить
-    params = add_tg_id(params)
-    async with session.delete(URL_BAN_LIST + str(bun_tg_id), params=params) as response:
+async def unban_user(session, params, bun_id: int):
+    # bun_id - id самой блокировки, а не пользователя.
+    async with session.delete(URL_BAN_LIST + str(bun_id), params=params) as response:
         status = response.status
         if status == 204:
             return True

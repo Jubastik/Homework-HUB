@@ -177,7 +177,7 @@ class ParserService:
             raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserNotFound, "No active parser")
         education_id, group_id = self.get_p_educations_and_p_group_ids(parser)
         if education_id == 0 or group_id == 0:
-            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserNotFound, "Token expired")
+            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
 
         cookies = {"X-JWT-Token": parser.x_jwt_token}
 

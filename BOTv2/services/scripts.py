@@ -1,8 +1,10 @@
 import datetime
+from asyncio import sleep
 
 from CONSTANTS import WEEKDAYS, WEEKDAYS_TRASNLATE
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
+
 # from service.restapi.restapi import get_user_by_id
 
 
@@ -63,28 +65,48 @@ def generate_dates_back(weekdays) -> list:
     return dates
 
 
-def convert_homework(data, callback) -> dict:
+def convert_homework(data, callback, diary_data=None) -> dict:
     res = []
     data.sort(key=lambda x: x["schedule"]["slot"]["number_of_lesson"])
-    for lesson in data:
+    for homework in data:
         # Формирование текста и фото
-        txt = lesson["text_homework"] if lesson["text_homework"] is not None else ""
-        author_name = lesson["author"]["name"]
-        subject = lesson["schedule"]["lesson"]["name"]
-        info = {
+        txt = homework["text_homework"] if homework["text_homework"] is not None else ""
+        author_name = homework["author"]["name"]
+        subject = homework["schedule"]["lesson"]["name"]
+        hw = {
             "text": process_text(
                 TextKeys.homework_txt,
                 callback,
                 subject=subject,
                 author=author_name,
                 txt=txt,
+                info="",
             ),
-            "photos": [_["photo_id"] for _ in lesson["photo_tg_id"]],
+            "photos": [_["photo_id"] for _ in homework["photo_tg_id"]],
         }
-        res.append(info)
+        res.append(hw)
+    if diary_data:
+        for homework in diary_data["homework"]:
+            hw = {
+                "text": process_text(
+                    TextKeys.homework_txt,
+                    callback,
+                    subject=homework["subject"],
+                    author=diary_data["author"]["name"],
+                    txt=homework["text"],
+                    info="Получено из электронного дневника",
+                ),
+                "photos": [],
+            }
+            res.append(hw)
     return res
 
     # {предмет: [{txt: txt, photo: [photos]}]}
+
+
+async def delete_msg(msg, time=10):
+    await sleep(time)
+    await msg.delete()
 
 
 def convert_users(data):

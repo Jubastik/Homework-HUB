@@ -4,6 +4,7 @@ from aiogram.types import User
 from tgbot.entities.mode import Mode
 
 from tgbot.modes.registration import *
+from tgbot.modes.common_stages.spb_diary import SPBDiaryGetLogin, SPBDiaryGetPassword
 
 from services.restapi.api_error import ApiError
 from services.restapi import restapi
@@ -24,6 +25,8 @@ class RegistrationMode(Mode):
         "shedule_stage5": lambda *args, **kwargs: LastSheduleStage(*args, **kwargs, day=5),
         "register_done1": RegisterDoneStage1,
         "register_done2": RegisterDoneStage2,
+        "spb_diary_get_login": SPBDiaryGetLogin,
+        "spb_diary_get_password": SPBDiaryGetPassword,
     }
     STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
     STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}
@@ -71,3 +74,11 @@ class RegistrationMode(Mode):
         await restapi.create_user(tg_id=self.user.tgid, name=class_name)
         self.students_class = await restapi.create_class(tg_id=self.user.tgid, class_name=class_name, schedules=shedule, start_time=self.get_time())
         await self.set_stage("register_done1")
+
+    async def register_diary(self, login: str, password: str):
+        res = await restapi.create_parser(self.user.tgid, login, password)
+        if isinstance(res, ApiError):
+            if res.error_code == 1502:
+                await self.set_stage("register_done2")
+            return res
+        await self.user.setup()

@@ -8,7 +8,7 @@ from tgbot.keyboards.inline.markup import (
     get_markup_student_menu,
 )
 
-from services.restapi.restapi import is_admin
+from services.restapi.restapi import is_lessons_in_saturday
 from services.restapi.api_error import ApiError
 
 
@@ -32,6 +32,14 @@ class MenuStage(Stage):
             return True
         elif call.data == "get_next_date_hw":
             date = datetime.date.today() - datetime.timedelta(hours=4) + datetime.timedelta(days=1)
+            if date.weekday() == 6:
+                date += datetime.timedelta(days=1)
+            elif date.weekday() == 5:
+                suturday = await is_lessons_in_saturday(self.user.tgid)
+                if isinstance(suturday, ApiError):
+                    return
+                if not suturday:
+                    date += datetime.timedelta(days=2)
             await self.mode.send_homework(call, date)
             return True
         elif call.data == "profile":

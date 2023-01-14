@@ -9,6 +9,9 @@ class TextKeys:
     shedule_stage = "shedule_stage"
     status_subject_added = "status_subject_added"
 
+    spb_diary_get_login = "spb_diary_get_login"
+    spb_diary_get_password = "spb_diary_get_password"
+
     by_link_success = "by_link_success"
     hello = "hello"
     warning = "warning"

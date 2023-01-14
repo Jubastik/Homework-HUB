@@ -31,7 +31,6 @@ class SendHwStage(Stage):
 
         if call.data == "done":
             if self.hw_txt or self.hw_photos:
-                print(self.hw_photos)
                 subject = self.mode.get_subject()
                 date = self.mode.get_add_date()
                 for i in self.messages:

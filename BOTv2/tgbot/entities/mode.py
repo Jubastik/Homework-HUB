@@ -21,7 +21,6 @@ class Mode:
 
     async def set_stage(self, stage: str | int) -> int:
         if isinstance(stage, int):
-            stage = min(self.STAGES_LEN - 1, max(0, stage))
             stage = self.STAGES_NUM_TO_NAME[stage]
 
         if stage in self.stages:
@@ -31,6 +30,11 @@ class Mode:
         main_msg_id = await self.stages[stage].activate()
         self.stage_num = self.STAGES_NAME_TO_NUM[stage]
         return main_msg_id
+    
+    def get_stage(self, stage: str | int) -> Stage:
+        if isinstance(stage, int):
+            stage = self.STAGES_NUM_TO_NAME[stage]
+        return self.stages[stage]
 
     async def handle_callback(self, call) -> bool:
         return await self.current_stage.handle_callback(call)

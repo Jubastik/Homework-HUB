@@ -36,10 +36,11 @@ async def on_startup(dp):
         get_parser_status,
         delete_parser,
         get_banned_users,
+        appoint_administrator,
     )
     from services.restapi.formatters import create_time_tables
     from datetime import time
-    data = await get_banned_users(472803385)
+    data = await appoint_administrator(3)
     print(data)
 
     if os.getenv("VERSION") == "server":

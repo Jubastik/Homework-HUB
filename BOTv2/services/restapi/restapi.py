@@ -104,6 +104,18 @@ async def is_superuser(session, params, tg_id: int):
 
 
 @aiohttp_session
+async def appoint_administrator(session, params, tg_id: int):
+    params = add_tg_id(params)
+    json = {"is_admin": True}
+    async with session.patch(URL_STUDENT + str(tg_id), params=params, json=json) as response:
+        status = response.status
+        if status == 200:
+            return await response.json()
+        else:
+            return ApiError(status, await response.json())
+
+
+@aiohttp_session
 async def create_user(session, params, tg_id: int, name: str, class_token: int = None):
     json = {"tg_id": tg_id, "name": name}
     if class_token is not None:

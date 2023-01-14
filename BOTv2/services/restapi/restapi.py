@@ -255,7 +255,7 @@ async def get_homework(session, params, tg_id: int, date: datetime.date):
 
 
 @aiohttp_session
-async def get_homework_pars(session, params, tg_id: int, date: datetime.date):
+async def get_parsed_hw(session, params, tg_id: int, date: datetime.date):
     params = add_tg_id(params, tg_id)
     async with session.get(URL_PARSER_HW + str(date), params=params) as response:
         status = response.status
@@ -278,7 +278,7 @@ async def create_parser(session, params, tg_id: int, login: str, password: str):
 
 
 @aiohttp_session
-async def parser_status(session, params, tg_id: int):
+async def get_parser_status(session, params, tg_id: int):
     """
     0 - парсер отсутствует
     1 - парсер есть и работает
@@ -321,7 +321,7 @@ async def delete_user(session, params, tg_id: int):
 
 
 @aiohttp_session
-async def get_baned_users(session, params, tg_id: int):
+async def get_banned_users(session, params, tg_id: int):
     params = add_tg_id(params)
     async with session.get(URL_BAN_LIST + "class/" + str(tg_id), params=params) as response:
         status = response.status

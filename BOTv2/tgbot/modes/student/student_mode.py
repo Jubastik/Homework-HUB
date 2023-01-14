@@ -1,11 +1,13 @@
 from aiogram.types import InputMediaPhoto
 from datetime import datetime
 
-from services.restapi.restapi import get_homework
+from services.restapi.restapi import get_homework, get_parsed_hw
 from tgbot.entities.mode import Mode
 
 from tgbot.modes.student.stages import *
+from tgbot.modes.common_stages.spb_diary import SPBDiaryGetLogin, SPBDiaryGetPassword
 from services.scripts import convert_homework
+
 
 
 class StudentMode(Mode):
@@ -21,6 +23,8 @@ class StudentMode(Mode):
         "hw_history": HwHistoryChooseDate,
         "delete_account": DeleteAccount,
         "admin_menu": AdminMenu,
+        "spb_diary_get_login": SPBDiaryGetLogin,
+        "spb_diary_get_password": SPBDiaryGetPassword,
     }
     STAGES_NUM_TO_NAME = {i: name for i, name in enumerate(STAGES)}
     STAGES_NAME_TO_NUM = {name: i for i, name in enumerate(STAGES)}
@@ -35,7 +39,7 @@ class StudentMode(Mode):
         handled = await self.current_stage.handle_callback(call)
         if handled:
             return True
-        if call.data == "menu":
+        if call.data == "menu" or call.data == "back":
             self.__init__(self.user)
             await self.set_stage("entry_stage")
             return True
@@ -61,11 +65,17 @@ class StudentMode(Mode):
 
     async def send_homework(self, call: CallbackQuery, date: datetime.date):
         # Getting and converting homework
-        data = await get_homework(self.user.tgid, date)
-        if isinstance(data, ApiError):
+        data_hw = await get_homework(self.user.tgid, date)
+        if isinstance(data_hw, ApiError):
             # TODO: handle errors
             return
-        homeworks = convert_homework(data, call)
+        diary_hw = await get_parsed_hw(self.user.tgid, date)
+        if isinstance(diary_hw, ApiError):
+            if diary_hw.error_code == 1501 or diary_hw.error_code == 1502:
+                diary_hw = None
+            else:
+                return
+        homeworks = convert_homework(data_hw, call, diary_hw)
         # Sending homework
         if len(homeworks) == 0:
             await call.answer(f"На {date.strftime('%A %d.%m')} нет домашнего задания❌")
@@ -81,3 +91,9 @@ class StudentMode(Mode):
             else:
                 await call.message.answer(lesson["text"], disable_notification=True)
         await self.user.reset()
+    
+    async def register_diary(self, login: str, password: str):
+        res = await restapi.create_parser(self.user.tgid, login, password)
+        await self.set_stage("profile")
+        if isinstance(res, ApiError):
+            return res

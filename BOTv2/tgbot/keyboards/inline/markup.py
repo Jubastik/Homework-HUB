@@ -54,6 +54,13 @@ markup_join_by_id_stage = InlineKeyboardMarkup(
 
 markup_next = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Далее", callback_data="next")]])
 
+markup_register_done2 = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Подключить ЭД", callback_data="connect_diary")],
+        [InlineKeyboardButton(text="Завершить регистрацию", callback_data="next")],
+    ]
+)
+
 
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
 
@@ -110,21 +117,27 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
 
 # | Student | Student | Student | Student | Student | Student | Student | Student |
 
-def markup_profile(is_admin, electronic_diary_status="disabled"):
+
+def markup_profile(is_admin, parser_status=0):
     markup = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Меню", callback_data="menu")],
         ]
     )
-    if electronic_diary_status == "disabled" or electronic_diary_status == "error":
-        markup.add(InlineKeyboardButton(text='Подключить "Петербургское Образование"', callback_data="enable_electronic_diary"))
+    if parser_status == 0 or parser_status == 2:
+        markup.add(
+            InlineKeyboardButton(text='Подключить "Петербургское Образование"', callback_data="connect_spb_diary")
+        )
     else:
-        markup.add(InlineKeyboardButton(text='Отключить "Петербургское Образование"', callback_data="disable_electronic_diary"))
+        markup.add(
+            InlineKeyboardButton(text='Отключить "Петербургское Образование"', callback_data="disable_spb_diary")
+        )
     markup.add(InlineKeyboardButton(text="История домашки", callback_data="get_homework_history"))
     if is_admin:
         markup.add(InlineKeyboardButton(text="Управление классом", callback_data="class_management"))
     markup.add(InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account"))
     return markup
+
 
 markup_add_homework = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -140,12 +153,12 @@ def get_markup_student_menu(subjects=[]) -> InlineKeyboardMarkup:
     for subject in subjects:
         keyboard.insert(InlineKeyboardButton(text=subject))
     keyboard.add(
-            InlineKeyboardButton(text="Добавить дз📌", callback_data="add_homework"),
-            InlineKeyboardButton(text="Дз на завтра⚡️", callback_data="get_next_date_hw"),
+        InlineKeyboardButton(text="Добавить дз📌", callback_data="add_homework"),
+        InlineKeyboardButton(text="Дз на завтра⚡️", callback_data="get_next_date_hw"),
     )
     keyboard.add(
-            InlineKeyboardButton(text="Добавить дз на дату📆", callback_data="add_on_date"),
-            InlineKeyboardButton(text="Получить дз🔍", callback_data="get_homework"),
+        InlineKeyboardButton(text="Добавить дз на дату📆", callback_data="add_on_date"),
+        InlineKeyboardButton(text="Получить дз🔍", callback_data="get_homework"),
     )
     keyboard.add(InlineKeyboardButton(text="Моё расписание📚", callback_data="my_shedule"))
     keyboard.add(InlineKeyboardButton(text="Профиль👤", callback_data="profile"))

@@ -32,14 +32,14 @@ async def on_startup(dp):
         create_homework,
         get_homework,
         create_parser,
-        get_homework_pars,
-        parser_status,
+        get_parsed_hw,
+        get_parser_status,
         delete_parser,
-        get_baned_users,
+        get_banned_users,
     )
     from services.restapi.formatters import create_time_tables
     from datetime import time
-    data = await get_baned_users(472803385)
+    data = await get_banned_users(472803385)
     print(data)
 
     if os.getenv("VERSION") == "server":

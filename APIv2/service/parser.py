@@ -19,28 +19,6 @@ from schemas.parser_pdc import ParserCreate, ParserHomeworkReturn, ParserHomewor
 from service.CONSTANTS import day_id_to_weekday
 
 
-def timed_lru_cache(seconds: int, maxsize: int = 128):
-    from functools import lru_cache, wraps
-    from datetime import datetime, timedelta
-
-    def wrapper_cache(func):
-        func = lru_cache(maxsize=maxsize)(func)
-        func.lifetime = timedelta(seconds=seconds)
-        func.expiration = datetime.utcnow() + func.lifetime
-
-        @wraps(func)
-        def wrapped_func(*args, **kwargs):
-            if datetime.utcnow() >= func.expiration:
-                func.cache_clear()
-                func.expiration = datetime.utcnow() + func.lifetime
-
-            return func(*args, **kwargs)
-
-        return wrapped_func
-
-    return wrapper_cache
-
-
 class ParserService:
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session

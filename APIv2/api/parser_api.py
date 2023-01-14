@@ -17,7 +17,7 @@ router = APIRouter(
     tags=["parser"],
 )
 
-clar_cache = TTLCache(maxsize=100, ttl=15)
+clar_cache = TTLCache(maxsize=100, ttl=45)
 
 
 @router.get("/", response_model=List[ParserReturn])

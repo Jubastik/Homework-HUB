@@ -41,4 +41,6 @@ HOMEWORK_NO_SUCH_LESSON = 1302
 
 ParserNotActive = 1500
 ParserNotFound = 1501
-LoginError = 1502
+ParserLoginError = 1502
+ParserAccessError = 1503
+

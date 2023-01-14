@@ -102,8 +102,10 @@ class ParserService:
                 data=payload,
             )
             print("!!!Запрос на сервер!!!")
-            if r.status_code != status.HTTP_200_OK:
-                raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.LoginError, "Invalid mail or password")
+            if r.status_code == status.HTTP_400_BAD_REQUEST:
+                raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Invalid mail or password")
+            elif r.status_code != status.HTTP_200_OK:
+                raise my_err.APIError(status.HTTP_500_INTERNAL_SERVER_ERROR, my_err.ParserAccessError, "Access error")
             data = r.json()
             x_jwt_token = data["data"]["token"]
             parser = Parser(
@@ -147,6 +149,7 @@ class ParserService:
 
     def get_pars_homework(self, student_id, hwdate: datetime.date):
         weekday = day_id_to_weekday[hwdate.weekday()]
+        student = self.session.query(Student).filter(Student.id == student_id).first()
 
         lessons_in_day = (
             self.session.query(Schedule)
@@ -158,7 +161,7 @@ class ParserService:
         )
         lessons_name = list(set([lesson.lesson.name for lesson in lessons_in_day]))
         if len(lessons_name) == 0:
-            return []
+            return ParserHomeworkReturn(author=student, homework=[])
         date_num = []
         for name in lessons_name:
             date_num.append((name, *self._get_day_and_number(student_id, name, hwdate)))
@@ -185,7 +188,7 @@ class ParserService:
         )
         print("!!!Запрос на сервер!!!")
         if r.status_code != status.HTTP_200_OK:
-            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.LoginError, "Token expired")
+            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
         data = r.json()["data"]["items"]
         return_data = []
         for ed_lesson in data:
@@ -202,6 +205,6 @@ class ParserService:
                                 text="+".join(all_hw),
                             )
                         )
-        student = self.session.query(Student).filter(Student.id == student_id).first()
+
         return_data = ParserHomeworkReturn(author=student, homework=return_data)
         return return_data

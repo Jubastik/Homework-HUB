@@ -17,4 +17,4 @@ jobs:
               git reset --hard HEAD
               git pull
               cd ..
-              pm2 restart pm2home.json
+              pm2 restart pm2NewHome.json

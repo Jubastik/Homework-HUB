@@ -9,6 +9,7 @@ class BanListReturn(BaseModel):
 
 
 class BanListUserReturn(BaseModel):
+    id: int
     tg_id: int
     name: str
 

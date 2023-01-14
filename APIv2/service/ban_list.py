@@ -9,7 +9,6 @@ from my_err import APIError
 from schemas.student_pdc import IdType
 
 
-
 class BanListService:
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session
@@ -32,13 +31,9 @@ class BanListService:
         self.session.commit()
         return ban
 
-    def unban_student(self, student_id: int, id_type: IdType, class_id: int):
-        if id_type == IdType.telegram:
-            ban = self.session.query(Ban_list).filter(Ban_list.tg_id == student_id, Ban_list.class_id == class_id).first()
-            if ban is None:
-                raise APIError(404, my_err.STUDENT_NOT_FOUND, "Пользователь не был найден.")
-            self.session.delete(ban)
-            self.session.commit()
-        raise APIError(422, my_err.IN_DEVELOPMENT, "Неверный тип id")
-
-
+    def unban_student(self, db_id):
+        ban = self.session.query(Ban_list).filter(Ban_list.id == db_id).first()
+        if ban is None:
+            raise APIError(404, my_err.STUDENT_NOT_FOUND, "Пользователь не был найден.")
+        self.session.delete(ban)
+        self.session.commit()

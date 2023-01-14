@@ -16,6 +16,7 @@ from languages.text_proccesor import process_text
 
 class RegistrationMode(Mode):
     STAGES = {
+        "join_by_id_done": JoinRegisterDone,
         "join_by_id_stage": JoinByIdStage,
         "entry_stage": StartStage,
         "time_stage": TimeStage,
@@ -83,7 +84,7 @@ class RegistrationMode(Mode):
                 await sleep(3)
                 await warning.delete()
             return ApiError
-        await self.user.change_mode("student_mode")
+        await self.set_stage("join_by_id_done")
 
     async def register(self, call):
         class_name = make_username(User.get_current())

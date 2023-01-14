@@ -53,6 +53,7 @@ class LanguageRussian:
 <i>P.S. Бот находится в бета-тесте
 Если что-то не работает, пиши @Ru1kaa или @fohan</i>
 """
+    join_register_done = f"Подпишись на мой телеграм канал <b>{TG_OFFICAL_CHANNEL}</b>"
     start_time_check = """
 Начало уроков в <i><b>{time}</b></i>
 

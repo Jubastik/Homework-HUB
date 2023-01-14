@@ -14,6 +14,7 @@ class TextKeys:
     no_banned_users = "no_banned_users"
     u_are_banned = "u_are_banned"
     class_not_found = "class_not_found"
+    join_register_done = "join_register_done"
 
     spb_diary_get_login = "spb_diary_get_login"
     spb_diary_get_password = "spb_diary_get_password"

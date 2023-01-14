@@ -1,1 +1,1 @@
-from . import admin_panel, developer, general, registration, student, groups_stopper
+from . import student, registration, admin_panel, developer, groups_stopper, general

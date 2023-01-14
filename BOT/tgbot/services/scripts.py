@@ -17,9 +17,9 @@ def time_is_correct(time: list):
 
 
 def convert_time(time: list):
-    if len(time[1]) == 1:
-        time[1] = f"0{time[1]}"
-    return time
+    time = time.split(":")
+    hours, minutes = map(int, time)
+    return datetime.time(hours, minutes)
 
 
 def generate_dates(saturday_lesson) -> list:
@@ -111,3 +111,12 @@ def make_username(user):
             return f"{fname}"
         elif lname:
             return f"{lname}"
+
+
+def parse_args(string: str) -> list:
+    """Разбивает строку на аргументы"""
+    args = string.split(":")
+    res = {}
+    for i in args:
+        arg = i.split("=")
+        res[arg[0]] = arg[1]

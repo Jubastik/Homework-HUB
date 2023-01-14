@@ -1,6 +1,12 @@
 
 
 class TextKeys:
+    unexpected_message = "unexpected_message"
+    wrong_class_token = "wrong_class_token"
+    wrong_time = "wrong_time"
+    status_time_changed = "status_time_changed"
+    shedule_stage = "shedule_stage"
+
     by_link_success = "by_link_success"
     hello = "hello"
     warning = "warning"

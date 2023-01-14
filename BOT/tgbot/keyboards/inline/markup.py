@@ -7,18 +7,68 @@ from tgbot.keyboards.inline.callback_data import (
     SubjectData,
 )
 
+
+# | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager |
+DEFAULT_REGISTRATION = [
+    InlineKeyboardButton(text="< Назад", callback_data="back"),
+    InlineKeyboardButton(text="Дальше >", callback_data="next"),
+]
+
+
+markup_registration_default = InlineKeyboardMarkup(inline_keyboard=[DEFAULT_REGISTRATION])
+
+markup_subjects_stage = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Удалить добавленный предмет", callback_data="remove"
+            )
+        ],
+        DEFAULT_REGISTRATION,
+    ]
+)
+
+
+def get_markup_shedule_stage(subjects, last_day=False):
+    keyboard = InlineKeyboardMarkup(
+        row_width=3,
+    )
+    keyboard.insert(InlineKeyboardButton(text="Вверх ↑", callback_data=ArrowsData.new(num=-1)))
+    keyboard.insert(InlineKeyboardButton(text="Удалить", callback_data="remove"))
+    keyboard.insert(InlineKeyboardButton(text="Вниз ↓", callback_data=ArrowsData.new(num=1)))
+    for subject in subjects:
+        keyboard.insert(
+            InlineKeyboardButton(
+                text=subject, callback_data=SubjectData.new(name=subject)
+            )
+        )
+    if last_day:
+        keyboard.add(InlineKeyboardButton(text="< Назад", callback_data="back"))
+    else:
+        keyboard.add(*DEFAULT_REGISTRATION)
+    keyboard.add(InlineKeyboardButton(text="Зарегистрироваться", callback_data="register"))
+    return keyboard
+
+
+markup_join_by_id_stage = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="next")]]
+)
+
+
 # | Registration | Registration | Registration | Registration | Registration | Registration | Registration | Registration |
 
 
 markup_start = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(
-                text="Присоедениться", callback_data="join_class_by_id"
-            ),
-            InlineKeyboardButton(text="Создать класс", callback_data="make_class"),
+            InlineKeyboardButton(text="Присоедениться", callback_data="back"),
+            InlineKeyboardButton(text="Создать класс", callback_data="next"),
         ],
     ]
+)
+
+markup_back = InlineKeyboardMarkup(
+    inline_keyboard=[InlineKeyboardButton(text="Назад", callback_data="back")]
 )
 
 markup_yes_or_no = InlineKeyboardMarkup(
@@ -241,7 +291,10 @@ def get_markup_classmates(data):
     keyboard = InlineKeyboardMarkup(row_width=2)
     for key in data.keys():
         keyboard.insert(
-            InlineKeyboardButton(text=data[key], callback_data=StudentsData.new(tguser_id=key, name=data[key]))
+            InlineKeyboardButton(
+                text=data[key],
+                callback_data=StudentsData.new(tguser_id=key, name=data[key]),
+            )
         )
     keyboard.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
     return keyboard

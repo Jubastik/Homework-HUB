@@ -35,7 +35,7 @@ class MyClassReturn(MyClassBase):
     id: int
     class_token: int
     mailing_time: time
-    mailing_stopped: bool
+    mailing_stopped: bool | None
     student: list[StudentReturn]
 
     class Config:

@@ -79,8 +79,6 @@ class StudentMode(Mode):
                 diary_hw = None
             else:
                 return
-        info_msg = await call.message.answer(f"🔻Домашка на {date.strftime('%A %d.%m')}🔻")
-        asyncio.create_task(delete_msg(info_msg, 600))
         homeworks = convert_homework(data_hw, call, diary_hw)
         # Sending homework
         if len(homeworks) == 0:
@@ -88,6 +86,8 @@ class StudentMode(Mode):
             if self.stage_num != self.STAGES_NAME_TO_NUM["entry_stage"]:
                 await self.set_stage("entry_stage")
             return
+        info_msg = await call.message.answer(f"🔻Домашка на {date.strftime('%A %d.%m')}🔻")
+        asyncio.create_task(delete_msg(info_msg, 600))
         for lesson in homeworks:
             if len(lesson["photos"]) != 0:
                 media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]

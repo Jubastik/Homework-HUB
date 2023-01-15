@@ -59,10 +59,10 @@ class User:
     async def handle_message(self, msg: Message) -> bool:
         if "/start" in msg.text:
             await self.reset()
-            if isinstance(self.mode, self.MODES["registration_mode"]):
+            if self.mode is None or isinstance(self.mode, self.MODES["registration_mode"]):
                 txt = msg.text.split()
-                if len(txt) == 2 and "class_token" in txt[-1]:
-                    await self.mode.join_class(int(txt[-1].replace("class_token", "")))
+                if len(txt) == 2 and txt[1].isdigit():
+                    await self.mode.join_class(int(txt[1].replace("class_token", "")))
             await sleep(0.5)
             await msg.delete()
             return True

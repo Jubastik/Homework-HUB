@@ -35,7 +35,7 @@ class SheduleStage(Stage):
         elif "subject" in call.data:
             self.shedule[self.cur] = call.data.split(":")[1]
             self.max_len = max(self.max_len, len(self.shedule[self.cur]))
-            self.cur += 1
+            self.cur = (self.cur + 1) % 8
             await self.activate()
             return True
         elif call.data == "remove":

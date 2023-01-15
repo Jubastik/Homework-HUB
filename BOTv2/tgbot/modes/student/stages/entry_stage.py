@@ -26,6 +26,9 @@ class MenuStage(Stage):
             await self.mode.set_stage("shedule")
             return True
         elif call.data == "add_homework":
+            if datetime.datetime.now().weekday() == 6:
+                await call.answer("Сегодня нету уроков")
+                return True
             await self.mode.set_stage("fast_add")
         elif call.data == "get_homework":
             await self.mode.set_stage("get_hw_choose_date")

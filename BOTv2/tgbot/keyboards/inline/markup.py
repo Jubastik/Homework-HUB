@@ -16,11 +16,11 @@ class InlineKeyboardMarkup(types.InlineKeyboardMarkup):
 
 # | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager | RegistrationManager |
 DEFAULT_REGISTRATION = [
-    InlineKeyboardButton(text="< Назад", callback_data="back"),
-    InlineKeyboardButton(text="Дальше >", callback_data="next"),
+    InlineKeyboardButton(text="◀️Назад", callback_data="back"),
+    InlineKeyboardButton(text="Дальше▶️", callback_data="next"),
 ]
 
-
+1
 markup_registration_default = InlineKeyboardMarkup(
     inline_keyboard=[DEFAULT_REGISTRATION]
 )
@@ -42,11 +42,11 @@ def get_markup_shedule_stage(subjects, last_day=False):
         row_width=3,
     )
     keyboard.insert(
-        InlineKeyboardButton(text="Вверх ↑", callback_data=ArrowsData.new(num=-1))
+        InlineKeyboardButton(text="Вверх ⬆️", callback_data=ArrowsData.new(num=-1))
     )
-    keyboard.insert(InlineKeyboardButton(text="Удалить", callback_data="remove"))
+    keyboard.insert(InlineKeyboardButton(text="Удалить❌", callback_data="remove"))
     keyboard.insert(
-        InlineKeyboardButton(text="Вниз ↓", callback_data=ArrowsData.new(num=1))
+        InlineKeyboardButton(text="Вниз ⬇️", callback_data=ArrowsData.new(num=1))
     )
     for subject in subjects:
         keyboard.insert(
@@ -55,7 +55,7 @@ def get_markup_shedule_stage(subjects, last_day=False):
             )
         )
     if last_day:
-        keyboard.add(InlineKeyboardButton(text="< Назад", callback_data="back"))
+        keyboard.add(InlineKeyboardButton(text="◀️Назад", callback_data="back"))
     else:
         keyboard.add(*DEFAULT_REGISTRATION)
     keyboard.add(
@@ -65,11 +65,11 @@ def get_markup_shedule_stage(subjects, last_day=False):
 
 
 markup_join_by_id_stage = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data="next")]]
+    inline_keyboard=[[InlineKeyboardButton(text="◀️Назад", callback_data="next")]]
 )
 
 markup_next = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text="Далее", callback_data="next")]]
+    inline_keyboard=[[InlineKeyboardButton(text="Далее▶️", callback_data="next")]]
 )
 
 markup_join_done = InlineKeyboardMarkup(
@@ -99,7 +99,7 @@ markup_start = InlineKeyboardMarkup(
 )
 
 markup_back = InlineKeyboardMarkup(
-    inline_keyboard=[InlineKeyboardButton(text="Назад", callback_data="back")]
+    inline_keyboard=[InlineKeyboardButton(text="◀️ Назад", callback_data="back")]
 )
 
 markup_yes_or_no = InlineKeyboardMarkup(
@@ -159,26 +159,26 @@ def markup_profile(is_admin, parser_status=0):
     if parser_status == 0 or parser_status == 2:
         markup.add(
             InlineKeyboardButton(
-                text='Подключить "Петербургское Образование"',
+                text='Подключить "Петербургское Образование"⚡️',
                 callback_data="connect_spb_diary",
             )
         )
     else:
         markup.add(
             InlineKeyboardButton(
-                text='Отключить "Петербургское Образование"',
+                text='Отключить "Петербургское Образование"❌',
                 callback_data="disable_spb_diary",
             )
         )
     markup.add(
         InlineKeyboardButton(
-            text="История домашки", callback_data="get_homework_history"
+            text="История домашки⏳", callback_data="get_homework_history"
         )
     )
     if is_admin:
         markup.add(
             InlineKeyboardButton(
-                text="Управление классом", callback_data="class_management"
+                text="Управление классом⭐️", callback_data="class_management"
             )
         )
     markup.add(

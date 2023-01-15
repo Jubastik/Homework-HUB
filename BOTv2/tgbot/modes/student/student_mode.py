@@ -94,9 +94,11 @@ class StudentMode(Mode):
                 for photo in lesson["photos"][1:]:
                     media.append(InputMediaPhoto(photo))
                 msg = await call.message.answer_media_group(media, disable_notification=True)
+                for m in msg:
+                    asyncio.create_task(delete_msg(m, 600))
             else:
                 msg = await call.message.answer(lesson["text"], disable_notification=True)
-            asyncio.create_task(delete_msg(msg, 600))
+                asyncio.create_task(delete_msg(msg, 600))
         await self.user.reset()
     
     async def register_diary(self, login: str, password: str):

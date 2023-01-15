@@ -55,6 +55,20 @@ class ParserService:
         self.session.commit()
         return parsers
 
+    def get_user_with_ed(self, student_id: int):
+        if (
+            self.session.query(Parser).filter(Parser.student_id == student_id, Parser.active == True).first()
+            is not None
+        ):
+            return student_id
+
+        my_class = self.session.query(Class).join(Student).filter(Student.id == student_id).first()
+        students = [st.id for st in my_class.student]
+        parser = self.session.query(Parser).filter(Parser.student_id.in_(students), Parser.active == True).first()
+        if not parser:
+            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserNotFound, "Class has no active parser")
+        return parser.student_id
+
     def create_parser(self, student_id: int, parser_data: ParserCreate):
         parsers = (
             self.session.query(Parser)

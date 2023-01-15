@@ -151,11 +151,7 @@ def get_markup_shedule(subjects) -> InlineKeyboardMarkup:
 
 
 def markup_profile(is_admin, parser_status=0):
-    markup = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="Меню", callback_data="menu")],
-        ]
-    )
+    markup = InlineKeyboardMarkup()
     if parser_status == 0 or parser_status == 2:
         markup.add(
             InlineKeyboardButton(
@@ -173,7 +169,7 @@ def markup_profile(is_admin, parser_status=0):
     markup.add(
         InlineKeyboardButton(
             text="История домашки⏳", callback_data="get_homework_history"
-        )
+        ),
     )
     if is_admin:
         markup.add(
@@ -182,8 +178,9 @@ def markup_profile(is_admin, parser_status=0):
             )
         )
     markup.add(
-        InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account")
+        InlineKeyboardButton(text="Удалить аккаунт", callback_data="delete_account"),
     )
+    markup.add(InlineKeyboardButton(text="Меню", callback_data="menu"))
     return markup
 
 

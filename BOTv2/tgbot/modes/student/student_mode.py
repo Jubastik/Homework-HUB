@@ -79,7 +79,7 @@ class StudentMode(Mode):
                 diary_hw = None
             else:
                 return
-        info_msg = await call.message.answer(f"Домашка на {date.strftime('%A %d.%m')}👇🏻")
+        info_msg = await call.message.answer(f"🔻Домашка на {date.strftime('%A %d.%m')}🔻")
         asyncio.create_task(delete_msg(info_msg, 600))
         homeworks = convert_homework(data_hw, call, diary_hw)
         # Sending homework

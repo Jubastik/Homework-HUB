@@ -1,5 +1,5 @@
 from aiogram.types import Message, CallbackQuery
-from aiogram.utils.exceptions import MessageCantBeDeleted
+from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
 import logging
 from asyncio import sleep
 
@@ -67,7 +67,7 @@ class UsersManager:
             await call.answer("Устаревший запрос, напиши /start")
             try:
                 await call.message.delete()
-            except (AttributeError, MessageCantBeDeleted) as err:
+            except (AttributeError, MessageCantBeDeleted, MessageToDeleteNotFound) as err:
                 logging.warning(
                     f"UM.handle_callback:Can't delete message from {userid} - {call.from_user.username or call.from_user.first_name + ' ' + call.from_user.last_name}"
                     + str(err)

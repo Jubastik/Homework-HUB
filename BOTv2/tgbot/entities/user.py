@@ -57,7 +57,7 @@ class User:
         return await self.mode.handle_callback(call)
 
     async def handle_message(self, msg: Message) -> bool:
-        if "/start" in msg.text:
+        if msg.text and "/start" in msg.text:
             await self.reset()
             if self.mode is None or isinstance(self.mode, self.MODES["registration_mode"]):
                 txt = msg.text.split()

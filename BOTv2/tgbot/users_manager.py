@@ -1,4 +1,6 @@
 from aiogram.types import Message, CallbackQuery
+from aiogram.utils.exceptions import MessageCantBeDeleted
+import logging
 from asyncio import sleep
 
 from tgbot.entities.user import User
@@ -41,7 +43,13 @@ class UsersManager:
         user = await self.get_user(userid)
         handled = await user.handle_message(msg)
         if not handled:
-            await msg.delete()
+            try:
+                await msg.delete()
+            except MessageCantBeDeleted as err:
+                logging.warning(
+                    f"UM.handle_message:Can't delete message from {userid} - {msg.from_user.username or msg.from_user.first_name + ' ' + msg.from_user.last_name}"
+                    + str(err)
+                )
             if user.main_msg_id:
                 warning = await msg.answer("Используй кнопки 👆🏻")
                 await sleep(3)
@@ -59,8 +67,11 @@ class UsersManager:
             await call.answer("Устаревший запрос, напиши /start")
             try:
                 await call.message.delete()
-            except AttributeError:
-                pass
+            except (AttributeError, MessageCantBeDeleted) as err:
+                logging.warning(
+                    f"UM.handle_callback:Can't delete message from {userid} - {call.from_user.username or call.from_user.first_name + ' ' + call.from_user.last_name}"
+                    + str(err)
+                )
             return
         handled = await user.handle_callback(call)
         if not handled:

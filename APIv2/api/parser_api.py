@@ -40,7 +40,7 @@ async def create_parser(
     return service.create_parser(obj_id, parser)
 
 
-hw_cache = TTLCache(maxsize=500, ttl=600)
+hw_cache = TTLCache(maxsize=500, ttl=60 * 60)
 
 
 @router.get("/homework/{hwdate}", response_model=ParserHomeworkReturn)

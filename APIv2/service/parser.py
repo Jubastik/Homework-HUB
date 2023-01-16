@@ -143,7 +143,8 @@ class ParserService:
         for i in range(6, now + 1, -1):
             if i in days:
                 return hwdate - datetime.timedelta(days=now + (7 - i)), [_[1] for _ in schedules if _[0] == i]
-        return hwdate - datetime.timedelta(days=7), [_[1] for _ in schedules if _[0] == i]
+
+        return hwdate - datetime.timedelta(days=7), [_[1] for _ in schedules if _[0] == now]
 
     def _fetch_hw_from_ed(self, json_data, date_num) -> list[ParserHomeworkInfoReturn]:
         data = json_data["data"]["items"]

@@ -1,12 +1,10 @@
-import datetime
+from datetime import date
 
 from fastapi import Depends
-from datetime import date
 from sqlalchemy.orm import Session
 from starlette import status
 
 import my_err
-from database.chats import Chat
 from database.classes import Class
 from database.db_session import get_session
 from database.homeworks import Homework
@@ -14,12 +12,8 @@ from database.lessons import Lesson
 from database.schedules import Schedule
 from database.students import Student
 from database.tg_photos import TgPhoto
-from database.week_days import WeekDay
 from my_err import APIError
 from schemas.homework_pdc import HomeworkCreate
-from schemas.student_pdc import IdType
-from service.CONSTANTS import day_id_to_weekday
-from service.student import StudentService
 
 
 class HomeworkService:
@@ -60,8 +54,10 @@ class HomeworkService:
                 status_code=status.HTTP_404_NOT_FOUND, msg="Schedule not found", err_id=my_err.HOMEWORK_NO_SUCH_LESSON
             )
         homework_data["schedule_id"] = homework_data["schedule_id"][0]
-        homework_data["author_id"] = self.session.query(Student).filter(Student.tg_id == homework_data['author_tg_id']).first().id
-        del homework_data['author_tg_id']
+        homework_data["author_id"] = (
+            self.session.query(Student).filter(Student.tg_id == homework_data["author_tg_id"]).first().id
+        )
+        del homework_data["author_tg_id"]
 
         homework = Homework(**homework_data)
         self.session.add(homework)

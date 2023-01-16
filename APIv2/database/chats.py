@@ -1,11 +1,10 @@
-import datetime
-
 import sqlalchemy
 from sqlalchemy import orm
 
 from .db_session import SqlAlchemyBase
 
 
+# noinspection DuplicatedCode
 class Chat(SqlAlchemyBase):
     __tablename__ = "Chats"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)

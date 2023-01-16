@@ -2,16 +2,12 @@ import datetime
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from starlette import status
 
-import my_err
 from database.classes import Class
 from database.db_session import get_session
 from database.schedules import Schedule
-from database.students import Student
 from database.time_tables import TimeTable
 from database.week_days import WeekDay
-from my_err import APIError
 from service.CONSTANTS import day_id_to_weekday
 
 

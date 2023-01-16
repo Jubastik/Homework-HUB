@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Response
 from starlette import status
 
-from api.dependencies import process_user_id, optional_process_user_id
+from api.dependencies import process_user_id
 from schemas.student_pdc import StudentReturn, StudentCreate, StudentUpdate
 from service.student import StudentService
 

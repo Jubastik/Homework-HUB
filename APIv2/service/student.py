@@ -39,8 +39,7 @@ class StudentService:
 
     def check_ban_by_tg_id(self, tg_id: int, class_id: int) -> bool:
         return (
-            self.session.query(Ban_list).filter(Ban_list.tg_id == tg_id, Ban_list.class_id == class_id).first()
-            is not None
+                self.session.query(Ban_list).filter(Ban_list.tg_id == tg_id, Ban_list.class_id == class_id).first() is not None
         )
 
     def get_student(self, student_id: int) -> Student:

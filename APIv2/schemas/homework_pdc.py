@@ -7,7 +7,6 @@ from starlette import status
 import my_err
 from my_err import APIError
 from schemas.schedule_pdc import ScheduleReturn
-
 from schemas.student_pdc import StudentReturn
 
 

@@ -7,7 +7,6 @@ from starlette import status
 
 from api.dependencies import process_user_id
 from schemas.parser_pdc import ParserReturn, ParserCreate, ParserHomeworkReturn
-
 from service.parser import ParserService
 
 router = APIRouter(

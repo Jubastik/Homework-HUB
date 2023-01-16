@@ -19,6 +19,7 @@ class User:
         self.tgid = tgid
         self.um = um
         self.main_msg_id = main_msg_id
+        self.mode = None
         # TODO: language
 
     async def setup(self, mode: Mode = None) -> None:
@@ -54,7 +55,10 @@ class User:
             self.main_msg_id = None
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
-        return await self.mode.handle_callback(call)
+        if not self.mode:
+            await self.reset()
+        handled = await self.mode.handle_callback(call)
+        return handled
 
     async def handle_message(self, msg: Message) -> bool:
         if msg.text and "/start" in msg.text:
@@ -66,7 +70,8 @@ class User:
             await sleep(0.5)
             await msg.delete()
             return True
-
+        if not self.mode:
+            await self.reset()
         handled = await self.mode.handle_message(msg)
         return handled
 

@@ -1,8 +1,10 @@
 import datetime
 import json
+import logging
 
 import requests
 from fastapi import Depends
+from sentry_sdk import capture_exception
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -36,7 +38,11 @@ class ParserService:
                 cookies=cookies,
                 headers=self.headers,
             )
-            print("!!!Запрос на сервер!!!")
+            logging.warning(f"Запрос на сервер в get_p_educations_and_p_group_ids. User id: {parser.student_id}")
+            if r.status_code not in [status.HTTP_200_OK, status.HTTP_401_UNAUTHORIZED]:
+                capture_exception(
+                    my_err.APIError(status.HTTP_500_INTERNAL_SERVER_ERROR, my_err.ParserAccessError, "Access error")
+                )
             if r.status_code != status.HTTP_200_OK:
                 return 0, 0
             data = r.json()
@@ -93,10 +99,13 @@ class ParserService:
                 headers=self.headers,
                 data=payload,
             )
-            print("!!!Запрос на сервер!!!")
+            logging.info(f"Запрос на сервер в create_parser. User id: {student_id}")
             if r.status_code == status.HTTP_400_BAD_REQUEST:
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Invalid mail or password")
             elif r.status_code != status.HTTP_200_OK:
+                capture_exception(
+                    my_err.APIError(status.HTTP_500_INTERNAL_SERVER_ERROR, my_err.ParserAccessError, "Access error")
+                )
                 raise my_err.APIError(status.HTTP_500_INTERNAL_SERVER_ERROR, my_err.ParserAccessError, "Access error")
             data = r.json()
             x_jwt_token = data["data"]["token"]
@@ -207,8 +216,9 @@ class ParserService:
             cookies=cookies,
             headers=self.headers,
         )
-        print("!!!Запрос на сервер!!!")
+        logging.info(f"Запрос на сервер в get_pars_homework. User id: {student_id}")
         if r.status_code != status.HTTP_200_OK:
+            capture_exception(my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired"))
             raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
         parser.x_jwt_token = r.cookies["X-JWT-Token"]
         self.session.commit()

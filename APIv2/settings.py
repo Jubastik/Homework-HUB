@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     ROOT_TOKEN: str = "no_token"
 
+    SENTRY_DSN: str = None
+
     DB_ENGINE: Engine = "sqlite"  # sqlite / postgresql
 
     POSTGRESQL_USERNAME: str

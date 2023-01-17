@@ -20,6 +20,8 @@ from database.week_days import WeekDay
 from schemas.parser_pdc import ParserCreate, ParserHomeworkReturn, ParserHomeworkInfoReturn
 from service.CONSTANTS import day_id_to_weekday
 
+ed_ses = requests.Session()
+
 
 class ParserService:
     def __init__(self, session: Session = Depends(get_session)):
@@ -33,7 +35,7 @@ class ParserService:
     def get_p_educations_and_p_group_ids(self, parser: Parser) -> tuple[int, int]:
         cookies = {"X-JWT-Token": parser.x_jwt_token}
         if parser.platform_id == 1:
-            r = requests.get(
+            r = ed_ses.get(
                 "https://dnevnik2.petersburgedu.ru/api/journal/person/related-child-list",
                 cookies=cookies,
                 headers=self.headers,
@@ -94,7 +96,7 @@ class ParserService:
                     "activation_code": None,
                 }
             )
-            r = requests.post(
+            r = ed_ses.post(
                 "https://dnevnik2.petersburgedu.ru/api/user/auth/login",
                 headers=self.headers,
                 data=payload,
@@ -211,7 +213,7 @@ class ParserService:
 
         cookies = {"X-JWT-Token": parser.x_jwt_token}
 
-        r = requests.get(
+        r = ed_ses.get(
             f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}&p_datetime_to={d_max}&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
             cookies=cookies,
             headers=self.headers,

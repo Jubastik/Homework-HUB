@@ -99,7 +99,7 @@ class ParserService:
                 headers=self.headers,
                 data=payload,
             )
-            logging.info(f"Запрос на сервер в create_parser. User id: {student_id}")
+            logging.warning(f"Запрос на сервер в create_parser. User id: {student_id}")
             if r.status_code == status.HTTP_400_BAD_REQUEST:
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Invalid mail or password")
             elif r.status_code != status.HTTP_200_OK:
@@ -216,7 +216,7 @@ class ParserService:
             cookies=cookies,
             headers=self.headers,
         )
-        logging.info(f"Запрос на сервер в get_pars_homework. User id: {student_id}")
+        logging.warning(f"Запрос на сервер в get_pars_homework. User id: {student_id}")
         if r.status_code != status.HTTP_200_OK:
             capture_exception(my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired"))
             raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")

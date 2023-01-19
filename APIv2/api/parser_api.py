@@ -1,4 +1,5 @@
 import datetime
+import json
 from typing import List
 
 from cachetools import cached, TTLCache
@@ -8,6 +9,7 @@ from starlette import status
 from api.dependencies import process_user_id
 from schemas.parser_pdc import ParserReturn, ParserCreate, ParserHomeworkReturn
 from service.parser import ParserService
+from service.redis_methods import get_cache, set_cache
 
 router = APIRouter(
     prefix="/parser",
@@ -23,11 +25,17 @@ async def clarify_parsers(obj_id: int = Depends(process_user_id), service: Parse
     Актуализировать информацию о состоянии парсеров юзера
     """
 
-    @cached(cache=clar_cache)
     def _get(obj_id):
         return service.clarify_parsers(obj_id)
 
-    return _get(obj_id)
+    data = get_cache(f"cp_{obj_id}")
+    if data is None:
+        data = _get(obj_id)
+        data = json.dumps([ParserReturn.from_orm(d).dict() for d in data])
+        set_cache(f"cp_{obj_id}", data, 20)
+    else:
+        data = [ParserReturn(**d) for d in json.loads(data)]
+    return data
 
 
 @router.post("/", response_model=ParserReturn)

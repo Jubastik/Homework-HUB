@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     ROOT_TOKEN: str = "no_token"
 
+    USE_REDIS: bool = False
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+
     SENTRY_DSN: str = None
 
     DB_ENGINE: Engine = "sqlite"  # sqlite / postgresql

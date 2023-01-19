@@ -16,5 +16,6 @@ jobs:
               cd /root/HomeBot
               git reset --hard HEAD
               git pull
+              poetry install
               cd ..
               pm2 restart pm2NewHome.json

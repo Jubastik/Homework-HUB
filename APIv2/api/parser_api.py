@@ -1,20 +1,18 @@
 import datetime
 from typing import List
 
-from cachetools import cached, TTLCache
 from fastapi import APIRouter, Depends, Response
 from starlette import status
 
 from api.dependencies import process_user_id
 from schemas.parser_pdc import ParserReturn, ParserCreate, ParserHomeworkReturn
 from service.parser import ParserService
+from service.redis_methods import get_cache, set_cache, del_cache
 
 router = APIRouter(
     prefix="/parser",
     tags=["parser"],
 )
-
-clar_cache = TTLCache(maxsize=100, ttl=45)
 
 
 @router.get("/", response_model=List[ParserReturn])
@@ -23,11 +21,17 @@ async def clarify_parsers(obj_id: int = Depends(process_user_id), service: Parse
     Актуализировать информацию о состоянии парсеров юзера
     """
 
-    @cached(cache=clar_cache)
     def _get(obj_id):
         return service.clarify_parsers(obj_id)
 
-    return _get(obj_id)
+    data = get_cache(f"cp_{obj_id}")
+    if data is None:
+        data = _get(obj_id)
+        cache_data = [ParserReturn.from_orm(d).dict(exclude_unset=True) for d in data]
+        set_cache(f"cp_{obj_id}", cache_data, 3 * 60)
+    else:
+        data = [ParserReturn(**d) for d in data]
+    return data
 
 
 @router.post("/", response_model=ParserReturn)
@@ -37,10 +41,8 @@ async def create_parser(
     """
     Создать парсер
     """
+    del_cache(f"cp_{obj_id}")
     return service.create_parser(obj_id, parser)
-
-
-hw_cache = TTLCache(maxsize=500, ttl=60 * 60)
 
 
 @router.get("/homework/{hwdate}", response_model=ParserHomeworkReturn)
@@ -51,12 +53,21 @@ async def get_pars_homework(
     Получить домашку с помощью парсера
     """
 
-    @cached(cache=hw_cache)
     def _get(obj_id: int, hwdate: datetime.date):
         return service.get_pars_homework(obj_id, hwdate)
 
     id_student_with_parser = service.get_user_with_ed(obj_id)
-    return _get(id_student_with_parser, hwdate)
+
+    data = get_cache(f"hw_{id_student_with_parser}_{hwdate}")
+    if data is None:
+        data = _get(id_student_with_parser, hwdate)
+        cache_data = data.dict(exclude_unset=True)
+        if "mailing_time" in cache_data["author"] and cache_data["author"]["mailing_time"] is not None:
+            cache_data["author"]["mailing_time"] = str(cache_data["author"]["mailing_time"])
+        set_cache(f"hw_{obj_id}_{hwdate}", cache_data, 2 * 60 * 60)
+    else:
+        data = ParserHomeworkReturn(**data)
+    return data
 
 
 @router.delete("/")
@@ -65,4 +76,5 @@ async def del_pars(obj_id: int = Depends(process_user_id), parser_type=1, servic
     Удаление парсера
     """
     service.delete_parser(obj_id, parser_type)
+    del_cache(f"cp_{obj_id}")
     return Response(status_code=status.HTTP_204_NO_CONTENT)

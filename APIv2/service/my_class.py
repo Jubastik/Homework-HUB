@@ -108,7 +108,9 @@ class MyClassService:
                 raise APIError(
                     status_code=status.HTTP_400_BAD_REQUEST, err_id=my_err.SLOT_NOT_FOUND, msg="Invalid lesson number"
                 )
-            schedule["day_of_week"] = self.session.query(WeekDay.id).filter(WeekDay.name == schedule["day_of_week"]).first()[0]
+            schedule["day_of_week"] = (
+                self.session.query(WeekDay.id).filter(WeekDay.name == schedule["day_of_week"]).first()[0]
+            )
             schedule = Schedule(
                 class_id=my_class.id, day_id=schedule["day_of_week"], slot_id=slot.id, lesson_id=lesson.id
             )

@@ -13,6 +13,5 @@ class Parser(SqlAlchemyBase):
     education_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     group_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
 
-
     def __repr__(self):
         return f"<Parser> {self.id} {self.student_id} {self.active}"

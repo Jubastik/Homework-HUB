@@ -1,11 +1,11 @@
-from typing import List, Literal
+from datetime import date
+from typing import List
 
 from fastapi import APIRouter, Depends
 
 from api.dependencies import process_class_id
 from schemas.homework_pdc import HomeworkReturn, HomeworkCreate
 from service.homework import HomeworkService
-from datetime import date
 
 router = APIRouter(
     prefix="/homework",

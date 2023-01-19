@@ -1,7 +1,7 @@
 import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from schemas.lesson_pdc import LessonReturn
 from schemas.time_table_pdc import TimeTableReturn

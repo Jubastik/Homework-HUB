@@ -186,6 +186,8 @@ async def get_schedule(session, params, tg_id: int, date: datetime.date = None):
     status, json = await _get_schedule(session, params, tg_id, date)
     if status == 200:
         return json
+    elif status == 404:
+        return []
     else:
         return ApiError(status, json)
 

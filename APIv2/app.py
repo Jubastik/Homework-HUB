@@ -1,9 +1,12 @@
+import logging
 from urllib.request import Request
 import redis
 
+import sentry_sdk
 from fastapi import FastAPI, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
+from sentry_sdk.integrations.logging import LoggingIntegration
 from starlette import status
 from starlette.responses import JSONResponse
 
@@ -12,6 +15,12 @@ from api import router
 from api.dependencies import verify_root_token
 from database import db_session
 from settings import settings
+
+if settings().SENTRY_DSN is not None and settings().SENTRY_DSN != "":
+    sentry_sdk.init(
+        dsn=settings().SENTRY_DSN,
+        traces_sample_rate=1.0
+    )
 
 tags_metadata = [
     {

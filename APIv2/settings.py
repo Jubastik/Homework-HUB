@@ -1,5 +1,4 @@
 from enum import Enum
-from functools import lru_cache
 
 from pydantic import BaseSettings
 
@@ -18,6 +17,8 @@ class Settings(BaseSettings):
     USE_REDIS: bool = False
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+
+    SENTRY_DSN: str = None
 
     DB_ENGINE: Engine = "sqlite"  # sqlite / postgresql
 

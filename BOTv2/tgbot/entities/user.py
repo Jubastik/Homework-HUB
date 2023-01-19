@@ -19,6 +19,7 @@ class User:
         self.tgid = tgid
         self.um = um
         self.main_msg_id = main_msg_id
+        self.mode = None
         # TODO: language
 
     async def setup(self, mode: Mode = None) -> None:
@@ -54,19 +55,23 @@ class User:
             self.main_msg_id = None
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
-        return await self.mode.handle_callback(call)
+        if not self.mode:
+            await self.reset()
+        handled = await self.mode.handle_callback(call)
+        return handled
 
     async def handle_message(self, msg: Message) -> bool:
-        if "/start" in msg.text:
+        if msg.text and "/start" in msg.text:
             await self.reset()
-            if isinstance(self.mode, self.MODES["registration_mode"]):
+            if self.mode is None or isinstance(self.mode, self.MODES["registration_mode"]):
                 txt = msg.text.split()
-                if len(txt) == 2 and "class_token" in txt[-1]:
-                    await self.mode.join_class(int(txt[-1].replace("class_token", "")))
+                if len(txt) == 2 and txt[1].isdigit():
+                    await self.mode.join_class(int(txt[1].replace("class_token", "")))
             await sleep(0.5)
             await msg.delete()
             return True
-
+        if not self.mode:
+            await self.reset()
         handled = await self.mode.handle_message(msg)
         return handled
 

@@ -17,31 +17,6 @@ from services.everyday_mailing import activate_hw_mailing
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
-    from pprint import pprint
-    from services.restapi.restapi import (
-        get_user,
-        is_student,
-        is_admin,
-        create_user,
-        change_class_token,
-        get_class,
-        get_schedule,
-        get_study_week_days,
-        get_current_lessons,
-        get_next_lesson_date,
-        create_homework,
-        get_homework,
-        create_parser,
-        get_parsed_hw,
-        get_parser_status,
-        delete_parser,
-        get_banned_users,
-        appoint_administrator,
-    )
-    from services.restapi.formatters import create_time_tables
-    from datetime import time
-    data = await appoint_administrator(3)
-    print(data)
 
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске

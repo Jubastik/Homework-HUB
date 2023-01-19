@@ -86,15 +86,19 @@ class StudentMode(Mode):
             if self.stage_num != self.STAGES_NAME_TO_NUM["entry_stage"]:
                 await self.set_stage("entry_stage")
             return
+        info_msg = await call.message.answer(f"🔻Домашка на {date.strftime('%A %d.%m')}🔻")
+        asyncio.create_task(delete_msg(info_msg, 600))
         for lesson in homeworks:
             if len(lesson["photos"]) != 0:
                 media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]
                 for photo in lesson["photos"][1:]:
                     media.append(InputMediaPhoto(photo))
                 msg = await call.message.answer_media_group(media, disable_notification=True)
+                for m in msg:
+                    asyncio.create_task(delete_msg(m, 600))
             else:
                 msg = await call.message.answer(lesson["text"], disable_notification=True)
-            asyncio.create_task(delete_msg(msg, 600))
+                asyncio.create_task(delete_msg(msg, 600))
         await self.user.reset()
     
     async def register_diary(self, login: str, password: str):

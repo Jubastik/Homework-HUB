@@ -1,8 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends
 
-from api.dependencies import process_user_id, optional_process_user_id, process_class_id
+from api.dependencies import process_user_id, process_class_id
 from schemas.class_pdc import MyClassReturn, MyClassCreate, MyClassUpdate
 from service.my_class import MyClassService
 
@@ -46,5 +46,3 @@ async def update_class(
     Обновить класс
     """
     return service.update_class(obj_id, my_class)
-
-

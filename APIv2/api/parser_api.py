@@ -1,15 +1,12 @@
 import datetime
-from functools import wraps
-from typing import List, Literal
+from typing import List
 
 from cachetools import cached, TTLCache
 from fastapi import APIRouter, Depends, Response
 from starlette import status
 
 from api.dependencies import process_user_id
-from schemas.homework_pdc import HomeworkReturn, HomeworkCreate
 from schemas.parser_pdc import ParserReturn, ParserCreate, ParserHomeworkReturn
-
 from service.parser import ParserService
 
 router = APIRouter(
@@ -17,7 +14,7 @@ router = APIRouter(
     tags=["parser"],
 )
 
-clar_cache = TTLCache(maxsize=100, ttl=15)
+clar_cache = TTLCache(maxsize=100, ttl=45)
 
 
 @router.get("/", response_model=List[ParserReturn])
@@ -43,7 +40,7 @@ async def create_parser(
     return service.create_parser(obj_id, parser)
 
 
-hw_cache = TTLCache(maxsize=500, ttl=600)
+hw_cache = TTLCache(maxsize=500, ttl=60 * 60)
 
 
 @router.get("/homework/{hwdate}", response_model=ParserHomeworkReturn)
@@ -58,7 +55,8 @@ async def get_pars_homework(
     def _get(obj_id: int, hwdate: datetime.date):
         return service.get_pars_homework(obj_id, hwdate)
 
-    return _get(obj_id, hwdate)
+    id_student_with_parser = service.get_user_with_ed(obj_id)
+    return _get(id_student_with_parser, hwdate)
 
 
 @router.delete("/")

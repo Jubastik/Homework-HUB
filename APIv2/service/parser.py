@@ -1,8 +1,10 @@
 import datetime
 import json
+import logging
 
 import requests
 from fastapi import Depends
+from sentry_sdk import capture_exception
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -17,28 +19,6 @@ from database.time_tables import TimeTable
 from database.week_days import WeekDay
 from schemas.parser_pdc import ParserCreate, ParserHomeworkReturn, ParserHomeworkInfoReturn
 from service.CONSTANTS import day_id_to_weekday
-
-
-def timed_lru_cache(seconds: int, maxsize: int = 128):
-    from functools import lru_cache, wraps
-    from datetime import datetime, timedelta
-
-    def wrapper_cache(func):
-        func = lru_cache(maxsize=maxsize)(func)
-        func.lifetime = timedelta(seconds=seconds)
-        func.expiration = datetime.utcnow() + func.lifetime
-
-        @wraps(func)
-        def wrapped_func(*args, **kwargs):
-            if datetime.utcnow() >= func.expiration:
-                func.cache_clear()
-                func.expiration = datetime.utcnow() + func.lifetime
-
-            return func(*args, **kwargs)
-
-        return wrapped_func
-
-    return wrapper_cache
 
 
 class ParserService:
@@ -58,7 +38,11 @@ class ParserService:
                 cookies=cookies,
                 headers=self.headers,
             )
-            print("!!!Запрос на сервер!!!")
+            logging.warning(f"Запрос на сервер в get_p_educations_and_p_group_ids. User id: {parser.student_id}")
+            if r.status_code not in [status.HTTP_200_OK, status.HTTP_401_UNAUTHORIZED]:
+                capture_exception(
+                    my_err.APIError(status.HTTP_500_INTERNAL_SERVER_ERROR, my_err.ParserAccessError, "Access error")
+                )
             if r.status_code != status.HTTP_200_OK:
                 return 0, 0
             data = r.json()
@@ -76,6 +60,20 @@ class ParserService:
                 parser.active = True
         self.session.commit()
         return parsers
+
+    def get_user_with_ed(self, student_id: int):
+        if (
+            self.session.query(Parser).filter(Parser.student_id == student_id, Parser.active == True).first()
+            is not None
+        ):
+            return student_id
+
+        my_class = self.session.query(Class).join(Student).filter(Student.id == student_id).first()
+        students = [st.id for st in my_class.student]
+        parser = self.session.query(Parser).filter(Parser.student_id.in_(students), Parser.active == True).first()
+        if not parser:
+            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserNotFound, "Class has no active parser")
+        return parser.student_id
 
     def create_parser(self, student_id: int, parser_data: ParserCreate):
         parsers = (
@@ -101,10 +99,13 @@ class ParserService:
                 headers=self.headers,
                 data=payload,
             )
-            print("!!!Запрос на сервер!!!")
+            logging.warning(f"Запрос на сервер в create_parser. User id: {student_id}")
             if r.status_code == status.HTTP_400_BAD_REQUEST:
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Invalid mail or password")
             elif r.status_code != status.HTTP_200_OK:
+                capture_exception(
+                    my_err.APIError(status.HTTP_500_INTERNAL_SERVER_ERROR, my_err.ParserAccessError, "Access error")
+                )
                 raise my_err.APIError(status.HTTP_500_INTERNAL_SERVER_ERROR, my_err.ParserAccessError, "Access error")
             data = r.json()
             x_jwt_token = data["data"]["token"]
@@ -151,7 +152,8 @@ class ParserService:
         for i in range(6, now + 1, -1):
             if i in days:
                 return hwdate - datetime.timedelta(days=now + (7 - i)), [_[1] for _ in schedules if _[0] == i]
-        return hwdate - datetime.timedelta(days=7), [_[1] for _ in schedules if _[0] == i]
+
+        return hwdate - datetime.timedelta(days=7), [_[1] for _ in schedules if _[0] == now]
 
     def _fetch_hw_from_ed(self, json_data, date_num) -> list[ParserHomeworkInfoReturn]:
         data = json_data["data"]["items"]
@@ -214,8 +216,9 @@ class ParserService:
             cookies=cookies,
             headers=self.headers,
         )
-        print("!!!Запрос на сервер!!!")
+        logging.warning(f"Запрос на сервер в get_pars_homework. User id: {student_id}")
         if r.status_code != status.HTTP_200_OK:
+            capture_exception(my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired"))
             raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
         parser.x_jwt_token = r.cookies["X-JWT-Token"]
         self.session.commit()

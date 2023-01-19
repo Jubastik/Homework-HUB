@@ -25,7 +25,7 @@ class BanListService:
         student = self.session.query(Student).filter(Student.id == student_id).first()
         if student is None:
             raise APIError(404, my_err.STUDENT_NOT_FOUND, "Пользователь не был найден.")
-        ban = Ban_list(tg_id=student_id, class_id=student.class_id, name=student.name)
+        ban = Ban_list(tg_id=student.tg_id, class_id=student.class_id, name=student.name)
         self.session.add(ban)
         self.session.delete(student)
         self.session.commit()

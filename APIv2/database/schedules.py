@@ -2,13 +2,11 @@ import datetime
 
 import sqlalchemy
 from sqlalchemy import orm
-from sqlalchemy.orm import Session
 from starlette import status
 
 import my_err
 from .db_session import SqlAlchemyBase
 from .lessons import Lesson
-from .week_days import WeekDay
 
 
 class Schedule(SqlAlchemyBase):

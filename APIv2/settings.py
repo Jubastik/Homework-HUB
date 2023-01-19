@@ -1,5 +1,5 @@
-from functools import lru_cache
 from enum import Enum
+from functools import lru_cache
 
 from pydantic import BaseSettings
 
@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     API_HOST: str = "localhost"
     API_PORT: int = 8000
     ROOT_TOKEN: str = "no_token"
+
+    USE_REDIS: bool = False
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
 
     DB_ENGINE: Engine = "sqlite"  # sqlite / postgresql
 

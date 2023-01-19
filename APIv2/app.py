@@ -1,4 +1,5 @@
 from urllib.request import Request
+import redis
 
 from fastapi import FastAPI, Depends
 from fastapi.encoders import jsonable_encoder
@@ -19,6 +20,15 @@ tags_metadata = [
     }
 ]
 
+if settings().USE_REDIS:
+    try:
+        print("Подключение к Redis...")
+        redis_con = redis.Redis(host=settings().REDIS_HOST, port=settings().REDIS_PORT, password='tmp')
+        print(redis_con.ping())
+    except redis.exceptions.ConnectionError as e:
+        print("Ошибка подключения к Redis:", e)
+        exit(1)
+
 db_session.global_init()
 app = FastAPI(
     title="APIv2",
@@ -27,10 +37,6 @@ app = FastAPI(
     dependencies=[Depends(verify_root_token)],
     debug=settings().API_DEBUG,
 )
-if settings().API_DEBUG:
-    from fastapi_profiler import PyInstrumentProfilerMiddleware
-    # app.add_middleware(PyInstrumentProfilerMiddleware)
-    pass
 app.include_router(router)
 
 

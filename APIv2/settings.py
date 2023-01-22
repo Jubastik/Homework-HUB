@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     USE_REDIS: bool = False
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str = ""
 
     SENTRY_DSN: str = None
 

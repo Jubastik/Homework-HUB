@@ -12,7 +12,7 @@ def init_redis():
     if settings().USE_REDIS:
         try:
             print("Подключение к Redis...")
-            redis_con = redis.Redis(host=settings().REDIS_HOST, port=settings().REDIS_PORT, db=0)
+            redis_con = redis.Redis(host=settings().REDIS_HOST, port=settings().REDIS_PORT, db=0, password=settings().REDIS_PASSWORD)
             print(redis_con.ping())
         except redis.exceptions.ConnectionError as e:
             print("Ошибка подключения к Redis:", e)

@@ -69,7 +69,7 @@ class UsersManager:
                 await call.message.delete()
             except (AttributeError, MessageCantBeDeleted, MessageToDeleteNotFound) as err:
                 logging.warning(
-                    f"UM.handle_callback:Can't delete message from {userid} - {call.from_user.username or call.from_user.first_name + ' ' + call.from_user.last_name}"
+                    f"UM.handle_callback:Can't delete message from {userid} - {call.from_user.username or call.from_user.first_name + ' ' + call.from_user.last_name or ''}"
                     + str(err)
                 )
             return

@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import cloudpickle
 
 from aiogram.utils import executor
 from dotenv import load_dotenv
@@ -33,6 +34,8 @@ async def on_shutdown(dp):
         bot_info = await bot.get_me()
         bot_name = bot_info["username"]
         await bot.send_message(chat_id, f"Stop polling. [@{bot_name}]")
+    with open("um.pcl", "wb") as f:
+        cloudpickle.dump(bot.um, f)
     await session.close()
     await dp.storage.close()
     await dp.storage.wait_closed()

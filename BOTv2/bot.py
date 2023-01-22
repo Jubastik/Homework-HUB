@@ -15,12 +15,14 @@ bot = Bot(token=os.getenv("TG_TOKEN"), parse_mode=types.ParseMode.HTML)
 try:
     with open("um.pcl", "rb") as f:
         bot.um = cloudpickle.load(f)
+    print("um.pcl file loaded successfully")
 except FileNotFoundError:
     print("FileNotFoundError: um.pcl")
+    print("Starting without um.cpl file...")
     bot.um = UsersManager()
 except Exception as e:
-    print("Unexpected error")
-    print(e)
+    print("Unexpected error while init um.cpl file:", e)
+    print("Starting without um.cpl file...")
     bot.um = UsersManager()
 dp = Dispatcher(bot, storage=MemoryStorage())
 

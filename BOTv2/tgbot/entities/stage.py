@@ -18,37 +18,38 @@ class Stage:  # Abstract class
     def merge_args(self, args1, args2) -> dict:
         return {**args1, **args2}
 
-    async def activate(self, markup_args={}, text_args={}, **kwargs) -> int:
-        from bot import bot
-
+    async def _prepare_args(self, markup_args={}, text_args={}, **kwargs):
         args = await self.get_args()
         if isinstance(args, ApiError):
             return args
         markup_args = self.merge_args(args["markup_args"], markup_args)
         text_args = self.merge_args(args["text_args"], text_args)
+        return {"markup_args": markup_args, "text_args": text_args}
+
+    async def activate(self, markup_args={}, text_args={}, **kwargs) -> int:
+        msg_args = await self._prepare_args(self, markup_args, text_args, **kwargs)
+
+        from bot import bot
 
         msg = await bot.edit_message_text(
             chat_id=self.user.tgid,
             message_id=self.user.main_msg_id,
-            text=self.text(**text_args),
-            reply_markup=self.markup(**markup_args),
+            text=self.text(**msg_args["text_args"]),
+            reply_markup=self.markup(**msg_args["markup_args"]),
             **kwargs,
         )
         return msg.message_id
 
     async def new_message(self, markup_args={}, text_args={}, **kwargs) -> int:
+        msg_args = await self._prepare_args(self, markup_args, text_args, **kwargs)
+
         from bot import bot
 
-        args = await self.get_args()
-        if isinstance(args, ApiError):
-            return args
-        markup_args = self.merge_args(args["markup_args"], markup_args)
-        text_args = self.merge_args(args["text_args"], text_args)
-
-        msg = await bot.send_message(
+        msg = await bot.edit_message_text(
             chat_id=self.user.tgid,
-            text=self.text(**text_args),
-            reply_markup=self.markup(**markup_args),
+            message_id=self.user.main_msg_id,
+            text=self.text(**msg_args["text_args"]),
+            reply_markup=self.markup(**msg_args["markup_args"]),
             **kwargs,
         )
         return msg.message_id
@@ -63,3 +64,7 @@ class Stage:  # Abstract class
         handled = await self.mode.handle_api_error(error)
         if handled:
             return True
+        return False
+    
+    async def pereodic_update():
+        pass

@@ -17,6 +17,18 @@ class MenuStage(Stage):
         super().__init__(mode)
         self.text = lambda *args, **kwargs: process_text(TextKeys.menu, **kwargs)
         self.markup = get_markup_student_menu
+        self.update_func = None
+    
+    async def get_args(self) -> dict:
+        return {"markup_args": {}, "text_args": {}}
+    
+    async def _prepare_args(self, markup_args={}, text_args={}, **kwargs):
+        if self.update_func is None:
+            # setup_update_function
+            pass
+
+        res = await super()._prepare_args(markup_args, text_args, **kwargs)
+        return res
     
     async def handle_callback(self, call: CallbackQuery) -> bool:
         if call.data == "add_on_date":

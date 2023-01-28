@@ -27,7 +27,7 @@ class Stage:  # Abstract class
         return {"markup_args": markup_args, "text_args": text_args}
 
     async def activate(self, markup_args={}, text_args={}, **kwargs) -> int:
-        msg_args = await self._prepare_args(self, markup_args, text_args, **kwargs)
+        msg_args = await self._prepare_args(markup_args, text_args, **kwargs)
 
         from bot import bot
 
@@ -41,13 +41,12 @@ class Stage:  # Abstract class
         return msg.message_id
 
     async def new_message(self, markup_args={}, text_args={}, **kwargs) -> int:
-        msg_args = await self._prepare_args(self, markup_args, text_args, **kwargs)
+        msg_args = await self._prepare_args(markup_args, text_args, **kwargs)
 
         from bot import bot
 
-        msg = await bot.edit_message_text(
+        msg = await bot.send_message(
             chat_id=self.user.tgid,
-            message_id=self.user.main_msg_id,
             text=self.text(**msg_args["text_args"]),
             reply_markup=self.markup(**msg_args["markup_args"]),
             **kwargs,
@@ -65,6 +64,3 @@ class Stage:  # Abstract class
         if handled:
             return True
         return False
-    
-    async def pereodic_update():
-        pass

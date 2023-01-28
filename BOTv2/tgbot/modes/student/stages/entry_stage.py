@@ -1,3 +1,4 @@
+import asyncio
 from aiogram.types import CallbackQuery
 import datetime
 
@@ -18,6 +19,7 @@ class MenuStage(Stage):
         self.text = lambda *args, **kwargs: process_text(TextKeys.menu, **kwargs)
         self.markup = get_markup_student_menu
         self.update_func = None
+        self.lessons_start_time = None
     
     async def get_args(self) -> dict:
         return {"markup_args": {}, "text_args": {}}
@@ -61,3 +63,6 @@ class MenuStage(Stage):
             await self.mode.set_stage("profile")
             return True
         return False
+    
+    async def set_dynamic_update(self):
+        pass

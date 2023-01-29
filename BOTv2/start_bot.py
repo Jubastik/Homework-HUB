@@ -2,12 +2,25 @@ import datetime
 import logging
 import os
 import cloudpickle
+import sentry_sdk
 
 from aiogram.utils import executor
 from dotenv import load_dotenv
 
 # preload
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+
 load_dotenv()
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[
+        AioHttpIntegration(),
+    ],
+    traces_sample_rate=1.0,
+    _experiments={
+        "custom_measurements": True,
+    },
+)
 
 from bot import bot, dp, session
 

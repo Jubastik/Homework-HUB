@@ -102,8 +102,8 @@ def convert_homework(data, callback, diary_data=None) -> dict:
     # {предмет: [{txt: txt, photo: [photos]}]}
 
 
-async def delete_msg(msg, time=10):
-    await sleep(time)
+async def delete_msg(msg, seconds=10):
+    await sleep(seconds)
     await msg.delete()
 
 

@@ -87,7 +87,7 @@ class StudentMode(Mode):
                 await self.set_stage("entry_stage")
             return
         info_msg = await call.message.answer(f"🔻Домашка на {date.strftime('%A %d.%m')}🔻")
-        task = asyncio.create_task(delete_msg(info_msg, 600))
+        task = asyncio.create_task(delete_msg(info_msg, seconds=7200))
         self.tasks += [task]
         for lesson in homeworks:
             if len(lesson["photos"]) != 0:
@@ -96,11 +96,11 @@ class StudentMode(Mode):
                     media.append(InputMediaPhoto(photo))
                 msg = await call.message.answer_media_group(media, disable_notification=True)
                 for m in msg:
-                    task = asyncio.create_task(delete_msg(m, 600))
+                    task = asyncio.create_task(delete_msg(m, seconds=7200))
                     self.tasks += [task]
             else:
                 msg = await call.message.answer(lesson["text"], disable_notification=True)
-                task = asyncio.create_task(delete_msg(msg, 600))
+                task = asyncio.create_task(delete_msg(msg, seconds=7200))
                 self.tasks += [task]
         await self.user.reset()
 

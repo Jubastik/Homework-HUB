@@ -100,9 +100,13 @@ class MenuStage(Stage):
                 seconds_left = get_seconds_to_event(self.update_start_time + datetime.timedelta(minutes=1))
             else:
                 i = 1
-                while now.time < self.update_start_time + datetime.timedelta(hours=i):
+                while now.time < datetime.time(
+                    hour=self.update_start_time.hour + i, minute=self.update_start_time.minute + 1
+                ):
                     i += 1
-                seconds_left = get_seconds_to_event(self.update_start_time + datetime.timedelta(hours=i, minutes=1))
+                seconds_left = get_seconds_to_event(
+                    datetime.time(hour=self.update_start_time.hour + i, minute=self.update_start_time.minute + 1)
+                )
 
             await asyncio.sleep(seconds_left)
             if self.mode.current_stage != self:

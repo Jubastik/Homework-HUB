@@ -11,8 +11,8 @@ class Mode:
 
     def __init__(self, user):
         self.user = user
-        self.stages = {}  # {"stage_name": Stage()}
-        self.current_stage: Stage = self.STAGES["entry_stage"](self)
+        self.stages = {"entry_stage": self.STAGES["entry_stage"](self)}  # {"stage_name": Stage()}
+        self.current_stage: Stage = self.stages["entry_stage"]
         self.stage_num: int = self.STAGES_NAME_TO_NUM["entry_stage"]
     
     async def send_entry(self):

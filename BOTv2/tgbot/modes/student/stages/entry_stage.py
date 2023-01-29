@@ -93,7 +93,6 @@ class MenuStage(Stage):
         self.update_func = asyncio.create_task(self.dynamic_update())
 
     async def dynamic_update(self):
-        print("dynamic update started")
         while True:
             # calculate time to next update
             now = datetime.datetime.now()
@@ -106,6 +105,8 @@ class MenuStage(Stage):
                 seconds_left = get_seconds_to_event(self.update_start_time + datetime.timedelta(hours=i, minutes=1))
 
             await asyncio.sleep(seconds_left)
+            if self.mode.current_stage != self:
+                break
             try:
                 await self.activate()
             except MessageNotModified:

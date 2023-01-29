@@ -34,8 +34,21 @@ async def on_shutdown(dp):
         bot_info = await bot.get_me()
         bot_name = bot_info["username"]
         await bot.send_message(chat_id, f"Stop polling. [@{bot_name}]")
+
+    # DEPRECATED code start
+    for user in bot.um.users.values():
+        if user.mode and "spb_diary_get_password" in user.mode.STAGES:
+            if "entry_stage" in user.mode.stages:
+                print(1)
+                user.mode.stages["entry_stage"].update_func.cancel()
+                user.mode.stages["entry_stage"].update_func = None
+            for task in user.mode.tasks:
+                task.cancel()
+            user.mode.tasks = []
     with open("um.pcl", "wb") as f:
         cloudpickle.dump(bot.um, f)
+    # DEPRECATED code end
+
     await session.close()
     await dp.storage.close()
     await dp.storage.wait_closed()

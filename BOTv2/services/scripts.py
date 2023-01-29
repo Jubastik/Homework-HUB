@@ -142,3 +142,11 @@ def parse_args(string: str) -> list:
     for i in args:
         arg = i.split("=")
         res[arg[0]] = arg[1]
+
+
+def get_seconds_to_event(event_time) -> int:
+    now = datetime.datetime.now()
+    event_time = datetime.datetime.combine(now.date(), event_time)
+    if event_time < now:
+        event_time += datetime.timedelta(days=1)
+    return (event_time - now).seconds

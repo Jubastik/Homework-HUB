@@ -12,6 +12,7 @@ from tgbot.users_manager import UsersManager
 locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
 
 bot = Bot(token=os.getenv("TG_TOKEN"), parse_mode=types.ParseMode.HTML)
+# pickle is deprecated
 if os.getenv("LOAD_CACHE") == "True":
     try:
         with open("um.pcl", "rb") as f:

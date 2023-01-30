@@ -4,7 +4,7 @@ import logging
 
 import requests
 from fastapi import Depends
-from requests import ReadTimeout
+from requests import ReadTimeout, Timeout
 from sentry_sdk import capture_exception
 from sqlalchemy.orm import Session
 from starlette import status
@@ -41,7 +41,7 @@ class ParserService:
                     headers=self.headers,
                     timeout=5,
                 )
-            except ReadTimeout as e:
+            except Timeout as e:
                 capture_exception(e)
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserAccessError, "Timeout")
             logging.warning(f"Запрос на сервер в get_p_educations_and_p_group_ids. User id: {parser.student_id}")
@@ -107,7 +107,7 @@ class ParserService:
                     data=payload,
                     timeout=5,
                 )
-            except ReadTimeout as e:
+            except Timeout as e:
                 capture_exception(e)
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserAccessError, "Timeout")
             logging.warning(f"Запрос на сервер в create_parser. User id: {student_id}")
@@ -228,7 +228,7 @@ class ParserService:
                 headers=self.headers,
                 timeout=5,
             )
-        except ReadTimeout as e:
+        except Timeout as e:
             capture_exception(e)
             raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserAccessError, "Timeout")
         logging.warning(f"Запрос на сервер в get_pars_homework. User id: {student_id}")

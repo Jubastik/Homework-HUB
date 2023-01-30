@@ -33,6 +33,7 @@ class ParserService:
         }
         self.proxies = {
             "https": settings().HTTPS_PROXY,
+            "http": settings().HTTPS_PROXY,
         }
 
     def get_p_educations_and_p_group_ids(self, parser: Parser) -> tuple[int, int]:

@@ -20,6 +20,7 @@ from database.time_tables import TimeTable
 from database.week_days import WeekDay
 from schemas.parser_pdc import ParserCreate, ParserHomeworkReturn, ParserHomeworkInfoReturn
 from service.CONSTANTS import day_id_to_weekday
+from settings import settings
 
 
 class ParserService:
@@ -29,6 +30,9 @@ class ParserService:
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
             "X-Requested-With": "XMLHttpRequest",
             "Content-Type": "application/json",
+        }
+        self.proxies = {
+            "https": settings().HTTPS_PROXY,
         }
 
     def get_p_educations_and_p_group_ids(self, parser: Parser) -> tuple[int, int]:
@@ -40,6 +44,7 @@ class ParserService:
                     cookies=cookies,
                     headers=self.headers,
                     timeout=3,
+                    proxies=self.proxies,
                 )
             except Timeout as e:
                 capture_exception(e)
@@ -106,6 +111,7 @@ class ParserService:
                     headers=self.headers,
                     data=payload,
                     timeout=3,
+                    proxies=self.proxies,
                 )
             except Timeout as e:
                 capture_exception(e)
@@ -222,11 +228,14 @@ class ParserService:
 
         cookies = {"X-JWT-Token": parser.x_jwt_token}
         try:
+            r = requests.get('https://ip.beget.ru/', proxies=self.proxies,).text
+            print(r)
             r = requests.get(
                 f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}&p_datetime_to={d_max}&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
                 cookies=cookies,
                 headers=self.headers,
                 timeout=3,
+                proxies=self.proxies,
             )
         except Timeout as e:
             capture_exception(e)

@@ -39,7 +39,7 @@ class ParserService:
                     "https://dnevnik2.petersburgedu.ru/api/journal/person/related-child-list",
                     cookies=cookies,
                     headers=self.headers,
-                    timeout=5,
+                    timeout=3,
                 )
             except Timeout as e:
                 capture_exception(e)
@@ -105,7 +105,7 @@ class ParserService:
                     "https://dnevnik2.petersburgedu.ru/api/user/auth/login",
                     headers=self.headers,
                     data=payload,
-                    timeout=5,
+                    timeout=3,
                 )
             except Timeout as e:
                 capture_exception(e)
@@ -226,7 +226,7 @@ class ParserService:
                 f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}&p_datetime_to={d_max}&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
                 cookies=cookies,
                 headers=self.headers,
-                timeout=5,
+                timeout=3,
             )
         except Timeout as e:
             capture_exception(e)

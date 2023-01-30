@@ -33,6 +33,7 @@ class ParserService:
         }
         self.proxies = {
             "https": settings().HTTPS_PROXY,
+            "http": settings().HTTPS_PROXY,
         }
 
     def get_p_educations_and_p_group_ids(self, parser: Parser) -> tuple[int, int]:
@@ -43,7 +44,7 @@ class ParserService:
                     "https://dnevnik2.petersburgedu.ru/api/journal/person/related-child-list",
                     cookies=cookies,
                     headers=self.headers,
-                    timeout=3,
+                    timeout=1,
                     proxies=self.proxies,
                 )
             except Timeout as e:
@@ -110,7 +111,7 @@ class ParserService:
                     "https://dnevnik2.petersburgedu.ru/api/user/auth/login",
                     headers=self.headers,
                     data=payload,
-                    timeout=3,
+                    timeout=1,
                     proxies=self.proxies,
                 )
             except Timeout as e:
@@ -229,12 +230,12 @@ class ParserService:
         cookies = {"X-JWT-Token": parser.x_jwt_token}
         try:
             r = requests.get('https://ip.beget.ru/', proxies=self.proxies,).text
-            print(r)
+            print(str(r))
             r = requests.get(
                 f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}&p_datetime_to={d_max}&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
                 cookies=cookies,
                 headers=self.headers,
-                timeout=3,
+                timeout=1,
                 proxies=self.proxies,
             )
         except Timeout as e:

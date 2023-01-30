@@ -77,6 +77,10 @@ class StudentMode(Mode):
         if isinstance(diary_hw, ApiError):
             if diary_hw.error_code == 1501 or diary_hw.error_code == 1502:
                 diary_hw = None
+            elif diary_hw.error_code == 1503:
+                warning = await call.message.answer("Внутренняя ошибка Электронного дневника❌\nДомашка из ЭД не будет отображена😭")
+                asyncio.create_task(delete_msg(warning, 10))
+                diary_hw = None
             else:
                 return
         homeworks = convert_homework(data_hw, call, diary_hw)

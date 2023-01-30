@@ -26,8 +26,7 @@ class Profile(Stage):
             return
         pstatus = await get_parser_status(self.user.tgid)
         if isinstance(pstatus, ApiError):
-            # TODO:
-            return
+            pstatus = 2
         if pstatus == 0:
             parser_status = "не подключен❌"
         elif pstatus == 1:

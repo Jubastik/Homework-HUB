@@ -82,7 +82,9 @@ class StudentMode(Mode):
                 asyncio.create_task(delete_msg(warning, 10))
                 diary_hw = None
             else:
-                return
+                warning = await call.message.answer("Ошибка при получении домашки из ЭД❌")
+                asyncio.create_task(delete_msg(warning, 10))
+                diary_hw = None
         homeworks = convert_homework(data_hw, call, diary_hw)
         # Sending homework
         if len(homeworks) == 0:

@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     ROOT_TOKEN: str = "no_token"
 
+    HTTPS_PROXY: str = ""
+
     USE_REDIS: bool = False
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379

@@ -4,6 +4,7 @@ import logging
 
 import requests
 from fastapi import Depends
+from requests import ReadTimeout
 from sentry_sdk import capture_exception
 from sqlalchemy.orm import Session
 from starlette import status
@@ -33,11 +34,16 @@ class ParserService:
     def get_p_educations_and_p_group_ids(self, parser: Parser) -> tuple[int, int]:
         cookies = {"X-JWT-Token": parser.x_jwt_token}
         if parser.platform_id == 1:
-            r = requests.get(
-                "https://dnevnik2.petersburgedu.ru/api/journal/person/related-child-list",
-                cookies=cookies,
-                headers=self.headers,
-            )
+            try:
+                r = requests.get(
+                    "https://dnevnik2.petersburgedu.ru/api/journal/person/related-child-list",
+                    cookies=cookies,
+                    headers=self.headers,
+                    timeout=5,
+                )
+            except ReadTimeout as e:
+                capture_exception(e)
+                raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserAccessError, "Timeout")
             logging.warning(f"Запрос на сервер в get_p_educations_and_p_group_ids. User id: {parser.student_id}")
             if r.status_code not in [status.HTTP_200_OK, status.HTTP_401_UNAUTHORIZED]:
                 capture_exception(
@@ -94,11 +100,16 @@ class ParserService:
                     "activation_code": None,
                 }
             )
-            r = requests.post(
-                "https://dnevnik2.petersburgedu.ru/api/user/auth/login",
-                headers=self.headers,
-                data=payload,
-            )
+            try:
+                r = requests.post(
+                    "https://dnevnik2.petersburgedu.ru/api/user/auth/login",
+                    headers=self.headers,
+                    data=payload,
+                    timeout=5,
+                )
+            except ReadTimeout as e:
+                capture_exception(e)
+                raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserAccessError, "Timeout")
             logging.warning(f"Запрос на сервер в create_parser. User id: {student_id}")
             if r.status_code == status.HTTP_400_BAD_REQUEST:
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Invalid mail or password")
@@ -210,12 +221,16 @@ class ParserService:
                 raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired")
 
         cookies = {"X-JWT-Token": parser.x_jwt_token}
-
-        r = requests.get(
-            f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}&p_datetime_to={d_max}&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
-            cookies=cookies,
-            headers=self.headers,
-        )
+        try:
+            r = requests.get(
+                f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}&p_datetime_to={d_max}&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
+                cookies=cookies,
+                headers=self.headers,
+                timeout=5,
+            )
+        except ReadTimeout as e:
+            capture_exception(e)
+            raise my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserAccessError, "Timeout")
         logging.warning(f"Запрос на сервер в get_pars_homework. User id: {student_id}")
         if r.status_code != status.HTTP_200_OK:
             capture_exception(my_err.APIError(status.HTTP_400_BAD_REQUEST, my_err.ParserLoginError, "Token expired"))

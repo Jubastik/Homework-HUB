@@ -212,11 +212,12 @@ class ParserService:
         date_num = []
         for name in lessons_name:
             date_num.append((name, *self._get_day_and_number(student_id, name, hwdate)))
-        date_num = [(_[0], _[1].strftime("%d.%m.%Y"), _[2]) for _ in date_num]
         d_min, d_max = (
-            min(date_num, key=lambda x: x[1])[1],
-            max(date_num, key=lambda x: x[1])[1],
+            min(date_num, key=lambda x: x[1])[1].strftime("%d.%m.%Y"),
+            max(date_num, key=lambda x: x[1])[1].strftime("%d.%m.%Y"),
         )
+        date_num = [(_[0], _[1].strftime("%d.%m.%Y"), _[2]) for _ in date_num]
+
 
         parser = self.session.query(Parser).filter(Parser.student_id == student_id, Parser.active == True).first()
         if parser is None:
@@ -233,7 +234,7 @@ class ParserService:
         try:
             logging.warning(f"{datetime.datetime.now()} Запрос на сервер в get_pars_homework. User id: {student_id}")
             r = requests.get(
-                f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}&p_datetime_to={d_max}&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
+                f"https://dnevnik2.petersburgedu.ru/api/journal/lesson/list-by-education?p_limit=3000&p_datetime_from={d_min}%2000:00:00&p_datetime_to={d_max}%2023:59:59&p_educations%5B%5D={education_id}&p_group_ids%5B%5D={group_id}",
                 cookies=cookies,
                 headers=self.headers,
                 timeout=1,

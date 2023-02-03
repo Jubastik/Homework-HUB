@@ -4,10 +4,12 @@ from typing import List
 from fastapi import APIRouter, Depends, Response
 from starlette import status
 
+import my_err
 from api.dependencies import process_user_id
+from my_err import APIError
 from schemas.parser_pdc import ParserReturn, ParserCreate, ParserHomeworkReturn
 from service.parser import ParserService
-from service.redis_methods import get_cache, set_cache, del_cache
+from service.redis_methods import get_cache, set_cache, del_cache, get_cache_time
 
 router = APIRouter(
     prefix="/parser",
@@ -58,16 +60,36 @@ async def get_pars_homework(
 
     id_student_with_parser = service.get_user_with_ed(obj_id)
 
-    data = get_cache(f"hw_{id_student_with_parser}_{hwdate}")
-    if data is None:
-        data = _get(id_student_with_parser, hwdate)
-        cache_data = data.dict(exclude_unset=True)
-        if "mailing_time" in cache_data["author"] and cache_data["author"]["mailing_time"] is not None:
-            cache_data["author"]["mailing_time"] = str(cache_data["author"]["mailing_time"])
-        set_cache(f"hw_{obj_id}_{hwdate}", cache_data, 2 * 60 * 60)
+    cache_ttl = get_cache_time(f"hw_{id_student_with_parser}_{hwdate}")
+
+    if cache_ttl is None or cache_ttl < (60 * 60 * 60) - (2 * 60 * 60):
+        try:
+            data = _get(id_student_with_parser, hwdate)
+            cache_data = data.dict(exclude_unset=True)
+            if "mailing_time" in cache_data["author"] and cache_data["author"]["mailing_time"] is not None:
+                cache_data["author"]["mailing_time"] = str(cache_data["author"]["mailing_time"])
+            set_cache(f"hw_{obj_id}_{hwdate}", cache_data, 60 * 60 * 60)
+            return data
+        except APIError as e:
+            if e.err_id == my_err.ParserAccessError:
+                data = get_cache(f"hw_{id_student_with_parser}_{hwdate}")
+                if data is None:
+                    raise e
+                data["homework"].insert(
+                    0,
+                    {
+                        "subject": "Ошибка ЭД",
+                        "date": "01.01.2023",
+                        "text": "Дневник недоступен. Отправлено последнее сохраненное дз",
+                    },
+                )
+                data = ParserHomeworkReturn(**data)
+                return data
+            raise e
     else:
+        data = get_cache(f"hw_{id_student_with_parser}_{hwdate}")
         data = ParserHomeworkReturn(**data)
-    return data
+        return data
 
 
 @router.delete("/")

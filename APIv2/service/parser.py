@@ -218,7 +218,6 @@ class ParserService:
         )
         date_num = [(_[0], _[1].strftime("%d.%m.%Y"), _[2]) for _ in date_num]
 
-
         parser = self.session.query(Parser).filter(Parser.student_id == student_id, Parser.active == True).first()
         if parser is None:
             # временно

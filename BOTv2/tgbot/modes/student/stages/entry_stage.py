@@ -25,11 +25,13 @@ class MenuStage(Stage):
         self.update_end_time = None
 
     async def get_args(self) -> dict:
-        subjects = await get_current_lessons(self.user.tgid)
-        if isinstance(subjects, ApiError):
+        data = await get_current_lessons(self.user.tgid)
+        if isinstance(data, ApiError):
             return
         # set(list()) to remove duplicates
-        subjects = list(set([subject["lesson"]["name"] for subject in subjects]))
+        data = [subject["lesson"]["name"] for subject in data]
+        subjects = sorted(set(data), key=lambda x: data.index(x))  # sorted by indexes in original data
+        print(subjects)
         return {"markup_args": {"subjects": subjects}, "text_args": {}}
 
     async def _prepare_args(self, markup_args={}, text_args={}, **kwargs):
@@ -88,7 +90,10 @@ class MenuStage(Stage):
         shedule = await get_schedule(self.user.tgid)
         shedule.sort(key=lambda x: x["slot"]["begin_time"])
         hours, minutes, seconds = map(int, shedule[0]["slot"]["begin_time"].split(":"))
-        self.update_start_time = datetime.time(hours, minutes, seconds)
+        if minutes < 11:
+            minutes += 60
+            hours -= 1
+        self.update_start_time = datetime.time(hours, minutes - 11, seconds)
         self.update_end_time = datetime.time(hour=self.update_start_time.hour + 9)
 
         self.update_func = asyncio.create_task(self.dynamic_update())
@@ -101,18 +106,19 @@ class MenuStage(Stage):
                 seconds_left = get_seconds_to_event(self.update_start_time + datetime.timedelta(minutes=1))
             else:
                 i = 1
-                while now.time < datetime.time(
+                while now.time() > datetime.time(
                     hour=self.update_start_time.hour + i, minute=self.update_start_time.minute + 1
                 ):
                     i += 1
                 seconds_left = get_seconds_to_event(
                     datetime.time(hour=self.update_start_time.hour + i, minute=self.update_start_time.minute + 1)
                 )
-
-            await asyncio.sleep(seconds_left)
+            print(f"dynamic update will be in {seconds_left} seconds, now is {now.time()}, it will be at {now + datetime.timedelta(seconds=seconds_left)}")
+            await asyncio.sleep(seconds_left + 5)
             if self.mode.current_stage != self:
                 break
             try:
                 await self.activate()
             except MessageNotModified:
+                # message was not modified, so we don't need to update it, just continue
                 pass

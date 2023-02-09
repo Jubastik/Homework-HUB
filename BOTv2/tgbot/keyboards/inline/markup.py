@@ -196,7 +196,7 @@ markup_add_homework = InlineKeyboardMarkup(
 def get_markup_student_menu(subjects=[]) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=2)
     for subject in subjects:
-        keyboard.insert(InlineKeyboardButton(text=subject))
+        keyboard.insert(InlineKeyboardButton(text=subject, callback_data=SubjectData.new(name=subject)))
     keyboard.add(
         InlineKeyboardButton(text="Добавить дз📌", callback_data="add_homework"),
         InlineKeyboardButton(text="Дз на завтра⚡️", callback_data="get_next_date_hw"),

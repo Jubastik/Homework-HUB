@@ -28,7 +28,8 @@ class MenuStage(Stage):
         subjects = await get_current_lessons(self.user.tgid)
         if isinstance(subjects, ApiError):
             return
-        subjects = [subject["lesson"]["name"] for subject in subjects]
+        # set(list()) to remove duplicates
+        subjects = list(set([subject["lesson"]["name"] for subject in subjects]))
         return {"markup_args": {"subjects": subjects}, "text_args": {}}
 
     async def _prepare_args(self, markup_args={}, text_args={}, **kwargs):

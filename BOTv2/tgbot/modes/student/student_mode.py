@@ -10,7 +10,6 @@ from tgbot.modes.common_stages.spb_diary import SPBDiaryGetLogin, SPBDiaryGetPas
 from services.scripts import convert_homework, delete_msg
 
 
-
 class StudentMode(Mode):
     STAGES = {
         "entry_stage": MenuStage,
@@ -38,6 +37,7 @@ class StudentMode(Mode):
         super().__init__(user)
         self.add_date = None
         self.subject = None
+        self.tasks = []
 
     async def handle_callback(self, call) -> bool:
         handled = await self.current_stage.handle_callback(call)
@@ -93,7 +93,8 @@ class StudentMode(Mode):
                 await self.set_stage("entry_stage")
             return
         info_msg = await call.message.answer(f"🔻Домашка на {date.strftime('%A %d.%m')}🔻")
-        asyncio.create_task(delete_msg(info_msg, 600))
+        task = asyncio.create_task(delete_msg(info_msg, seconds=7200))
+        self.tasks += [task]
         for lesson in homeworks:
             if len(lesson["photos"]) != 0:
                 media = [InputMediaPhoto(lesson["photos"][0], lesson["text"])]
@@ -101,12 +102,14 @@ class StudentMode(Mode):
                     media.append(InputMediaPhoto(photo))
                 msg = await call.message.answer_media_group(media, disable_notification=True)
                 for m in msg:
-                    asyncio.create_task(delete_msg(m, 600))
+                    task = asyncio.create_task(delete_msg(m, seconds=7200))
+                    self.tasks += [task]
             else:
                 msg = await call.message.answer(lesson["text"], disable_notification=True)
-                asyncio.create_task(delete_msg(msg, 600))
+                task = asyncio.create_task(delete_msg(msg, seconds=7200))
+                self.tasks += [task]
         await self.user.reset()
-    
+
     async def register_diary(self, login: str, password: str):
         res = await restapi.create_parser(self.user.tgid, login, password)
         await self.set_stage("profile")

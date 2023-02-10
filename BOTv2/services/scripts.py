@@ -1,11 +1,9 @@
 import datetime
 from asyncio import sleep
 
-from CONSTANTS import WEEKDAYS, WEEKDAYS_TRASNLATE
+from CONSTANTS import WEEKDAYS
 from languages.text_keys import TextKeys
 from languages.text_proccesor import process_text
-
-# from service.restapi.restapi import get_user_by_id
 
 
 def time_is_correct(time: list):
@@ -104,8 +102,8 @@ def convert_homework(data, callback, diary_data=None) -> dict:
     # {предмет: [{txt: txt, photo: [photos]}]}
 
 
-async def delete_msg(msg, time=10):
-    await sleep(time)
+async def delete_msg(msg, seconds=10):
+    await sleep(seconds)
     await msg.delete()
 
 
@@ -142,3 +140,11 @@ def parse_args(string: str) -> list:
     for i in args:
         arg = i.split("=")
         res[arg[0]] = arg[1]
+
+
+def get_seconds_to_event(event_time) -> int:
+    now = datetime.datetime.now()
+    event_time = datetime.datetime.combine(now.date(), event_time)
+    if event_time < now:
+        event_time += datetime.timedelta(days=1)
+    return (event_time - now).seconds

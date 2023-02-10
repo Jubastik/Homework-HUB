@@ -25,12 +25,9 @@ class UsersManager:
             return await self._restore_user(userid)
 
     async def _restore_user(self, userid: int) -> User:
-        # import here to avoid circular imports
-
         # try to restore user from database
         # if user is not in database, create new user
         # TODO: try to find main message id and his state
-
         user = User(self, userid)
         self.users[userid] = user
         return user

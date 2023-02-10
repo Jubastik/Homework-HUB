@@ -15,7 +15,7 @@ aiogram = "^2.24"
 sqlalchemy = "^1.4.46"
 redis = "^4.4.2"
 cloudpickle = "^2.2.1"
-pysocks = "^1.7.1"
+sentry-sdk = "^1.14.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -24,3 +24,6 @@ fastapi-profiler = "^1.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119

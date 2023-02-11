@@ -31,7 +31,7 @@ class MenuStage(Stage):
         # set(list()) to remove duplicates
         data = [subject["lesson"]["name"] for subject in data]
         subjects = sorted(set(data), key=lambda x: data.index(x))  # sorted by indexes in original data
-        print(subjects)
+        print(f"tgid:{self.user.tgid} current subjects - {subjects}")
         return {"markup_args": {"subjects": subjects}, "text_args": {}}
 
     async def _prepare_args(self, markup_args={}, text_args={}, **kwargs):
@@ -94,8 +94,7 @@ class MenuStage(Stage):
             minutes += 60
             hours -= 1
         self.update_start_time = datetime.time(hours, minutes - 11, seconds)
-        self.update_end_time = datetime.time(hour=self.update_start_time.hour + 9)
-
+        self.update_end_time = datetime.time(hour=self.update_start_time.hour + 10, minute=0)
         self.update_func = asyncio.create_task(self.dynamic_update())
 
     async def dynamic_update(self):
@@ -103,7 +102,12 @@ class MenuStage(Stage):
             # calculate time to next update
             now = datetime.datetime.now()
             if now.time() < self.update_start_time or now.time() > self.update_end_time:
-                seconds_left = get_seconds_to_event(self.update_start_time + datetime.timedelta(minutes=1))
+                hours = self.update_start_time.hour
+                minutes = self.update_start_time.minute + 1
+                if minutes > 60:
+                    minutes -= 60
+                    hours += 1
+                seconds_left = get_seconds_to_event(datetime.time(hours, minutes))
             else:
                 i = 1
                 while now.time() > datetime.time(

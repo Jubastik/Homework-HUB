@@ -1,4 +1,5 @@
 from aiogram.types import Message, CallbackQuery
+from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
 from asyncio import sleep
 
 from tgbot.entities.mode import Mode
@@ -51,7 +52,10 @@ class User:
         from bot import bot
 
         if self.main_msg_id is not None:
-            await bot.delete_message(self.tgid, self.main_msg_id)
+            try:
+                await bot.delete_message(self.tgid, self.main_msg_id)
+            except (MessageCantBeDeleted, MessageToDeleteNotFound):
+                pass
             self.main_msg_id = None
 
     async def handle_callback(self, call: CallbackQuery) -> bool:

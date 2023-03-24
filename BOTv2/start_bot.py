@@ -31,6 +31,10 @@ from services.everyday_mailing import activate_hw_mailing
 
 async def on_startup(dp):
     # Действия при запуске, например оповещение админов
+    if os.getenv("USE_WEBHOOK", "False") == "True":
+        logging.info("Set webhook")
+        webhook_url = os.getenv("WEBHOOK_HOST") + os.getenv("WEBHOOK_PATH")
+        await bot.set_webhook(webhook_url)
 
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске
@@ -42,6 +46,10 @@ async def on_startup(dp):
 
 
 async def on_shutdown(dp):
+    if os.getenv("USE_WEBHOOK", "False") == "True":
+        logging.info("Delete webhook")
+        await bot.delete_webhook()
+
     if os.getenv("VERSION") == "server":
         chat_id = os.getenv("TG_ADMIN_CHAT")
         bot_info = await bot.get_me()
@@ -71,7 +79,20 @@ def start():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
-    executor.start_polling(dp, on_shutdown=on_shutdown, on_startup=on_startup)
+    if os.getenv("USE_WEBHOOK", "False") == "True":
+        logging.info("Start webhook")
+        executor.start_webhook(
+            dp,
+            webhook_path=os.getenv("WEBHOOK_PATH"),
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            skip_updates=True,
+            host=os.getenv("WEBAPP_HOST"),
+            port=int(os.getenv("WEBAPP_PORT")),
+        )
+    else:
+        logging.info("Start polling")
+        executor.start_polling(dp, on_shutdown=on_shutdown, on_startup=on_startup, skip_updates=True)
 
 
 if __name__ == "__main__":

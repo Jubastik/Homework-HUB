@@ -15,6 +15,7 @@ from languages.text_proccesor import process_text
 
 
 class RegistrationMode(Mode):
+    tasks = []
     STAGES = {
         "join_by_id_done": JoinRegisterDone,
         "join_by_id_stage": JoinByIdStage,

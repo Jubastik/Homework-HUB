@@ -31,7 +31,7 @@ class ScheduleService:
     def get_current_schedule(self, class_id: int):
         # __now = datetime.datetime(2021, 9, 1, 10, 30)
         start_lesson = (datetime.datetime.now() + datetime.timedelta(minutes=10)).time()
-        end_lesson = (datetime.datetime.now() - datetime.timedelta(minutes=180)).time()
+        end_lesson = (datetime.datetime.now() - datetime.timedelta(minutes=60)).time()
         day = day_id_to_weekday[datetime.datetime.today().weekday()]
 
         now_lessons = (

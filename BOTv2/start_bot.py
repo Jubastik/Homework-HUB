@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import aiohttp
 import logging
@@ -38,7 +39,8 @@ async def on_startup(dp):
         await bot.set_webhook(webhook_url)
 
     headers = {"X-Requested-With": "XMLHttpRequest", "Content-Type": "application/json"}
-    session = aiohttp.ClientSession(headers=headers)
+    loop = asyncio.get_running_loop()
+    session = aiohttp.ClientSession(headers=headers, loop=loop)
     dp.api_session = session
 
     if os.getenv("VERSION") == "server":

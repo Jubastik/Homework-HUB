@@ -37,6 +37,10 @@ async def on_startup(dp):
         webhook_url = os.getenv("WEBHOOK_HOST") + os.getenv("WEBHOOK_PATH")
         await bot.set_webhook(webhook_url)
 
+    headers = {"X-Requested-With": "XMLHttpRequest", "Content-Type": "application/json"}
+    session = aiohttp.ClientSession(headers=headers)
+    dp.api_session = session
+
     if os.getenv("VERSION") == "server":
         # Отправка сообщения админу о запуске
         chat_id = os.getenv("TG_ADMIN_CHAT")
@@ -44,10 +48,6 @@ async def on_startup(dp):
         bot_name = bot_info["username"]
         await bot.send_message(chat_id, f"Start polling. [@{bot_name}]")
     await activate_hw_mailing()
-
-    headers = {"X-Requested-With": "XMLHttpRequest", "Content-Type": "application/json"}
-    session = aiohttp.ClientSession(headers=headers)
-    dp.api_session = session
 
 
 async def on_shutdown(dp):

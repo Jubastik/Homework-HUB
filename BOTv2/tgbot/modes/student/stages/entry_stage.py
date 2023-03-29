@@ -103,7 +103,7 @@ class MenuStage(Stage):
             # calculate time to next update
             now = datetime.datetime.now()
             if now.time() < self.update_start_time or now.time() > self.update_end_time:
-                seconds_left = get_seconds_to_event(self.update_start_time + datetime.timedelta(minutes=1))
+                seconds_left = get_seconds_to_event(self.update_start_time)
             else:
                 i = 1
                 while now.time() > datetime.time(

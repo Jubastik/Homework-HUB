@@ -23,7 +23,7 @@ sentry_sdk.init(
     },
 )
 
-from bot import bot, dp, session
+from bot import bot, dp
 
 import tgbot
 import tgbot.handlers
@@ -74,7 +74,7 @@ async def on_shutdown(dp):
         cloudpickle.dump(bot.um, f)
     # DEPRECATED code end
 
-    await session.close()
+    await dp.api_session.close()
     await dp.storage.close()
     await dp.storage.wait_closed()
 

@@ -1,4 +1,5 @@
 import datetime
+import aiohttp
 import logging
 import os
 import cloudpickle
@@ -43,6 +44,10 @@ async def on_startup(dp):
         bot_name = bot_info["username"]
         await bot.send_message(chat_id, f"Start polling. [@{bot_name}]")
     await activate_hw_mailing()
+
+    headers = {"X-Requested-With": "XMLHttpRequest", "Content-Type": "application/json"}
+    session = aiohttp.ClientSession(headers=headers)
+    dp.api_session = session
 
 
 async def on_shutdown(dp):

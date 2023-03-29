@@ -3,12 +3,12 @@ from CONSTANTS import API_TOKEN
 
 def aiohttp_session(func):
     async def wrapper(*args, **kwargs):
-        from bot import session
+        from bot import dp
 
         params = {
             "root_token": API_TOKEN,
         }
-        res = await func(session, params, *args, **kwargs)
+        res = await func(dp.api_session, params, *args, **kwargs)
         return res
 
     return wrapper

@@ -1,7 +1,6 @@
 import locale
 import os
 
-import aiohttp
 import cloudpickle
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -30,6 +29,3 @@ else:
     bot.um = UsersManager()
     print("Starting without um.cpl file...")
 dp = Dispatcher(bot, storage=MemoryStorage())
-
-headers = {"X-Requested-With": "XMLHttpRequest", "Content-Type": "application/json"}
-session = aiohttp.ClientSession(headers=headers)

@@ -51,7 +51,7 @@ class ScheduleService:
             .all()
         )[-2::]
         end = time()
-        logging.info(f"get_current_schedule: {end - start}")
+        logging.warning(f"get_current_schedule: {end - start}")
         return now_lessons
 
     def get_next_date(self, class_id: int, lessons: list[str]):

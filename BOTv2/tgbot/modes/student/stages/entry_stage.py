@@ -2,6 +2,7 @@ import asyncio
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import MessageNotModified
 import datetime
+from random import randint
 
 from tgbot.entities.stage import Stage
 from languages.text_keys import TextKeys
@@ -102,12 +103,7 @@ class MenuStage(Stage):
             # calculate time to next update
             now = datetime.datetime.now()
             if now.time() < self.update_start_time or now.time() > self.update_end_time:
-                hours = self.update_start_time.hour
-                minutes = self.update_start_time.minute + 1
-                if minutes > 60:
-                    minutes -= 60
-                    hours += 1
-                seconds_left = get_seconds_to_event(datetime.time(hours, minutes))
+                seconds_left = get_seconds_to_event(self.update_start_time)
             else:
                 i = 1
                 while now.time() > datetime.time(
@@ -117,6 +113,7 @@ class MenuStage(Stage):
                 seconds_left = get_seconds_to_event(
                     datetime.time(hour=self.update_start_time.hour + i, minute=self.update_start_time.minute + 1)
                 )
+            seconds_left += randint(0, 60)
             print(f"dynamic update will be in {seconds_left} seconds, now is {now.time()}, it will be at {now + datetime.timedelta(seconds=seconds_left)}")
             await asyncio.sleep(seconds_left + 5)
             if self.mode.current_stage != self:

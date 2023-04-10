@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -9,7 +10,7 @@ from database.schedules import Schedule
 from database.time_tables import TimeTable
 from database.week_days import WeekDay
 from service.CONSTANTS import day_id_to_weekday
-
+from time import time
 
 class ScheduleService:
     def __init__(self, session: Session = Depends(get_session)):
@@ -29,9 +30,10 @@ class ScheduleService:
         return schedule
 
     def get_current_schedule(self, class_id: int):
+        start = time()
         # __now = datetime.datetime(2021, 9, 1, 10, 30)
         start_lesson = (datetime.datetime.now() + datetime.timedelta(minutes=10)).time()
-        end_lesson = (datetime.datetime.now() - datetime.timedelta(minutes=180)).time()
+        end_lesson = (datetime.datetime.now() - datetime.timedelta(minutes=60)).time()
         day = day_id_to_weekday[datetime.datetime.today().weekday()]
 
         now_lessons = (
@@ -48,6 +50,8 @@ class ScheduleService:
             .order_by(TimeTable.begin_time)
             .all()
         )[-2::]
+        end = time()
+        logging.warning(f"get_current_schedule: {end - start}")
         return now_lessons
 
     def get_next_date(self, class_id: int, lessons: list[str]):

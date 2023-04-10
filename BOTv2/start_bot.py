@@ -65,8 +65,8 @@ async def on_shutdown(dp):
 
     # DEPRECATED code start
     for user in bot.um.users.values():
-        if user.mode and "spb_diary_get_password" in user.mode.STAGES:
-            if "entry_stage" in user.mode.stages:
+        if user.mode and "send_hw" in user.mode.STAGES:
+            if "entry_stage" in user.mode.stages and user.mode.stages["entry_stage"].update_func:
                 user.mode.stages["entry_stage"].update_func.cancel()
                 user.mode.stages["entry_stage"].update_func = None
             for task in user.mode.tasks:

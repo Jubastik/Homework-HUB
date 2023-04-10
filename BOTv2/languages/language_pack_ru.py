@@ -55,7 +55,7 @@ class LanguageRussian:
 """
     join_register_done = f"Подпишись на мой телеграм канал <b>{TG_OFFICAL_CHANNEL}</b>"
     start_time_check = """
-Начало уроков в <i><b>{time}</b></i>
+Начало уроков в <i><b>{time}</b></i> по МСК
 
 Чтобы изменить время, введи новое время в формате <b>ЧАСЫ:МИНУТЫ</b>
 

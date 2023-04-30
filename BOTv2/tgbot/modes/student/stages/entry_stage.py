@@ -44,17 +44,25 @@ class MenuStage(Stage):
 
     async def handle_callback(self, call: CallbackQuery) -> bool:
         if call.data == "add_on_date":
+            self.update_func.cancel()
+            self.update_func = None
             await self.mode.set_stage("choose_date")
             return True
         elif call.data == "my_shedule":
+            self.update_func.cancel()
+            self.update_func = None
             await self.mode.set_stage("shedule")
             return True
         elif call.data == "add_homework":
             if datetime.datetime.now().weekday() == 6:
                 await call.answer("Сегодня нету уроков")
                 return True
+            self.update_func.cancel()
+            self.update_func = None
             await self.mode.set_stage("fast_add")
         elif call.data == "get_homework":
+            self.update_func.cancel()
+            self.update_func = None
             await self.mode.set_stage("get_hw_choose_date")
             return True
         elif call.data == "get_next_date_hw":
@@ -70,6 +78,8 @@ class MenuStage(Stage):
             await self.mode.send_homework(call, date)
             return True
         elif call.data == "profile":
+            self.update_func.cancel()
+            self.update_func = None
             await self.mode.set_stage("profile")
             return True
         elif "subject" in call.data:
@@ -81,6 +91,8 @@ class MenuStage(Stage):
                 # TODO: handle error
                 return
             self.mode.set_add_date(date)
+            self.update_func.cancel()
+            self.update_func = None
             await self.mode.set_stage("send_hw")
             return True
         return False
@@ -117,9 +129,11 @@ class MenuStage(Stage):
             print(f"dynamic update will be in {seconds_left} seconds, now is {now.time()}, it will be at {now + datetime.timedelta(seconds=seconds_left)}")
             await asyncio.sleep(seconds_left + 5)
             if self.mode.current_stage != self:
+                self.update_func = None
                 break
             try:
-                await self.activate()
+                await self.mode.set_stage("entry_stage")
             except MessageNotModified:
                 # message was not modified, so we don't need to update it, just continue
-                pass
+                self.update_func = None
+                break

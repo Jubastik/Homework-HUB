@@ -66,13 +66,18 @@ class UsersManager:
                 await call.message.delete()
             except (AttributeError, MessageCantBeDeleted, MessageToDeleteNotFound) as err:
                 # Удаляет None значения
-                names = filter(lambda x: x, [call.from_user.username, call.from_user.first_name, call.from_user.last_name])
-                name = " ".join(names)
-                logging.warning(
-                    f"UM.handle_callback:Can't delete message from {userid} - {name}"
-                    + str(err)
+                names = filter(
+                    lambda x: x, [call.from_user.username, call.from_user.first_name, call.from_user.last_name]
                 )
+                name = " ".join(names)
+                logging.warning(f"UM.handle_callback:Can't delete message from {userid} - {name}" + str(err))
             return
         handled = await user.handle_callback(call)
         if not handled:
-            pass
+            from bot import bot
+
+            await call.answer()
+            await bot.send_message(f"Callback is't handled DATA:\n call_data: {call.data}")
+            await logging.critical(
+                f"Callback is't handled DATA:\n call_data: {call.data}\n userid: {userid}\n cur_stage: {user.mode.current_stage}"
+            )

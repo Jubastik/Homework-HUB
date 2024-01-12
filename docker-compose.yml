@@ -9,3 +9,10 @@ services:
       - "8000:8000"
     volumes:
       - ./APIv2:/app
+
+  bot:
+    build:
+      context: BOTv2
+      dockerfile: Dockerfile
+    volumes:
+      - ./BOTv2:/app
